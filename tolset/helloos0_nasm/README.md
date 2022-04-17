@@ -18,5 +18,8 @@ $ qemu-system-x86_64 -fda helloos
 ```
 
 
-https://user-images.githubusercontent.com/71201308/163673724-aa491991-aa75-42ce-a068-4481a4ed92c7.mov
+
+https://user-images.githubusercontent.com/71201308/163697130-0509679d-6db1-43ed-9ac6-715e266c5b34.mov
+
+
 
