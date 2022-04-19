@@ -1,0 +1,102 @@
+     1                                  CYLS	EQU	10
+     2                                  
+     3                                  	ORG	0x7c00
+     4                                  
+     5 00000000 EB4E                    	JMP	entry
+     6 00000002 90                      	DB	0x90
+     7 00000003 48415249424F5445        	DB	"HARIBOTE"
+     8 0000000B 0002                    	DW	512
+     9 0000000D 01                      	DB	1
+    10 0000000E 0100                    	DW	1
+    11 00000010 02                      	DB	2
+    12 00000011 E000                    	DW	224
+    13 00000013 400B                    	DW	2880
+    14 00000015 F0                      	DB	0xf0
+    15 00000016 0900                    	DW	9
+    16 00000018 1200                    	DW	18
+    17 0000001A 0200                    	DW	2
+    18 0000001C 00000000                	DD	0
+    19 00000020 400B0000                	DD	2880
+    20 00000024 000029                  	DB	0,0,0x29
+    21 00000027 FFFFFFFF                	DD	0xffffffff
+    22 0000002B 48415249424F54454F-     	DB	"HARIBOTEOS "
+    22 00000034 5320               
+    23 00000036 4641543132202020        	DB	"FAT12   "
+    24 0000003E 00<rep 12h>             	TIMES 18 DB 0
+    25                                  
+    26                                  entry:
+    27 00000050 B80000                  	MOV	AX,0
+    28 00000053 8ED0                    	MOV	SS,AX
+    29 00000055 BC007C                  	MOV	SP,0x7c00
+    30 00000058 8ED8                    	MOV	DS,AX
+    31                                  
+    32 0000005A B82008                  	MOV	AX,0x0820
+    33 0000005D 8EC0                    	MOV	ES,AX
+    34 0000005F B500                    	MOV	CH,0
+    35 00000061 B600                    	MOV	DH,0
+    36 00000063 B102                    	MOV	CL,2
+    37                                  
+    38                                  readloop:
+    39 00000065 BE0000                  	MOV	SI,0
+    40                                  
+    41                                  retry:
+    42 00000068 B402                    	MOV	AH,0x02
+    43 0000006A B001                    	MOV	AL,1
+    44 0000006C BB0000                  	MOV	BX,0
+    45 0000006F B200                    	MOV	DL,0x00
+    46 00000071 CD13                    	INT	0x13
+    47 00000073 7310                    	JNC	next
+    48 00000075 83C601                  	ADD	SI,1
+    49 00000078 83FE05                  	CMP	SI,5
+    50 0000007B 732E                    	JAE	error
+    51 0000007D B400                    	MOV	AH,0x00
+    52 0000007F B200                    	MOV	DL,0x00
+    53 00000081 CD13                    	INT	0x13
+    54 00000083 EBE3                    	JMP	retry
+    55                                  
+    56                                  next:
+    57 00000085 8CC0                    	MOV	AX,ES
+    58 00000087 83C020                  	ADD	AX,0x0020
+    59 0000008A 8EC0                    	MOV	ES,AX
+    60 0000008C 80C101                  	ADD	CL,1
+    61 0000008F 80F912                  	CMP	CL,18
+    62 00000092 76D1                    	JBE	readloop
+    63 00000094 B101                    	MOV	CL,1
+    64 00000096 80C601                  	ADD	DH,1
+    65 00000099 80FE02                  	CMP	DH,2
+    66 0000009C 72C7                    	JB	readloop
+    67 0000009E B600                    	MOV	DH,0
+    68 000000A0 80C501                  	ADD	CH,1
+    69 000000A3 80FD0A                  	CMP	CH,CYLS
+    70 000000A6 72BD                    	JB	readloop
+    71                                  
+    72                                  fin:
+    73 000000A8 F4                      	HLT
+    74 000000A9 EBFD                    	JMP	fin
+    75                                  
+    76                                  error:
+    77 000000AB BE[C000]                	MOV	SI,msg
+    78                                  
+    79                                  putloop:
+    80 000000AE 8A04                    	MOV	AL,[SI]
+    81 000000B0 83C601                  	ADD	SI,1
+    82 000000B3 3C00                    	CMP	AL,0
+    83 000000B5 74F1                    	JE	fin
+    84 000000B7 B40E                    	MOV	AH,0x0e
+    85 000000B9 BB0F00                  	MOV	BX,15
+    86 000000BC CD10                    	INT	0x10
+    87 000000BE EBEE                    	JMP	putloop
+    88                                  
+    89                                  msg:
+    90 000000C0 0A0A                    	DB	0x0a, 0x0a
+    91 000000C2 6C6F6164206572726F-     	DB	"load error"
+    91 000000CB 72                 
+    92 000000CC 0A                      	DB	0x0a
+    93 000000CD 00                      	DB	0
+    94 000000CE 00<rep 130h>            	TIMES 0x1fe-($-$$) DB 0
+    95 000001FE 55AA                    	DB	0x55, 0xaa
+    96                                  
+    97 00000200 F0FFFF0000000000        DB 0xf0, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00
+    98 00000208 00<rep 11F8h>           TIMES 4600 DB 0
+    99 00001400 F0FFFF0000000000        DB 0xf0, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00
+   100 00001408 00<rep 166BF8h>         TIMES 1469432 DB 0
