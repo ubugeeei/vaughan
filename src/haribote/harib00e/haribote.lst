@@ -1,3 +1,8 @@
-     1                                  fin:
-     2 00000000 F4                      		HLT
-     3 00000001 EBFD                    		JMP		fin
+     1                                  		ORG		0xc200
+     2                                  
+     3 00000000 B013                    		MOV		AL,0x13
+     4 00000002 B400                    		MOV		AH,0x00
+     5 00000004 CD10                    		INT		0x10
+     6                                  fin:
+     7 00000006 F4                      		HLT
+     8 00000007 EBFD                    		JMP		fin
