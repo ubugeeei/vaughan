@@ -1,9 +1,15 @@
      1                                  [BITS 32]
      2                                  
-     3                                  GLOBAL	io_hlt
+     3                                  GLOBAL	io_hlt, write_mem8
      4                                  
      5                                  [SECTION .text]
      6                                  
      7                                  io_hlt:
      8 00000000 F4                          HLT
      9 00000001 C3                          RET
+    10                                  
+    11                                  write_mem8:
+    12 00000002 8B4C2404                	MOV     ECX,[ESP+4]
+    13 00000006 8A442408                	MOV     AL,[ESP+8]
+    14 0000000A 8801                    	MOV     [ECX],AL
+    15 0000000C C3                      	RET
