@@ -48,6 +48,11 @@ void HariMain(void)
 	putfont8(binfo->vram, binfo->scrnx, 30, 10, COL8_FFFFFF, hankaku + 'C' * 16);
 	putfont8(binfo->vram, binfo->scrnx, 40, 10, COL8_FFFFFF, hankaku + 'D' * 16);
 
+	putfont8(binfo->vram, binfo->scrnx, 60, 10, COL8_FFFFFF, hankaku + '1' * 16);
+	putfont8(binfo->vram, binfo->scrnx, 70, 10, COL8_FFFFFF, hankaku + '2' * 16);
+	putfont8(binfo->vram, binfo->scrnx, 80, 10, COL8_FFFFFF, hankaku + '3' * 16);
+	putfont8(binfo->vram, binfo->scrnx, 90, 10, COL8_FFFFFF, hankaku + '4' * 16);
+
 	for (;;)
 	{
 		io_hlt();
