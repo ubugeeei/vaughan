@@ -39,13 +39,14 @@ struct BOOTINFO
 void HariMain(void)
 {
 	struct BOOTINFO *binfo = (struct BOOTINFO *)0x0ff0;
-	static char font_A[16] = {
-			0x00, 0x18, 0x18, 0x18, 0x18, 0x24, 0x24, 0x24,
-			0x24, 0x7e, 0x42, 0x42, 0x42, 0xe7, 0x00, 0x00};
+	extern char hankaku[4096];
 
 	init_palette();
 	init_screen(binfo->vram, binfo->scrnx, binfo->scrny);
-	putfont8(binfo->vram, binfo->scrnx, 10, 10, COL8_FFFFFF, font_A);
+	putfont8(binfo->vram, binfo->scrnx, 10, 10, COL8_FFFFFF, hankaku + 'A' * 16);
+	putfont8(binfo->vram, binfo->scrnx, 20, 10, COL8_FFFFFF, hankaku + 'B' * 16);
+	putfont8(binfo->vram, binfo->scrnx, 30, 10, COL8_FFFFFF, hankaku + 'C' * 16);
+	putfont8(binfo->vram, binfo->scrnx, 40, 10, COL8_FFFFFF, hankaku + 'D' * 16);
 
 	for (;;)
 	{

@@ -4,6 +4,14 @@ DEL = rm -f
 default :
 	$(MAKE) img
 
+# Generate files
+
+hankaku_txt_compiler : hankaku_txt_compiler.c
+	gcc hankaku_txt_compiler.c -o hankaku_txt_compiler
+
+hankaku.c : hankaku.txt hankaku_txt_compiler
+	./hankaku_txt_compiler
+
 ipl10.bin : ipl10.nas Makefile
 	nasm ipl10.nas -o ipl10.bin -l ipl10.lst
 
@@ -13,8 +21,8 @@ asmhead.bin : asmhead.nas Makefile
 naskfunc.o : naskfunc.nas Makefile
 	nasm -g -f elf naskfunc.nas -o naskfunc.o -l naskfunc.lst
 
-bootpack.hrb : bootpack.c hrb.ld naskfunc.o Makefile
-	i386-elf-gcc -march=i486 -m32 -nostdlib -T hrb.ld -g bootpack.c naskfunc.o -o bootpack.hrb
+bootpack.hrb : bootpack.c hrb.ld hankaku.c naskfunc.o Makefile
+	i386-elf-gcc -march=i486 -m32 -nostdlib -T hrb.ld -g bootpack.c hankaku.c naskfunc.o -o bootpack.hrb
 
 haribote.sys : asmhead.bin bootpack.hrb Makefile
 	cat asmhead.bin bootpack.hrb > haribote.sys
@@ -22,6 +30,8 @@ haribote.sys : asmhead.bin bootpack.hrb Makefile
 haribote.img : ipl10.bin haribote.sys Makefile
 	mformat -f 1440 -C -B ipl10.bin -i haribote.img ::
 	mcopy -i haribote.img haribote.sys ::
+
+# Commands
 
 img :
 	$(MAKE) haribote.img
@@ -36,6 +46,8 @@ clean :
 	-$(DEL) *.o
 	-$(DEL) *.sys
 	-$(DEL) *.hrb
+	-$(DEL) hankaku.c
+	-$(DEL) hankaku_txt_compiler
 
 src_only :
 	$(MAKE) clean
