@@ -10,8 +10,9 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 make: *** No rule to make target `all'.  Stop.
 
 
-# Make data base, printed on Sun Apr 24 23:55:15 2022
+# Make data base, printed on Tue Apr 26 00:34:35 2022
 
+ 
 # Variables
 
 # automatic
@@ -43,7 +44,7 @@ STARSHIP_SESSION_KEY = 5902117712629028
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /var/folders/15/y46f3z1s02d4zxklbyncxk9m0000gn/T/vscode-ipc-af6bcb27-4e78-48d6-9e80-b34852c3484c.sock
+VSCODE_IPC_HOOK_EXTHOST = /var/folders/15/y46f3z1s02d4zxklbyncxk9m0000gn/T/vscode-ipc-ef66d343-684f-4f6e-bb35-58d20d60b2b7.sock
 # environment
 VSCODE_CWD = /Users/ubugeeei
 # environment
@@ -87,7 +88,7 @@ VSCODE_CODE_CACHE_PATH = /Users/ubugeeei/Library/Application Support/Code/Cached
 # environment
 LOGNAME = ubugeeei
 # environment
-APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
 # environment
 VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # automatic
@@ -120,6 +121,7 @@ TERM_SESSION_ID = w0t0p0:CD58F2C1-5E87-48F2-93CA-05BF4D5F996B
 MAKE_COMMAND := /Applications/Xcode.app/Contents/Developer/usr/bin/make
 # environment
 TERM_PROGRAM = iTerm.app
+ 
 # default
 .VARIABLES := 
 # environment
@@ -261,6 +263,6 @@ GNUmakefile:
 # strcache size: total = 0 / max = 0 / min = 4096 / avg = 0
 # strcache free: total = 0 / max = 0 / min = 4096 / avg = 0
 
-# Finished Make data base on Sun Apr 24 23:55:15 2022
+# Finished Make data base on Tue Apr 26 00:34:35 2022
 
  
