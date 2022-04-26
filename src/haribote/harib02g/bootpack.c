@@ -53,7 +53,7 @@ void HariMain(void)
 	putfonts8_asc(binfo->vram, binfo->scrnx, 79, 95, COL8_C6C6C6, "Effective Font Test.");
 	putfonts8_asc(binfo->vram, binfo->scrnx, 78, 94, COL8_FFFFFF, "Effective Font Test.");
 
-	sprintf(s, "scrnx = %d", binfo->scrnx);
+	sprintf(s, "scrnx = %d, scrny = %d,", binfo->scrnx, binfo->scrny);
 	putfonts8_asc(binfo->vram, binfo->scrnx, 16, 64, COL8_FFFFFF, s);
 
 	for (;;)
@@ -116,7 +116,7 @@ void boxfill8(unsigned char *vram, int xsize, unsigned char c, int x0, int y0, i
 
 void init_screen(char *vram, int x, int y)
 {
-	boxfill8(vram, x, COL8_008484, 0, 0, x - 1, y - 29);
+	boxfill8(vram, x, COL8_000000, 0, 0, x - 1, y - 29);
 	boxfill8(vram, x, COL8_C6C6C6, 0, y - 28, x - 1, y - 28);
 	boxfill8(vram, x, COL8_FFFFFF, 0, y - 27, x - 1, y - 27);
 	boxfill8(vram, x, COL8_C6C6C6, 0, y - 26, x - 1, y - 1);
