@@ -1,14 +1,18 @@
 {
 	"cSpell.words": [
 		"binfo",
+		"bxsize",
 		"cyls",
 		"hankaku",
 		"Hari",
 		"infp",
 		"leds",
+		"pxsize",
+		"pysize",
 		"scrnx",
 		"scrny",
 		"vmode",
+		"vxsize",
 		"ysize"
 	]
 }
