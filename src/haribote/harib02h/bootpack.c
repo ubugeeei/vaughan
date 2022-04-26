@@ -33,6 +33,9 @@ void putblock8_8(char *vram, int vxsize, int pxsize,
 #define COL8_840084 13
 #define COL8_008484 14
 #define COL8_848484 15
+// custom
+#define COL8_BLACK2 16
+#define COL8_BLACK3 17
 
 struct BOOTINFO
 {
@@ -53,16 +56,16 @@ void HariMain(void)
 	putfonts8_asc(binfo->vram, binfo->scrnx, 8, 8, COL8_FFFFFF, "Hello, Ubugeeei!");
 	putfonts8_asc(binfo->vram, binfo->scrnx, 8, 32, COL8_FFFFFF, "This is my first OS implementation.");
 
-	putfonts8_asc(binfo->vram, binfo->scrnx, 80, 96, COL8_000000, "Effective Font Test.");
-	putfonts8_asc(binfo->vram, binfo->scrnx, 79, 95, COL8_C6C6C6, "Effective Font Test.");
+	putfonts8_asc(binfo->vram, binfo->scrnx, 80, 96, COL8_BLACK2, "Effective Font Test.");
+	putfonts8_asc(binfo->vram, binfo->scrnx, 79, 95, COL8_BLACK3, "Effective Font Test.");
 	putfonts8_asc(binfo->vram, binfo->scrnx, 78, 94, COL8_FFFFFF, "Effective Font Test.");
 
-	sprintf(s, "scrnx = %d, scrny = %d,", binfo->scrnx, binfo->scrny);
+	sprintf(s, "scrnx = %d, scrny = %d", binfo->scrnx, binfo->scrny);
 	putfonts8_asc(binfo->vram, binfo->scrnx, 16, 64, COL8_FFFFFF, s);
 
 	mx = (binfo->scrnx - 16) / 2;
 	my = (binfo->scrny - 28 - 32);
-	init_mouse_cursor8(mcursor, COL8_000000);
+	init_mouse_cursor8(mcursor, COL8_BLACK2);
 	putblock8_8(binfo->vram, binfo->scrnx, 16, 16, mx, my, mcursor, 16);
 
 	for (;;)
@@ -73,7 +76,7 @@ void HariMain(void)
 
 void init_palette(void)
 {
-	static unsigned char table_rgb[16 * 3] = {
+	static unsigned char table_rgb[18 * 3] = {
 			0x00, 0x00, 0x00, //  0:black
 			0xff, 0x00, 0x00, //  1:red
 			0x00, 0xff, 0x00, //  2:green
@@ -89,9 +92,12 @@ void init_palette(void)
 			0x00, 0x00, 0x84, // 12:dark blue
 			0x84, 0x00, 0x84, // 13:dark purple
 			0x00, 0x84, 0x84, // 14:dark water blue
-			0x84, 0x84, 0x84	// 15:dark gray
+			0x84, 0x84, 0x48, // 15:dark gray
+			// custom color
+			0x26, 0x29, 0x2D, // 16: black 2
+			0x1F, 0x20, 0x23 // 16: black 3
 	};
-	set_palette(0, 15, table_rgb);
+	set_palette(0, 17, table_rgb);
 	return;
 }
 
@@ -125,22 +131,22 @@ void boxfill8(unsigned char *vram, int xsize, unsigned char c, int x0, int y0, i
 
 void init_screen(char *vram, int x, int y)
 {
-	boxfill8(vram, x, COL8_000000, 0, 0, x - 1, y - 29);
-	boxfill8(vram, x, COL8_C6C6C6, 0, y - 28, x - 1, y - 28);
-	boxfill8(vram, x, COL8_FFFFFF, 0, y - 27, x - 1, y - 27);
-	boxfill8(vram, x, COL8_C6C6C6, 0, y - 26, x - 1, y - 1);
+	boxfill8(vram, x, COL8_BLACK2, 0, 0, x - 1, y - 29);
+	boxfill8(vram, x, COL8_000000, 0, y - 28, x - 1, y - 28);
+	boxfill8(vram, x, COL8_BLACK3, 0, y - 27, x - 1, y - 27);
+	boxfill8(vram, x, COL8_BLACK3, 0, y - 26, x - 1, y - 1);
 
-	boxfill8(vram, x, COL8_FFFFFF, 3, y - 24, 59, y - 24);
-	boxfill8(vram, x, COL8_FFFFFF, 2, y - 24, 2, y - 4);
-	boxfill8(vram, x, COL8_848484, 3, y - 4, 59, y - 4);
-	boxfill8(vram, x, COL8_848484, 59, y - 23, 59, y - 5);
-	boxfill8(vram, x, COL8_000000, 2, y - 3, 59, y - 3);
-	boxfill8(vram, x, COL8_000000, 60, y - 24, 60, y - 3);
+	boxfill8(vram, x, COL8_BLACK2, 3, y - 24, 59, y - 24);
+	boxfill8(vram, x, COL8_BLACK2, 2, y - 24, 2, y - 4);
+	boxfill8(vram, x, COL8_BLACK2, 3, y - 4, 59, y - 4);
+	boxfill8(vram, x, COL8_BLACK2, 59, y - 23, 59, y - 5);
+	boxfill8(vram, x, COL8_BLACK2, 2, y - 3, 59, y - 3);
+	boxfill8(vram, x, COL8_BLACK2, 60, y - 24, 60, y - 3);
 
-	boxfill8(vram, x, COL8_848484, x - 47, y - 24, x - 4, y - 24);
-	boxfill8(vram, x, COL8_848484, x - 47, y - 23, x - 47, y - 4);
-	boxfill8(vram, x, COL8_FFFFFF, x - 47, y - 3, x - 4, y - 3);
-	boxfill8(vram, x, COL8_FFFFFF, x - 3, y - 24, x - 3, y - 3);
+	boxfill8(vram, x, COL8_BLACK2, x - 47, y - 24, x - 4, y - 24);
+	boxfill8(vram, x, COL8_BLACK2, x - 47, y - 23, x - 47, y - 4);
+	boxfill8(vram, x, COL8_BLACK2, x - 47, y - 3, x - 4, y - 3);
+	boxfill8(vram, x, COL8_BLACK2, x - 3, y - 24, x - 3, y - 3);
 	return;
 }
 
@@ -226,7 +232,7 @@ void init_mouse_cursor8(char *mouse, char bc)
 		{
 			if (cursor[y][x] == '*')
 			{
-				mouse[y * 16 + x] = COL8_000000;
+				mouse[y * 16 + x] = COL8_BLACK2;
 			}
 			if (cursor[y][x] == 'O')
 			{
