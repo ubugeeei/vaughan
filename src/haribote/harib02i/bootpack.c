@@ -4,6 +4,8 @@ void io_cli(void);
 void io_out8(int port, int data);
 int io_load_eflags(void);
 void io_store_eflags(int eflags);
+void load_gdtr(int limit, int addr);
+void load_idtr(int limit, int addr);
 extern void sprintf(char *str, char *fmt, ...);
 
 // prototypes
@@ -63,7 +65,7 @@ void load_gdtr(int limit, int addr);
 
 void HariMain(void)
 {
-mstruct BOOTINFO *binfo = (struct BOOTINFO *) 0x0ff0;
+struct BOOTINFO *binfo = (struct BOOTINFO *) 0x0ff0;
 	char s[40], mcursor[256];
 	int mx, my;
 
@@ -312,7 +314,7 @@ void set_segmdesc(struct SEGMENT_DESCRIPTOR *sd, unsigned int limit, int base, i
 	return;
 }
 
-void set_gatedesc(struct GATE_DESCRIPTOR *gd, int offset, int selectr, int ar)
+void set_gatedesc(struct GATE_DESCRIPTOR *gd, int offset, int selector, int ar)
 {
 	gd->offset_low = offset & 0xffff;
 	gd->selector = selector;
@@ -320,5 +322,5 @@ void set_gatedesc(struct GATE_DESCRIPTOR *gd, int offset, int selectr, int ar)
 	gd->access_right = ar & 0xff;
 	gd->offset_high = (offset >> 16) & 0xffff;
 	return;
-
+}
 
