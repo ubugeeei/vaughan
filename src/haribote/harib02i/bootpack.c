@@ -275,7 +275,7 @@ void init_gdtidt(void)
 	struct GATE_DESCRIPTOR    *idt = (struct GATE_DESCRIPTOR    *) 0x0026f800;
 	int i;
 
-	// Reset GDT
+	// Init GDT
 	for (i = 0; i < 8192; i++) {
 		set_segmdesc(gdt + i, 0, 0, 0);
 	}
@@ -283,7 +283,7 @@ void init_gdtidt(void)
 	set_segmdesc(gdt + 2, 0x0007ffff, 0x00280000, 0x409a);
 	load_gdtr(0xffff, 0x00270000);
 
-	// Rest IDT
+	// Init IDT
 	for (i = 0; i < 256; i++) {
 		set_gatedesc(idt + i, 0, 0, 0);
 	}
@@ -292,6 +292,11 @@ void init_gdtidt(void)
 	return;
 }
 
+/*
+ * limit: セグメントのバイト数
+ * base: メモリ開始位置
+ * ar: 権限属性
+ */
 void set_segmdesc(struct SEGMENT_DESCRIPTOR *sd, unsigned int limit, int base, int ar)
 {
 	if (limit > 0xfffff) {
