@@ -1,9 +1,8 @@
 #include "bootpack.h"
 
-void init_pic(void)
-{
-	io_out8(PIC0_IMR, 0xff); // no recieve interrupt
-	io_out8(PIC1_IMR, 0xff); // no recieve interrupt
+void init_pic(void) {
+	io_out8(PIC0_IMR, 0xff);  // no recieve interrupt
+	io_out8(PIC1_IMR, 0xff);  // no recieve interruptい
 
 	io_out8(PIC0_ICW1, 0x11);
 	io_out8(PIC0_ICW2, 0x20);
@@ -21,5 +20,4 @@ void init_pic(void)
 	io_out8(PIC1_IMR, 0xff);
 
 	return;
-
 }
