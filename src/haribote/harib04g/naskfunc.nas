@@ -131,4 +131,4 @@ asm_inthandler2c:
 		POPAD
 		POP		DS
 		POP		ES
-		IRETi
+		IRETD
