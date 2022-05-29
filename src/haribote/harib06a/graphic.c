@@ -4,7 +4,7 @@
 
 void init_palette(void) {
 	// clang-format off
-	static unsigned char table_rgb[18 * 3] = {
+	static unsigned char table_rgb[16* 3] = {
 	    0x00, 0x00, 0x00,  //  0:black
 	    0xff, 0x00, 0x00,  //  1:red
 	    0x00, 0xff, 0x00,  //  2:green
@@ -21,10 +21,8 @@ void init_palette(void) {
 	    0x84, 0x00, 0x84,  // 13:dark purple
 	    0x00, 0x84, 0x84,  // 14:dark water blue
 	    0x84, 0x84, 0x84,   // 15:dark gray
-	    0x1e, 0x1f, 0x21,  // 16:black2
-	    0x30, 0x31, 0x34,  // 15:gray2
 	};
-	set_palette(0, 17, table_rgb);
+	set_palette(0, 15, table_rgb);
 	return;
 }
 
@@ -55,22 +53,22 @@ void boxfill8(unsigned char *vram, int xsize, unsigned char c, int x0, int y0,
 }
 
 void init_screen8(char *vram, int x, int y) {
-	boxfill8(vram, x, BLACK2, 0, 0, x - 1, y - 29);
-	boxfill8(vram, x, GREY2, 0, y - 28, x - 1, y - 28);
-	boxfill8(vram, x, GREY2, 0, y - 27, x - 1, y - 27);
-	boxfill8(vram, x, GREY2, 0, y - 26, x - 1, y - 1);
+	boxfill8(vram, x, COL8_008484, 0, 0, x - 1, y - 29);
+	boxfill8(vram, x, COL8_C6C6C6, 0, y - 28, x - 1, y - 28);
+	boxfill8(vram, x, COL8_FFFFFF, 0, y - 27, x - 1, y - 27);
+	boxfill8(vram, x, COL8_C6C6C6, 0, y - 26, x - 1, y - 1);
 
-	boxfill8(vram, x, GREY2, 3, y - 24, 59, y - 24);
-	boxfill8(vram, x, GREY2, 2, y - 24, 2, y - 4);
-	boxfill8(vram, x, GREY2, 3, y - 4, 59, y - 4);
-	boxfill8(vram, x, GREY2, 59, y - 23, 59, y - 5);
-	boxfill8(vram, x, GREY2, 2, y - 3, 59, y - 3);
-	boxfill8(vram, x, GREY2, 60, y - 24, 60, y - 3);
+	boxfill8(vram, x, COL8_FFFFFF, 3, y - 24, 59, y - 24);
+	boxfill8(vram, x, COL8_FFFFFF, 2, y - 24, 2, y - 4);
+	boxfill8(vram, x, COL8_848484, 3, y - 4, 59, y - 4);
+	boxfill8(vram, x, COL8_848484, 59, y - 23, 59, y - 5);
+	boxfill8(vram, x, COL8_000000, 2, y - 3, 59, y - 3);
+	boxfill8(vram, x, COL8_000000, 60, y - 24, 60, y - 3);
 
-	boxfill8(vram, x, GREY2, x - 47, y - 24, x - 4, y - 24);
-	boxfill8(vram, x, GREY2, x - 47, y - 23, x - 47, y - 4);
-	boxfill8(vram, x, GREY2, x - 47, y - 3, x - 4, y - 3);
-	boxfill8(vram, x, GREY2, x - 3, y - 24, x - 3, y - 3);
+	boxfill8(vram, x, COL8_848484, x - 47, y - 24, x - 4, y - 24);
+	boxfill8(vram, x, COL8_848484, x - 47, y - 23, x - 47, y - 4);
+	boxfill8(vram, x, COL8_FFFFFF, x - 47, y - 3, x - 4, y - 3);
+	boxfill8(vram, x, COL8_FFFFFF, x - 3, y - 24, x - 3, y - 3);
 	return;
 }
 

@@ -61,9 +61,6 @@ void putblock8_8(char *vram, int vxsize, int pxsize, int pysize, int px0,
 #define COL8_840084 13
 #define COL8_008484 14
 #define COL8_848484 15
-// orignal color
-#define BLACK2 16
-#define GREY2 17
 
 /* dsctbl.c */
 struct SEGMENT_DESCRIPTOR {
@@ -92,9 +89,7 @@ void set_gatedesc(struct GATE_DESCRIPTOR *gd, int offset, int selector, int ar);
 
 /* int.c */
 void init_pic(void);
-void inthandler21(int *esp);
 void inthandler27(int *esp);
-void inthandler2c(int *esp);
 #define PIC0_ICW1 0x0020  // 16-bit (2-byte)
 #define PIC0_OCW2 0x0020
 #define PIC0_IMR 0x0021
