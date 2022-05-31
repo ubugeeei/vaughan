@@ -5,7 +5,7 @@ GLOBAL	io_in8,  io_in16,  io_in32
 GLOBAL	io_out8, io_out16, io_out32
 GLOBAL	io_load_eflags, io_store_eflags
 GLOBAL	load_gdtr, load_idtr
-GLOBAL	_load_gdtr, _load_idtr
+GLOBAL	load_cr0, store_cr0
 GLOBAL	asm_inthandler21, asm_inthandler27, asm_inthandler2c
 EXTERN	inthandler21, inthandler27, inthandler2c
 

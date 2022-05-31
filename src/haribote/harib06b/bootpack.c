@@ -1,5 +1,8 @@
 #include "bootpack.h"
 
+unsigned int memtest(unsigned int start, unsigned int end);
+unsigned int memtest_sub(unsigned int start, unsigned int end);
+
 void HariMain(void) {
 	struct BOOTINFO *binfo = (struct BOOTINFO *)ADR_BOOTINFO;
 	char s[40], mcursor[256], keybuf[32], mousebuf[128];
@@ -29,6 +32,10 @@ void HariMain(void) {
 	putfonts8_asc(binfo->vram, binfo->scrnx, 0, 0, COL8_FFFFFF, s);
 
 	enable_mouse(&mdec);
+
+	i = memtest(0x00400000, 0xbfffffff) / (1024 * 1024);
+	sprintf(s, "memory %dMB", i);
+	putfonts8_asc(binfo->vram, binfo->scrnx, 0, 32, COL8_FFFFFF, s);
 
 	for (;;) {
 		io_cli();
