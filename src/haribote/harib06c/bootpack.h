@@ -122,3 +122,6 @@ void inthandler2c(int *esp);
 void enable_mouse(struct MOUSE_DEC *mdec);
 int mouse_decode(struct MOUSE_DEC *mdec, unsigned char dat);
 extern struct FIFO8 mousefifo;
+
+/* mem test */
+unsigned int memtest_sub(unsigned int start, unsigned int end);
