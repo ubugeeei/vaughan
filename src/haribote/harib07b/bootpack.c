@@ -1,12 +1,15 @@
 #include "bootpack.h"
 
 void HariMain(void) {
-	struct BOOTINFO *binfo = (struct BOOTINFO *)ADR_BOOTINFO;
-	char s[40], mcursor[256], keybuf[32], mousebuf[128];
+	struct BOOTINFO *binfo = (struct BOOTINFO *) ADR_BOOTINFO;
+	char s[40], keybuf[32], mousebuf[128];
 	int mx, my, i;
 	unsigned int memtotal;
 	struct MOUSE_DEC mdec;
-	struct MEMMAN *memman = (struct MEMMAN *)MEMMAN_ADDR;
+	struct MEMMAN *memman = (struct MEMMAN *) MEMMAN_ADDR;
+	struct SHTCTL *shtctl;
+	struct SHEET *sht_back, *sht_mouse;
+	unsigned char *buf_back, buf_mouse[256];
 
 	init_gdtidt();
 	init_pic();
@@ -26,20 +29,28 @@ void HariMain(void) {
 	memman_free(memman, 0x00400000, memtotal - 0x00400000);
 
 	init_palette();
-	init_screen8(binfo->vram, binfo->scrnx, binfo->scrny);
-
+	shtctl = shtctl_init(memman, binfo->vram, binfo->scrnx, binfo->scrny);
+	sht_back  = sheet_alloc(shtctl);
+	sht_mouse = sheet_alloc(shtctl);
+	buf_back  = (unsigned char *) memman_alloc_4k(memman, binfo->scrnx * binfo->scrny);
+	sheet_setbuf(sht_back, buf_back, binfo->scrnx, binfo->scrny, -1);
+	sheet_setbuf(sht_mouse, buf_mouse, 16, 16, 99);
+	init_screen8(buf_back, binfo->scrnx, binfo->scrny);
+	init_mouse_cursor8(buf_mouse, 99);
+	sheet_slide(shtctl, sht_back, 0, 0);
 	mx = (binfo->scrnx - 16) / 2;
 	my = (binfo->scrny - 28 - 16) / 2;
-
-	init_mouse_cursor8(mcursor, COL8_008484);
-	putblock8_8(binfo->vram, binfo->scrnx, 16, 16, mx, my, mcursor, 16);
+	sheet_slide(shtctl, sht_mouse, mx, my);
+	sheet_updown(shtctl, sht_back,  0);
+	sheet_updown(shtctl, sht_mouse, 1);
 	sprintf(s, "(%d, %d)", mx, my);
-	putfonts8_asc(binfo->vram, binfo->scrnx, 0, 0, COL8_FFFFFF, s);
+	putfonts8_asc(buf_back, binfo->scrnx, 0, 0, COL8_FFFFFF, s);
 
+	putfonts8_asc(binfo->vram, binfo->scrnx, 0, 0, COL8_FFFFFF, s);
 	sprintf(s, "memory %dMB   free : %dKB", memtotal / (1024 * 1024),
 		memman_total(memman) / 1024);
-
-	putfonts8_asc(binfo->vram, binfo->scrnx, 0, 32, COL8_FFFFFF, s);
+	putfonts8_asc(buf_back, binfo->scrnx, 0, 32, COL8_FFFFFF, s);
+	sheet_refresh(shtctl);
 
 	for (;;) {
 		io_cli();
@@ -98,9 +109,7 @@ void HariMain(void) {
 						 COL8_008484, 0, 0, 79, 15);
 					putfonts8_asc(binfo->vram, binfo->scrnx,
 						      0, 0, COL8_FFFFFF, s);
-					putblock8_8(binfo->vram, binfo->scrnx,
-						    16, 16, mx, my, mcursor,
-						    16);
+					sheet_slide(shtctl, sht_mouse, mx, my);
 				}
 			}
 		}
