@@ -78,7 +78,7 @@ void sheet_updown(struct SHTCTL *ctl, struct SHEET *sht, int height)
       ctl->sheets[height] = sht;
     }
     else
-    // hide
+    // set invisible
     {
       if (ctl->top > old)
       {
@@ -96,7 +96,7 @@ void sheet_updown(struct SHTCTL *ctl, struct SHEET *sht, int height)
   {
     if (old >= 0)
     {
-
+      // down
       for (h = old; h < height; h++)
       {
         ctl->sheets[h] = ctl->sheets[h + 1];
@@ -106,7 +106,7 @@ void sheet_updown(struct SHTCTL *ctl, struct SHEET *sht, int height)
     }
     else
     {
-
+      // set visible
       for (h = ctl->top; h >= height; h--)
       {
         ctl->sheets[h + 1] = ctl->sheets[h];
