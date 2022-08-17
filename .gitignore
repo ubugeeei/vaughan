@@ -7,3 +7,4 @@ tolset
 *.ld
 *.o
 .vscode
+.DS_Store
