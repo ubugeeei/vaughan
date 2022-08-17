@@ -1,8 +1,4 @@
-tolset/z_new_o
-tolset/z_new_w
-tolset/z_new_bin
-tolset/z_osabin
-tolset/z_tools
+tolset
 *.bin
 *.lst
 *.hrb
@@ -10,3 +6,4 @@ tolset/z_tools
 *.sys
 *.ld
 *.o
+.vscode
