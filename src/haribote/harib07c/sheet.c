@@ -53,6 +53,7 @@ void sheet_updown(struct SHTCTL *ctl, struct SHEET *sht, int height)
 {
   int h, old = sht->height;
 
+  // level
   if (height > ctl->top + 1)
   {
     height = ctl->top + 1;
@@ -63,11 +64,12 @@ void sheet_updown(struct SHTCTL *ctl, struct SHEET *sht, int height)
   }
   sht->height = height;
 
+  // sort
   if (old > height)
   {
     if (height >= 0)
     {
-
+      // up
       for (h = old; h > height; h--)
       {
         ctl->sheets[h] = ctl->sheets[h - 1];
@@ -76,10 +78,10 @@ void sheet_updown(struct SHTCTL *ctl, struct SHEET *sht, int height)
       ctl->sheets[height] = sht;
     }
     else
+    // hide
     {
       if (ctl->top > old)
       {
-
         for (h = old; h < ctl->top; h++)
         {
           ctl->sheets[h] = ctl->sheets[h + 1];
