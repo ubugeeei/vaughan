@@ -49,78 +49,7 @@ void sheet_setbuf(struct SHEET *sht, unsigned char *buf, int xsize, int ysize, i
   return;
 }
 
-void sheet_updown(struct SHTCTL *ctl, struct SHEET *sht, int height)
-{
-  int h, old = sht->height;
-
-  // level
-  if (height > ctl->top + 1)
-  {
-    height = ctl->top + 1;
-  }
-  if (height < -1)
-  {
-    height = -1;
-  }
-  sht->height = height;
-
-  // sort
-  if (old > height)
-  {
-    if (height >= 0)
-    {
-      // up
-      for (h = old; h > height; h--)
-      {
-        ctl->sheets[h] = ctl->sheets[h - 1];
-        ctl->sheets[h]->height = h;
-      }
-      ctl->sheets[height] = sht;
-    }
-    else
-    // set invisible
-    {
-      if (ctl->top > old)
-      {
-        for (h = old; h < ctl->top; h++)
-        {
-          ctl->sheets[h] = ctl->sheets[h + 1];
-          ctl->sheets[h]->height = h;
-        }
-      }
-      ctl->top--;
-    }
-    sheet_refresh(ctl);
-  }
-  else if (old < height)
-  {
-    if (old >= 0)
-    {
-      // down
-      for (h = old; h < height; h++)
-      {
-        ctl->sheets[h] = ctl->sheets[h + 1];
-        ctl->sheets[h]->height = h;
-      }
-      ctl->sheets[height] = sht;
-    }
-    else
-    {
-      // set visible
-      for (h = ctl->top; h >= height; h--)
-      {
-        ctl->sheets[h + 1] = ctl->sheets[h];
-        ctl->sheets[h + 1]->height = h + 1;
-      }
-      ctl->sheets[height] = sht;
-      ctl->top++;
-    }
-    sheet_refresh(ctl);
-  }
-  return;
-}
-
-void sheet_refresh(struct SHTCTL *ctl)
+void sheet_refreshsub(struct SHTCTL *ctl, int vx0, int vy0, int vx1, int vy1)
 {
   int h, bx, by, vx, vy;
   unsigned char *buf, c, *vram = ctl->vram;
@@ -135,10 +64,13 @@ void sheet_refresh(struct SHTCTL *ctl)
       for (bx = 0; bx < sht->bxsize; bx++)
       {
         vx = sht->vx0 + bx;
-        c = buf[by * sht->bxsize + bx];
-        if (c != sht->col_inv)
+        if (vx0 <= vx && vx < vx1 && vy0 <= vy && vy < vy1)
         {
-          vram[vy * ctl->xsize + vx] = c;
+          c = buf[by * sht->bxsize + bx];
+          if (c != sht->col_inv)
+          {
+            vram[vy * ctl->xsize + vx] = c;
+          }
         }
       }
     }
@@ -146,13 +78,89 @@ void sheet_refresh(struct SHTCTL *ctl)
   return;
 }
 
+void sheet_updown(struct SHTCTL *ctl, struct SHEET *sht, int height)
+{
+  int h, old = sht->height;
+
+  if (height > ctl->top + 1)
+  {
+    height = ctl->top + 1;
+  }
+  if (height < -1)
+  {
+    height = -1;
+  }
+  sht->height = height;
+
+  if (old > height)
+  {
+    if (height >= 0)
+    {
+      for (h = old; h > height; h--)
+      {
+        ctl->sheets[h] = ctl->sheets[h - 1];
+        ctl->sheets[h]->height = h;
+      }
+      ctl->sheets[height] = sht;
+    }
+    else
+    {
+      if (ctl->top > old)
+      {
+        for (h = old; h < ctl->top; h++)
+        {
+          ctl->sheets[h] = ctl->sheets[h + 1];
+          ctl->sheets[h]->height = h;
+        }
+      }
+      ctl->top--;
+    }
+    sheet_refreshsub(ctl, sht->vx0, sht->vy0, sht->vx0 + sht->bxsize, sht->vy0 + sht->bysize);
+  }
+  else if (old < height)
+  {
+    if (old >= 0)
+    {
+      for (h = old; h < height; h++)
+      {
+        ctl->sheets[h] = ctl->sheets[h + 1];
+        ctl->sheets[h]->height = h;
+      }
+      ctl->sheets[height] = sht;
+    }
+    else
+    {
+      for (h = ctl->top; h >= height; h--)
+      {
+        ctl->sheets[h + 1] = ctl->sheets[h];
+        ctl->sheets[h + 1]->height = h + 1;
+      }
+      ctl->sheets[height] = sht;
+      ctl->top++;
+    }
+    sheet_refreshsub(ctl, sht->vx0, sht->vy0, sht->vx0 + sht->bxsize, sht->vy0 + sht->bysize);
+  }
+  return;
+}
+
+void sheet_refresh(struct SHTCTL *ctl, struct SHEET *sht, int bx0, int by0, int bx1, int by1)
+{
+  if (sht->height >= 0)
+  {
+    sheet_refreshsub(ctl, sht->vx0 + bx0, sht->vy0 + by0, sht->vx0 + bx1, sht->vy0 + by1);
+  }
+  return;
+}
+
 void sheet_slide(struct SHTCTL *ctl, struct SHEET *sht, int vx0, int vy0)
 {
+  int old_vx0 = sht->vx0, old_vy0 = sht->vy0;
   sht->vx0 = vx0;
   sht->vy0 = vy0;
   if (sht->height >= 0)
   {
-    sheet_refresh(ctl);
+    sheet_refreshsub(ctl, old_vx0, old_vy0, old_vx0 + sht->bxsize, old_vy0 + sht->bysize);
+    sheet_refreshsub(ctl, vx0, vy0, vx0 + sht->bxsize, vy0 + sht->bysize);
   }
   return;
 }

@@ -1,7 +1,8 @@
 /* mysprint.c */
 void sprintf(char *str, char *fmt, ...);
 /* asmead.nas */
-struct BOOTINFO {
+struct BOOTINFO
+{
 	char cyls, leds, vmode, reserve;
 	short scrnx, scrny;
 	char *vram;
@@ -27,7 +28,8 @@ void asm_inthandler2c(void);
 unsigned int memtest_sub(unsigned int start, unsigned int end);
 
 /* fifo.c */
-struct FIFO8 {
+struct FIFO8
+{
 	unsigned char *buf;
 	int p, q, size, free, flags;
 };
@@ -40,14 +42,14 @@ int fifo8_status(struct FIFO8 *fifo);
 void init_palette(void);
 void set_palette(int start, int end, unsigned char *rgb);
 void boxfill8(unsigned char *vram, int xsize, unsigned char c, int x0, int y0,
-	      int x1, int y1);
+							int x1, int y1);
 void init_screen8(char *vram, int x, int y);
 void putfont8(char *vram, int xsize, int x, int y, char c, char *font);
 void putfonts8_asc(char *vram, int xsize, int x, int y, char c,
-		   unsigned char *s);
+									 unsigned char *s);
 void init_mouse_cursor8(char *mouse, char bc);
 void putblock8_8(char *vram, int vxsize, int pxsize, int pysize, int px0,
-		 int py0, char *buf, int bxsize);
+								 int py0, char *buf, int bxsize);
 #define COL8_000000 0
 #define COL8_FF000 1
 #define COL8_00FF00 2
@@ -66,21 +68,23 @@ void putblock8_8(char *vram, int vxsize, int pxsize, int pysize, int px0,
 #define COL8_848484 15
 
 /* dsctbl.c */
-struct SEGMENT_DESCRIPTOR {
+struct SEGMENT_DESCRIPTOR
+{
 	short limit_low, base_low;
 	char base_mid, access_right;
 	char limit_high, base_high;
 };
-struct GATE_DESCRIPTOR {
+struct GATE_DESCRIPTOR
+{
 	short offset_low, selector;
 	char dw_count, access_right;
 	short offset_high;
 };
 void init_gdtidt(void);
 void set_segmdesc(struct SEGMENT_DESCRIPTOR *sd, unsigned int limit, int base,
-		  int ar);
+									int ar);
 void set_gatedesc(struct GATE_DESCRIPTOR *gd, int offset, int selector, int ar);
-#define ADR_IDT 0x0026f800  // 32-bit (4-byte)
+#define ADR_IDT 0x0026f800 // 32-bit (4-byte)
 #define LIMIT_IDT 0x000007ff
 #define ADR_GDT 0x00270000
 #define LIMIT_GDT 0x0000ffff
@@ -93,7 +97,7 @@ void set_gatedesc(struct GATE_DESCRIPTOR *gd, int offset, int selector, int ar);
 /* int.c */
 void init_pic(void);
 void inthandler27(int *esp);
-#define PIC0_ICW1 0x0020  // 16-bit (2-byte)
+#define PIC0_ICW1 0x0020 // 16-bit (2-byte)
 #define PIC0_OCW2 0x0020
 #define PIC0_IMR 0x0021
 #define PIC0_ICW2 0x0021
@@ -115,7 +119,8 @@ extern struct FIFO8 keyfifo;
 #define PORT_KEYCMD 0x0064
 
 /* mouse.c */
-struct MOUSE_DEC {
+struct MOUSE_DEC
+{
 	unsigned char buf[3], phase;
 	int x, y, btn;
 };
@@ -127,10 +132,12 @@ extern struct FIFO8 mousefifo;
 /* memory.c */
 #define MEMMAN_FREES 4090
 #define MEMMAN_ADDR 0x003c0000
-struct FREEINFO {
+struct FREEINFO
+{
 	unsigned int addr, size;
 };
-struct MEMMAN {
+struct MEMMAN
+{
 	int frees, maxfrees, lostsize, losts;
 	struct FREEINFO free[MEMMAN_FREES];
 };
@@ -143,12 +150,14 @@ unsigned int memman_alloc_4k(struct MEMMAN *man, unsigned int size);
 int memman_free_4k(struct MEMMAN *man, unsigned int addr, unsigned int size);
 
 /* sheet.c */
-#define MAX_SHEETS		256
-struct SHEET {
+#define MAX_SHEETS 256
+struct SHEET
+{
 	unsigned char *buf;
 	int bxsize, bysize, vx0, vy0, col_inv, height, flags;
 };
-struct SHTCTL {
+struct SHTCTL
+{
 	unsigned char *vram;
 	int xsize, ysize, top;
 	struct SHEET *sheets[MAX_SHEETS];
@@ -158,6 +167,6 @@ struct SHTCTL *shtctl_init(struct MEMMAN *memman, unsigned char *vram, int xsize
 struct SHEET *sheet_alloc(struct SHTCTL *ctl);
 void sheet_setbuf(struct SHEET *sht, unsigned char *buf, int xsize, int ysize, int col_inv);
 void sheet_updown(struct SHTCTL *ctl, struct SHEET *sht, int height);
-void sheet_refresh(struct SHTCTL *ctl);
+void sheet_refresh(struct SHTCTL *ctl, struct SHEET *sht, int bx0, int by0, int bx1, int by1);
 void sheet_slide(struct SHTCTL *ctl, struct SHEET *sht, int vx0, int vy0);
 void sheet_free(struct SHTCTL *ctl, struct SHEET *sht);
