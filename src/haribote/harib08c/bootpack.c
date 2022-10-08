@@ -38,12 +38,12 @@ void HariMain(void)
 	sheet_setbuf(sht_mouse, buf_mouse, 16, 16, 99);
 	init_screen8(buf_back, binfo->scrnx, binfo->scrny);
 	init_mouse_cursor8(buf_mouse, 99);
-	sheet_slide(shtctl, sht_back, 0, 0);
+	sheet_slide(sht_back, 0, 0);
 	mx = (binfo->scrnx - 16) / 2;
 	my = (binfo->scrny - 28 - 16) / 2;
-	sheet_slide(shtctl, sht_mouse, mx, my);
-	sheet_updown(shtctl, sht_back, 0);
-	sheet_updown(shtctl, sht_mouse, 1);
+	sheet_slide(sht_mouse, mx, my);
+	sheet_updown(sht_back, 0);
+	sheet_updown(sht_mouse, 1);
 	sprintf(s, "(%d, %d)", mx, my);
 	putfonts8_asc(buf_back, binfo->scrnx, 0, 0, COL8_FFFFFF, s);
 
@@ -51,7 +51,7 @@ void HariMain(void)
 	sprintf(s, "memory %dMB   free : %dKB", memtotal / (1024 * 1024),
 					memman_total(memman) / 1024);
 	putfonts8_asc(buf_back, binfo->scrnx, 0, 32, COL8_FFFFFF, s);
-	sheet_refresh(shtctl, sht_back, 0, 0, binfo->scrnx, 48);
+	sheet_refresh(sht_back, 0, 0, binfo->scrnx, 48);
 
 	for (;;)
 	{
@@ -125,7 +125,7 @@ void HariMain(void)
 									 COL8_008484, 0, 0, 79, 15);
 					putfonts8_asc(binfo->vram, binfo->scrnx,
 												0, 0, COL8_FFFFFF, s);
-					sheet_slide(shtctl, sht_mouse, mx, my);
+					sheet_slide(sht_mouse, mx, my);
 				}
 			}
 		}
