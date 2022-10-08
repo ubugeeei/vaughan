@@ -4,7 +4,6 @@ tolset
 *.hrb
 *.img
 *.sys
-*.ld
 *.o
 .vscode
 .DS_Store
