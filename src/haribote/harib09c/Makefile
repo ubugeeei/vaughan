@@ -1,4 +1,4 @@
-OBJS_BOOTPACK = bootpack.o naskfunc.o hankaku.o graphic.o dsctbl.o mysprintf.o int.o fifo.o keyboard.o mouse.o memory.o sheet.o timer.o
+OBJS_BOOTPACK = $(OBJ_PATH)/bootpack.o $(OBJ_PATH)/naskfunc.o $(OBJ_PATH)/hankaku.o $(OBJ_PATH)/graphic.o $(OBJ_PATH)/dsctbl.o $(OBJ_PATH)/mysprintf.o $(OBJ_PATH)/int.o $(OBJ_PATH)/fifo.o $(OBJ_PATH)/keyboard.o $(OBJ_PATH)/mouse.o $(OBJ_PATH)/memory.o $(OBJ_PATH)/sheet.o $(OBJ_PATH)/timer.o
 
 MAKE = make -r
 DEL = rm -f
@@ -6,59 +6,49 @@ DEL = rm -f
 CC = i386-elf-gcc
 CFLAGS = -m32 -fno-builtin
 
+TARGET_PATH = ./target
+OBJ_PATH = ./target/obj
+BIN_PATH = ./target/bin
+
 default : 
 	$(MAKE) img
 
-# Generate files
-
-hankaku_txt_compiler : hankaku_txt_compiler.c
+target/bin/hankaku_txt_compiler : src/hankaku_txt_compiler.c
 	gcc $< -o $@
 
-hankaku.c : hankaku.txt hankaku_txt_compiler
-	./hankaku_txt_compiler
+src/hankaku.c : static/hankaku.txt $(BIN_PATH)/hankaku_txt_compiler
+	./$(BIN_PATH)/hankaku_txt_compiler
 
-ipl10.bin : ipl10.nas
-	nasm $< -o $@ -l ipl10.lst
+target/bin/ipl10.bin : src/asm/ipl10.nas
+	nasm $< -o $@ -l $(TARGET_PATH)/ipl10.lst
 
-asmhead.bin : asmhead.nas
-	nasm $< -o $@ -l asmhead.lst
+target/bin/asmhead.bin : src/asm/asmhead.nas
+	nasm $< -o $@ -l $(TARGET_PATH)/asmhead.lst
 
-naskfunc.o : naskfunc.nas 
-	nasm -g -f elf $< -o $@ -l naskfunc.lst
+$(OBJ_PATH)/naskfunc.o : src/asm/naskfunc.nas 
+	nasm -g -f elf $< -o $@ -l $(TARGET_PATH)/naskfunc.lst
 
-bootpack.hrb : $(OBJS_BOOTPACK) hrb.ld
+target/bootpack.hrb : $(OBJS_BOOTPACK) hrb.ld
 	$(CC) $(CFLAGS) -march=i486 -nostdlib -T hrb.ld -g $(OBJS_BOOTPACK) -o $@
 
-haribote.sys : asmhead.bin bootpack.hrb Makefile
-	cat asmhead.bin bootpack.hrb > haribote.sys
+target/haribote.sys : $(TARGET_PATH)/bin/asmhead.bin $(TARGET_PATH)/bootpack.hrb Makefile
+	cat $(TARGET_PATH)/bin/asmhead.bin $(TARGET_PATH)/bootpack.hrb > $(TARGET_PATH)/haribote.sys
 
-haribote.img : ipl10.bin haribote.sys Makefile
-	mformat -f 1440 -C -B ipl10.bin -i haribote.img ::
-	mcopy -i haribote.img haribote.sys ::
+target/haribote.img : $(TARGET_PATH)/bin/ipl10.bin $(TARGET_PATH)/haribote.sys Makefile
+	mformat -f 1440 -C -B $(TARGET_PATH)/bin/ipl10.bin -i $@ ::
+	mcopy -i $@ $(TARGET_PATH)/haribote.sys ::
 
-# Rule
 
-%.o : %.c
-	$(CC) $(CFLAGS) -c $*.c -o $*.o
+$(OBJ_PATH)/%.o : src/%.c
+	$(CC) $(CFLAGS) -c src/$*.c -o $(OBJ_PATH)/$*.o
 
-# Commands
 
 img :
-	$(MAKE) haribote.img
+	$(MAKE) $(TARGET_PATH)/haribote.img
 
 run :
 	$(MAKE) img
-	qemu-system-i386 -drive file=haribote.img,format=raw,if=floppy -boot a
-
-clean :
-	-$(DEL) *.bin
-	-$(DEL) *.lst
-	-$(DEL) *.o
-	-$(DEL) *.sys
-	-$(DEL) *.hrb
-	-$(DEL) hankaku.c
-	-$(DEL) hankaku_txt_compiler
+	qemu-system-i386 -drive file=$(TARGET_PATH)/haribote.img,format=raw,if=floppy -boot a
 
 src_only :
-	$(MAKE) clean
-	-$(DEL) haribote.img
+	-$(DEL) $(TARGET_PATH)/

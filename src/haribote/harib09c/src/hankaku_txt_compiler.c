@@ -13,13 +13,13 @@ int main() {
   int d;
 
   // Read error
-  if ((infp = fopen("hankaku.txt","r")) == NULL) {
+  if ((infp = fopen("static/hankaku.txt","r")) == NULL) {
     printf("input file open error\n");
     return 0;
   }
 
   // Write error
-  if ((outfp = fopen("hankaku.c","w")) == NULL) {
+  if ((outfp = fopen("src/hankaku.c","w")) == NULL) {
     printf("output file open error\n");
     return 0;
   }
