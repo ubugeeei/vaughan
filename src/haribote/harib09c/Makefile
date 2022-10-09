@@ -51,4 +51,4 @@ run :
 	qemu-system-i386 -drive file=$(TARGET_PATH)/haribote.img,format=raw,if=floppy -boot a
 
 src_only :
-	-$(DEL) $(TARGET_PATH)/
+	-$(DEL) $(TARGET_PATH)/*

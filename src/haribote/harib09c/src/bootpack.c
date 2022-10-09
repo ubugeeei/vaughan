@@ -5,9 +5,10 @@ void make_window8(unsigned char *buf, int xsize, int ysize, char *title);
 void HariMain(void)
 {
 	struct BOOTINFO *binfo = (struct BOOTINFO *)ADR_BOOTINFO;
-	char s[40], keybuf[32], mousebuf[128];
+	struct FIFO8 timerfifo;
+	char s[40], keybuf[32], mousebuf[128], timerbuf[8];
 	int mx, my, i;
-	unsigned int memtotal, count = 0;
+	unsigned int memtotal;
 	struct MOUSE_DEC mdec;
 	struct MEMMAN *memman = (struct MEMMAN *)MEMMAN_ADDR;
 	struct SHTCTL *shtctl;
@@ -22,6 +23,9 @@ void HariMain(void)
 	init_pit();
 	io_out8(PIC0_IMR, 0xf8);
 	io_out8(PIC1_IMR, 0xef);
+
+	fifo8_init(&timerfifo, 8, timerbuf);
+	settimer(1000, &timerfifo, 1);
 
 	init_keyboard();
 	enable_mouse(&mdec);
@@ -66,7 +70,7 @@ void HariMain(void)
 		sheet_refresh(sht_win, 40, 28, 120, 44);
 
 		io_cli();
-		if (fifo8_status(&keyfifo) + fifo8_status(&mousefifo) == 0)
+		if (fifo8_status(&keyfifo) + fifo8_status(&mousefifo) + fifo8_status(&timerfifo) == 0)
 		{
 			io_sti();
 		}
@@ -87,7 +91,7 @@ void HariMain(void)
 				io_sti();
 				if (mouse_decode(&mdec, i) != 0)
 				{
-
+				
 					sprintf(s, "[lcr %4d %4d]", mdec.x, mdec.y);
 					if ((mdec.btn & 0x01) != 0)
 					{
@@ -104,7 +108,7 @@ void HariMain(void)
 					boxfill8(buf_back, binfo->scrnx, COL8_008484, 32, 16, 32 + 15 * 8 - 1, 31);
 					putfonts8_asc(buf_back, binfo->scrnx, 32, 16, COL8_FFFFFF, s);
 					sheet_refresh(sht_back, 32, 16, 32 + 15 * 8, 32);
-
+				
 					mx += mdec.x;
 					my += mdec.y;
 					if (mx < 0)
@@ -129,6 +133,13 @@ void HariMain(void)
 					sheet_refresh(sht_back, 0, 0, 80, 16);
 					sheet_slide(sht_mouse, mx, my);
 				}
+			}
+			else if (fifo8_status(&timerfifo) != 0)
+			{
+				i = fifo8_get(&timerfifo);
+				io_sti();
+				putfonts8_asc(buf_back, binfo->scrnx, 0, 64, COL8_FFFFFF, "10[sec]");
+				sheet_refresh(sht_back, 0, 64, 56, 80);
 			}
 		}
 	}
