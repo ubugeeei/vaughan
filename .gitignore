@@ -9,3 +9,4 @@ tolset
 .DS_Store
 hankaku.c
 hankaku_txt_compiler
+target
