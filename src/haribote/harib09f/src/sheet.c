@@ -44,7 +44,7 @@ struct SHEET *sheet_alloc(struct SHTCTL *ctl)
       return sht;
     }
   }
-  return 0; /* �S�ẴV�[�g���g�p�������� */
+  return 0;
 }
 
 void sheet_setbuf(struct SHEET *sht, unsigned char *buf, int xsize, int ysize, int col_inv)
@@ -123,7 +123,6 @@ void sheet_refreshsub(struct SHTCTL *ctl, int vx0, int vy0, int vx1, int vy1, in
   int h, bx, by, vx, vy, bx0, by0, bx1, by1;
   unsigned char *buf, *vram = ctl->vram, *map = ctl->map, sid;
   struct SHEET *sht;
-  /* refresh�͈͂���ʊO�ɂ͂ݏo���Ă�����␳ */
   if (vx0 < 0)
   {
     vx0 = 0;
@@ -145,7 +144,6 @@ void sheet_refreshsub(struct SHTCTL *ctl, int vx0, int vy0, int vx1, int vy1, in
     sht = ctl->sheets[h];
     buf = sht->buf;
     sid = sht - ctl->sheets0;
-    /* vx0�`vy1���g���āAbx0�`by1���t�Z���� */
     bx0 = vx0 - sht->vx0;
     by0 = vy0 - sht->vy0;
     bx1 = vx1 - sht->vx0;
@@ -187,7 +185,6 @@ void sheet_updown(struct SHEET *sht, int height)
   struct SHTCTL *ctl = sht->ctl;
   int h, old = sht->height;
 
-  /* �w�肪�Ⴗ���⍂������������A�C������ */
   if (height > ctl->top + 1)
   {
     height = ctl->top + 1;
@@ -198,12 +195,10 @@ void sheet_updown(struct SHEET *sht, int height)
   }
   sht->height = height;
 
-  /* �ȉ��͎��sheets[]�̕��בւ� */
   if (old > height)
-  { /* �ȑO�����Ⴍ�Ȃ� */
+  {
     if (height >= 0)
     {
-      /* �Ԃ̂��̂������グ�� */
       for (h = old; h > height; h--)
       {
         ctl->sheets[h] = ctl->sheets[h - 1];
@@ -214,10 +209,9 @@ void sheet_updown(struct SHEET *sht, int height)
       sheet_refreshsub(ctl, sht->vx0, sht->vy0, sht->vx0 + sht->bxsize, sht->vy0 + sht->bysize, height + 1, old);
     }
     else
-    { /* ��\���� */
+    {
       if (ctl->top > old)
       {
-        /* ��ɂȂ��Ă�����̂����낷 */
         for (h = old; h < ctl->top; h++)
         {
           ctl->sheets[h] = ctl->sheets[h + 1];
@@ -230,10 +224,9 @@ void sheet_updown(struct SHEET *sht, int height)
     }
   }
   else if (old < height)
-  { /* �ȑO���������Ȃ� */
+  {
     if (old >= 0)
     {
-      /* �Ԃ̂��̂����������� */
       for (h = old; h < height; h++)
       {
         ctl->sheets[h] = ctl->sheets[h + 1];
@@ -242,8 +235,7 @@ void sheet_updown(struct SHEET *sht, int height)
       ctl->sheets[height] = sht;
     }
     else
-    { /* ��\����Ԃ���\����Ԃ� */
-      /* ��ɂȂ���̂������グ�� */
+    {
       for (h = ctl->top; h >= height; h--)
       {
         ctl->sheets[h + 1] = ctl->sheets[h];
