@@ -3,7 +3,7 @@
 #include "bootpack.h"
 
 void init_palette(void) {
-	// clang-format off
+    // clang-format off
 	static unsigned char table_rgb[16* 3] = {
 	    0x00, 0x00, 0x00,  //  0:black
 	    0xff, 0x00, 0x00,  //  1:red
