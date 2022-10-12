@@ -51,7 +51,7 @@ img :
 run :
 	$(PRE_MAKE)
 	$(MAKE) img
-	qemu-system-i386 -drive file=$(TARGET_PATH)/haribote.img,format=raw,if=floppy -boot a -m 2G
+	qemu-system-i386 -drive file=$(TARGET_PATH)/haribote.img,format=raw,if=floppy -boot a
 
 src_only :
 	-$(DEL) $(TARGET_PATH)/*
