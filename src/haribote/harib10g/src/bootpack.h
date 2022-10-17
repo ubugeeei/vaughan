@@ -1,8 +1,10 @@
-/* mysprint.c */
 void sprintf(char *str, char *fmt, ...);
-/* asmead.nas */
+/* asmhead.nas */
 struct BOOTINFO {
-    char cyls, leds, vmode, reserve;
+    char cyls;
+    char leds;
+    char vmode;
+    char reserve;
     short scrnx, scrny;
     char *vram;
 };
@@ -10,11 +12,11 @@ struct BOOTINFO {
 
 /* naskfunc.nas */
 void io_hlt(void);
-void io_stihlt(void);
 void io_cli(void);
 void io_sti(void);
+void io_stihlt(void);
+int io_in8(int port);
 void io_out8(int port, int data);
-int io_in8(int prot);
 int io_load_eflags(void);
 void io_store_eflags(int eflags);
 void load_gdtr(int limit, int addr);
@@ -28,14 +30,14 @@ void asm_inthandler2c(void);
 unsigned int memtest_sub(unsigned int start, unsigned int end);
 
 /* fifo.c */
-struct FIFO8 {
-    unsigned char *buf;
+struct FIFO32 {
+    int *buf;
     int p, q, size, free, flags;
 };
-void fifo8_init(struct FIFO8 *fifo, int size, unsigned char *buf);
-int fifo8_put(struct FIFO8 *fifo, unsigned char data);
-int fifo8_get(struct FIFO8 *fifo);
-int fifo8_status(struct FIFO8 *fifo);
+void fifo32_init(struct FIFO32 *fifo, int size, int *buf);
+int fifo32_put(struct FIFO32 *fifo, int data);
+int fifo32_get(struct FIFO32 *fifo);
+int fifo32_status(struct FIFO32 *fifo);
 
 /* graphic.c */
 void init_palette(void);
@@ -50,7 +52,7 @@ void init_mouse_cursor8(char *mouse, char bc);
 void putblock8_8(char *vram, int vxsize, int pxsize, int pysize, int px0,
                  int py0, char *buf, int bxsize);
 #define COL8_000000 0
-#define COL8_FF000 1
+#define COL8_FF0000 1
 #define COL8_00FF00 2
 #define COL8_FFFF00 3
 #define COL8_0000FF 4
@@ -81,7 +83,7 @@ void init_gdtidt(void);
 void set_segmdesc(struct SEGMENT_DESCRIPTOR *sd, unsigned int limit, int base,
                   int ar);
 void set_gatedesc(struct GATE_DESCRIPTOR *gd, int offset, int selector, int ar);
-#define ADR_IDT 0x0026f800  // 32-bit (4-byte)
+#define ADR_IDT 0x0026f800
 #define LIMIT_IDT 0x000007ff
 #define ADR_GDT 0x00270000
 #define LIMIT_GDT 0x0000ffff
@@ -94,7 +96,7 @@ void set_gatedesc(struct GATE_DESCRIPTOR *gd, int offset, int selector, int ar);
 /* int.c */
 void init_pic(void);
 void inthandler27(int *esp);
-#define PIC0_ICW1 0x0020  // 16-bit (2-byte)
+#define PIC0_ICW1 0x0020
 #define PIC0_OCW2 0x0020
 #define PIC0_IMR 0x0021
 #define PIC0_ICW2 0x0021
@@ -110,8 +112,7 @@ void inthandler27(int *esp);
 /* keyboard.c */
 void inthandler21(int *esp);
 void wait_KBC_sendready(void);
-void init_keyboard(void);
-extern struct FIFO8 keyfifo;
+void init_keyboard(struct FIFO32 *fifo, int data0);
 #define PORT_KEYDAT 0x0060
 #define PORT_KEYCMD 0x0064
 
@@ -121,9 +122,8 @@ struct MOUSE_DEC {
     int x, y, btn;
 };
 void inthandler2c(int *esp);
-void enable_mouse(struct MOUSE_DEC *mdec);
+void enable_mouse(struct FIFO32 *fifo, int data0, struct MOUSE_DEC *mdec);
 int mouse_decode(struct MOUSE_DEC *mdec, unsigned char dat);
-extern struct FIFO8 mousefifo;
 
 /* memory.c */
 #define MEMMAN_FREES 4090
@@ -170,8 +170,8 @@ void sheet_free(struct SHEET *sht);
 #define MAX_TIMER 500
 struct TIMER {
     unsigned int timeout, flags;
-    struct FIFO8 *fifo;
-    unsigned char data;
+    struct FIFO32 *fifo;
+    int data;
 };
 struct TIMERCTL {
     unsigned int count, next, using;
@@ -182,6 +182,6 @@ extern struct TIMERCTL timerctl;
 void init_pit(void);
 struct TIMER *timer_alloc(void);
 void timer_free(struct TIMER *timer);
-void timer_init(struct TIMER *timer, struct FIFO8 *fifo, unsigned char data);
+void timer_init(struct TIMER *timer, struct FIFO32 *fifo, int data);
 void timer_settime(struct TIMER *timer, unsigned int timeout);
 void inthandler20(int *esp);
