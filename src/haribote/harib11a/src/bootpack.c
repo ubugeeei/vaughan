@@ -57,6 +57,7 @@ void HariMain(void) {
     init_screen8(buf_back, binfo->scrnx, binfo->scrny);
     init_mouse_cursor8(buf_mouse, 99);
     make_window8(buf_win, 160, 52, "counter");
+
     sheet_slide(sht_back, 0, 0);
     mx = (binfo->scrnx - 16) / 2;
     my = (binfo->scrny - 28 - 16) / 2;
@@ -73,6 +74,8 @@ void HariMain(void) {
 
     for (;;) {
         count++;
+        sprintf(s, "%d", count);
+        putfonts8_asc_sht(sht_win, 40, 28, COL8_000000, COL8_C6C6C6, s, 10);
 
         io_cli();
         if (fifo32_status(&fifo) == 0) {
@@ -121,9 +124,10 @@ void HariMain(void) {
             } else if (i == 10) {
                 putfonts8_asc_sht(sht_back, 0, 64, COL8_FFFFFF, COL8_000000,
                                   "10[sec]", 7);
-                sprintf(s, "%d", count);
-                putfonts8_asc_sht(sht_win, 40, 28, COL8_000000, COL8_C6C6C6, s,
-                                  10);
+                // sprintf(s, "%d", count);
+                // putfonts8_asc_sht(sht_win, 40, 28, COL8_000000, COL8_C6C6C6,
+                // s,
+                //                   10);
             } else if (i == 3) {
                 putfonts8_asc_sht(sht_back, 0, 80, COL8_FFFFFF, COL8_000000,
                                   "3[sec]", 6);
