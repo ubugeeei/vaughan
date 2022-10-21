@@ -16,42 +16,43 @@ VRAM	EQU		0x0ff8
 		ORG     0xc200
 
 ; Display mode
-		MOV		AL,0x13
-		MOV		AH,0x00
-		INT		0x10
-		MOV		BYTE [VMODE],8
-		MOV		WORD [SCRNX],320
-		MOV		WORD [SCRNY],200
-		MOV		DWORD [VRAM],0x000a0000
+MOV		BX,0x4105
+MOV		AX,0x4f02
+INT		0x10
+MOV		BYTE [VMODE],8
+MOV		WORD [SCRNX],1024
+MOV		WORD [SCRNY],768
+MOV		DWORD [VRAM],0xe0000000
 
 ; Keyboard
-		MOV		AH,0x02
-		INT		0x16
-		MOV		[LEDS],AL
+MOV		AH,0x02
+INT		0x16
+MOV		[LEDS],AL
 
-		MOV		AL,0xff
-		OUT		0x21,AL
-		NOP
-		OUT		0xa1,AL
+MOV		AL,0xff
+OUT		0x21,AL
+NOP
+OUT		0xa1,AL
 
-		CLI
+CLI
 
 ; CPU access
-		CALL	waitkbdout
-		MOV		AL,0xd1
-		OUT		0x64,AL
-		CALL	waitkbdout
-		MOV		AL,0xdf
-		OUT		0x60,AL
-		CALL	waitkbdout
+CALL	waitkbdout
+MOV		AL,0xd1
+OUT		0x64,AL
+CALL	waitkbdout
+MOV		AL,0xdf
+OUT		0x60,AL
+CALL	waitkbdout
 
 ; protect mode
-		LGDT	[GDTR0]
-		MOV		EAX,CR0
-		AND		EAX,0x7fffffff
-		OR		EAX,0x00000001
-		MOV		CR0,EAX
-		JMP		pipelineflush
+LGDT	[GDTR0]
+MOV		EAX,CR0
+AND		EAX,0x7fffffff
+OR		EAX,0x00000001
+MOV		CR0,EAX
+JMP		pipelineflush
+
 pipelineflush:
 		MOV		AX,1*8
 		MOV		DS,AX
@@ -66,7 +67,7 @@ pipelineflush:
 		MOV		ECX,512*1024/4
 		CALL	memcpy
 
-; Move disc data
+		; Move disc data
 		;bootsector
 		MOV		ESI,0x7c00
 		MOV		EDI,DSKCAC
@@ -82,7 +83,7 @@ pipelineflush:
 		SUB		ECX,512/4
 		CALL	memcpy
 
-; Boot up bootpack
+		; Boot up bootpack
 		MOV		EBX,BOTPAK
 		MOV		ECX,[EBX+16]
 		ADD		ECX,3
@@ -123,4 +124,5 @@ GDTR0:
 		DW		8*3-1
 		DD		GDT0
 		ALIGNB	16, DB 0
+
 bootpack:
