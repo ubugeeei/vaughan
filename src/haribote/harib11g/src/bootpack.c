@@ -79,7 +79,7 @@ void HariMain(void) {
             i = fifo32_get(&fifo);
             io_sti();
             if (256 <= i && i <= 511) {  // keyboard
-                sprintf(s, "%d", i - 256);
+                sprintf(s, "%x", i - 256);
                 putfonts8_asc_sht(sht_back, 0, 16, COL8_FFFFFF, COL8_000000, s,
                                   2);
                 if (i == 0x1e + 256) {
