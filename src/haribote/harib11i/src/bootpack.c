@@ -144,7 +144,6 @@ void HariMain(void) {
                                       s, 10);
                     sheet_slide(sht_mouse, mx, my);
                     if ((mdec.btn & 0x01) != 0) {
-                        /* 左ボタンを押していたら、sht_winを動かす */
                         sheet_slide(sht_win, mx - 80, my - 8);
                     }
                 }
