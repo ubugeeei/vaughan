@@ -151,7 +151,7 @@ void HariMain(void) {
                 putfonts8_asc_sht(sht_back, 0, 80, COL8_FFFFFF, COL8_000000,
                                   "3[sec]", 6);
             } else if (i <= 1) {  // cursor
-                if (i != 0) {
+                if (i != 0) {  // blink
                     timer_init(timer3, &fifo, 0);
                     cursor_c = COL8_000000;
                 } else {
