@@ -7,7 +7,7 @@ GLOBAL	io_load_eflags, io_store_eflags
 GLOBAL	load_gdtr, load_idtr
 GLOBAL	load_cr0, store_cr0
 GLOBAL  load_tr
-GLOBAL  taskswitch4
+GLOBAL  taskswitch3, taskswitch4
 GLOBAL	asm_inthandler20, asm_inthandler21, asm_inthandler27, asm_inthandler2c
 GLOBAL	memtest_sub
 EXTERN	inthandler20, inthandler21, inthandler27, inthandler2c
@@ -168,6 +168,10 @@ asm_inthandler2c:
 
 taskswitch4: ; void taskswitch4(void);
 	JMP  4*8:0
+	RET
+
+taskswitch3: ; void taskswitch3(void);
+	JMP  3*8:0
 	RET
 
 memtest_sub:	; unsigned int memtest_sub(unsigned int start, unsigned int end)
