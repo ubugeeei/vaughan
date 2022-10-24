@@ -6,6 +6,8 @@ GLOBAL	io_out8, io_out16, io_out32
 GLOBAL	io_load_eflags, io_store_eflags
 GLOBAL	load_gdtr, load_idtr
 GLOBAL	load_cr0, store_cr0
+GLOBAL  load_tr
+GLOBAL  taskswitch4
 GLOBAL	asm_inthandler20, asm_inthandler21, asm_inthandler27, asm_inthandler2c
 GLOBAL	memtest_sub
 EXTERN	inthandler20, inthandler21, inthandler27, inthandler2c
@@ -96,6 +98,10 @@ store_cr0:		; void store_cr0(int cr0);
 	MOV		CR0,EAX
 	RET
 
+load_tr:		; void load_tr(int tr);
+	LTR		[ESP+4]
+	RET
+
 asm_inthandler20:
   PUSH	ES
   PUSH	DS
@@ -159,6 +165,10 @@ asm_inthandler2c:
 		POP		DS
 		POP		ES
 		IRETD
+
+taskswitch4: ; void taskswitch4(void);
+	JMP  4*8:0
+	RET
 
 memtest_sub:	; unsigned int memtest_sub(unsigned int start, unsigned int end)
 	PUSH	EDI
