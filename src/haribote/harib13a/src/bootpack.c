@@ -92,8 +92,8 @@ void HariMain(void) {
     sheet_updown(sht_mouse, 2);
     sprintf(s, "(%d, %d)", mx, my);
     putfonts8_asc_sht(sht_back, 0, 0, COL8_FFFFFF, COL8_000000, s, 10);
-    sprintf(s, "memory %dMB   free : %dKB", memtotal / (1024 * 1024),
-            memman_total(memman) / 1024);
+    sprintf(s, "memory %dMB   free : %dMB", memtotal / (1024 * 1024),
+            memman_total(memman) / (1024 * 1024));
     putfonts8_asc_sht(sht_back, 0, 32, COL8_FFFFFF, COL8_000000, s, 40);
 
     // task
@@ -311,7 +311,7 @@ void task_b_main(struct SHEET *sht_back) {
                                   11);
                 timer_settime(timer_put, 1);
             } else if (i == 100) {
-                sprintf(s, "%11d", count - count0);
+                sprintf(s, "%d", count - count0);
                 putfonts8_asc_sht(sht_back, 0, 128, COL8_FFFFFF, COL8_000000, s,
                                   11);
                 count0 = count;
