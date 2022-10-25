@@ -1,4 +1,4 @@
-OBJS_BOOTPACK = $(OBJ_PATH)/bootpack.o $(OBJ_PATH)/naskfunc.o $(OBJ_PATH)/hankaku.o $(OBJ_PATH)/graphic.o $(OBJ_PATH)/dsctbl.o $(OBJ_PATH)/mysprintf.o $(OBJ_PATH)/int.o $(OBJ_PATH)/fifo.o $(OBJ_PATH)/keyboard.o $(OBJ_PATH)/mouse.o $(OBJ_PATH)/memory.o $(OBJ_PATH)/sheet.o $(OBJ_PATH)/timer.o
+OBJS_BOOTPACK = $(OBJ_PATH)/bootpack.o $(OBJ_PATH)/naskfunc.o $(OBJ_PATH)/hankaku.o $(OBJ_PATH)/graphic.o $(OBJ_PATH)/dsctbl.o $(OBJ_PATH)/mysprintf.o $(OBJ_PATH)/int.o $(OBJ_PATH)/fifo.o $(OBJ_PATH)/keyboard.o $(OBJ_PATH)/mouse.o $(OBJ_PATH)/memory.o $(OBJ_PATH)/sheet.o $(OBJ_PATH)/timer.o $(OBJ_PATH)/mtask.o
 
 MAKE = make -r
 PRE_MAKE = mkdir -p target/bin && mkdir -p target/obj

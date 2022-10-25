@@ -79,6 +79,7 @@ void timer_settime(struct TIMER *timer, unsigned int timeout) {
 
 void inthandler20(int *esp) {
     struct TIMER *timer;
+    char ts = 0;
     io_out8(PIC0_OCW2, 0x60);
     timerctl.count++;
     if (timerctl.next > timerctl.count) {
@@ -89,12 +90,18 @@ void inthandler20(int *esp) {
         if (timer->timeout > timerctl.count) {
             break;
         }
-
         timer->flags = TIMER_FLAGS_ALLOC;
-        fifo32_put(timer->fifo, timer->data);
+        if (timer != mt_timer) {
+            fifo32_put(timer->fifo, timer->data);
+        } else {
+            ts = 1;
+        }
         timer = timer->next;
     }
     timerctl.t0 = timer;
     timerctl.next = timer->timeout;
+    if (ts != 0) {
+        mt_taskswitch();
+    }
     return;
 }
