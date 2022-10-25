@@ -193,7 +193,6 @@ void HariMain(void) {
             } else if (i == 10) {  // timer 10
                 putfonts8_asc_sht(sht_back, 0, 64, COL8_FFFFFF, COL8_000000,
                                   "10[sec]", 7);
-                farjmp(0, 4 * 8);
             } else if (i == 3) {  // timer 3
                 putfonts8_asc_sht(sht_back, 0, 80, COL8_FFFFFF, COL8_000000,
                                   "3[sec]", 6);
