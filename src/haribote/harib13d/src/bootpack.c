@@ -71,7 +71,7 @@ void HariMain(void) {
         task_b[i]->tss.fs = 1 * 8;
         task_b[i]->tss.gs = 1 * 8;
         *((int *)(task_b[i]->tss.esp + 4)) = (int)sht_win_b[i];
-        task_run(task_b[i]);
+        task_run(task_b[i], i + 1);
     }
 
     sht_win = sheet_alloc(shtctl);
@@ -273,7 +273,6 @@ void task_b_main(struct SHEET *sht_win_b) {
 
     for (;;) {
         count++;
-        sprintf(s, "%d", count - count0);
         putfonts8_asc_sht(sht_win_b, 24, 28, COL8_000000, COL8_C6C6C6, s, 11);
         io_cli();
         if (fifo32_status(&fifo) == 0) {
@@ -282,7 +281,7 @@ void task_b_main(struct SHEET *sht_win_b) {
             i = fifo32_get(&fifo);
             io_sti();
             if (i == 100) {
-                count0 = count;
+                sprintf(s, "%d", count - count0);
                 timer_settime(timer_1s, 100);
             }
         }
