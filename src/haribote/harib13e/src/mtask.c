@@ -15,14 +15,14 @@ struct TASK *task_init(struct MEMMAN *memman) {
                      AR_TSS32);
     }
     task = task_alloc();
-    task->priority = 2;  // 0.02 sec
+    task->priority = 2;
     task->flags = 2;
     taskctl->running = 1;
     taskctl->now = 0;
     taskctl->tasks[0] = task;
     load_tr(task->sel);
     task_timer = timer_alloc();
-    timer_settime(task_timer, 2);
+    timer_settime(task_timer, task->priority);
     return task;
 }
 
@@ -57,9 +57,11 @@ void task_run(struct TASK *task, int priority) {
     if (priority > 0) {
         task->priority = priority;
     }
-    task->flags = 2;
-    taskctl->tasks[taskctl->running] = task;
-    taskctl->running++;
+    if (task->flags != 2) {
+        task->flags = 2;
+        taskctl->tasks[taskctl->running] = task;
+        taskctl->running++;
+    }
     return;
 }
 
