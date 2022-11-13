@@ -24,6 +24,11 @@ int fifo32_put(struct FIFO32 *fifo, int data) {
         fifo->p = 0;
     }
     fifo->free--;
+    if (fifo->task != 0) {
+        if (fifo->task->flags != 2) {
+            task_run(fifo->task);
+        }
+    }
     return 0;
 }
 
