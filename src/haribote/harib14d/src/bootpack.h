@@ -205,6 +205,7 @@ struct TSS32 {
 struct TASK {
     int sel, flags;
     int level, priority;
+    struct FIFO32 fifo;
     struct TSS32 tss;
 };
 struct TASK_LEVEL {

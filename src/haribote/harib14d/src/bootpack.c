@@ -118,19 +118,29 @@ void HariMain(void) {
                 sprintf(s, "%x", i - 256);
                 putfonts8_asc_sht(sht_back, 0, 16, COL8_FFFFFF, COL8_000000, s,
                                   2);
-                if (i < 256 + 0x54) {
-                    if (keytable[i - 256] != 0 && cursor_x < 144) {
-                        s[0] = keytable[i - 256];
-                        s[1] = 0;
-                        putfonts8_asc_sht(sht_win, cursor_x, 28, COL8_000000,
-                                          COL8_FFFFFF, s, 1);
-                        cursor_x += 8;
+                if (i < 256 + 0x54 && keytable[i - 256] != 0) {
+                    if (key_to == 0) {
+                        if (cursor_x < 128) {
+                            s[0] = keytable[i - 256];
+                            s[1] = 0;
+                            putfonts8_asc_sht(sht_win, cursor_x, 28,
+                                              COL8_000000, COL8_FFFFFF, s, 1);
+                            cursor_x += 8;
+                        }
+                    } else {
+                        fifo32_put(&task_cons->fifo, keytable[i - 256] + 256);
                     }
                 }
-                if (i == 256 + 0x0e && cursor_x > 8) {
-                    putfonts8_asc_sht(sht_win, cursor_x, 28, COL8_000000,
-                                      COL8_FFFFFF, " ", 1);
-                    cursor_x -= 8;
+                if (i == 256 + 0x0e) {
+                    if (key_to == 0) {
+                        if (cursor_x > 8) {
+                            putfonts8_asc_sht(sht_win, cursor_x, 28,
+                                              COL8_000000, COL8_FFFFFF, " ", 1);
+                            cursor_x -= 8;
+                        }
+                    } else {
+                        fifo32_put(&task_cons->fifo, 8 + 256);
+                    }
                 }
                 if (i == 256 + 0x0f) {
                     if (key_to == 0) {
@@ -285,38 +295,56 @@ void make_textbox8(struct SHEET *sht, int x0, int y0, int sx, int sy, int c) {
 }
 
 void console_task(struct SHEET *sheet) {
-    struct FIFO32 fifo;
     struct TIMER *timer;
     struct TASK *task = task_now();
+    int i, fifobuf[128], cursor_x = 16, cursor_c = COL8_000000;
+    char s[2];
 
-    int i, fifobuf[128], cursor_x = 8, cursor_c = COL8_000000;
-    fifo32_init(&fifo, 128, fifobuf, task);
-
+    fifo32_init(&task->fifo, 128, fifobuf, task);
     timer = timer_alloc();
-    timer_init(timer, &fifo, 1);
+    timer_init(timer, &task->fifo, 1);
     timer_settime(timer, 50);
+
+    putfonts8_asc_sht(sheet, 8, 28, COL8_FFFFFF, COL8_000000, ">", 1);
 
     for (;;) {
         io_cli();
-        if (fifo32_status(&fifo) == 0) {
+        if (fifo32_status(&task->fifo) == 0) {
             task_sleep(task);
             io_sti();
         } else {
-            i = fifo32_get(&fifo);
+            i = fifo32_get(&task->fifo);
             io_sti();
             if (i <= 1) {
                 if (i != 0) {
-                    timer_init(timer, &fifo, 0);
+                    timer_init(timer, &task->fifo, 0);
                     cursor_c = COL8_FFFFFF;
                 } else {
-                    timer_init(timer, &fifo, 1);
+                    timer_init(timer, &task->fifo, 1);
                     cursor_c = COL8_000000;
                 }
                 timer_settime(timer, 50);
-                boxfill8(sheet->buf, sheet->bxsize, cursor_c, cursor_x, 28,
-                         cursor_x + 7, 43);
-                sheet_refresh(sheet, cursor_x, 28, cursor_x + 8, 44);
             }
+            if (256 <= i && i <= 511) {
+                if (i == 8 + 256) {
+                    if (cursor_x > 16) {
+                        putfonts8_asc_sht(sheet, cursor_x, 28, COL8_FFFFFF,
+                                          COL8_000000, " ", 1);
+                        cursor_x -= 8;
+                    }
+                } else {
+                    if (cursor_x < 240) {
+                        s[0] = i - 256;
+                        s[1] = 0;
+                        putfonts8_asc_sht(sheet, cursor_x, 28, COL8_FFFFFF,
+                                          COL8_000000, s, 1);
+                        cursor_x += 8;
+                    }
+                }
+            }
+            boxfill8(sheet->buf, sheet->bxsize, cursor_c, cursor_x, 28,
+                     cursor_x + 7, 43);
+            sheet_refresh(sheet, cursor_x, 28, cursor_x + 8, 44);
         }
     }
 }
