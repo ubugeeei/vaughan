@@ -8,12 +8,14 @@ void make_textbox8(struct SHEET *sht, int x0, int y0, int sx, int sy, int c);
 void make_wtitle8(unsigned char *buf, int xsize, char *title, char act);
 void console_task(struct SHEET *sheet);
 
+#define KEYCMD_LED 0xed
+
 void HariMain(void) {
     struct BOOTINFO *binfo = (struct BOOTINFO *)ADR_BOOTINFO;
-    struct FIFO32 fifo;
     struct SHTCTL *shtctl;
     char s[40];
-    int fifobuf[128];
+    struct FIFO32 fifo, keycmd;
+    int fifobuf[128], keycmd_buf[32];
     int mx, my, i, cursor_x, cursor_c;
     unsigned int memtotal;
     struct MOUSE_DEC mdec;
@@ -44,7 +46,8 @@ void HariMain(void) {
         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   '_', 0,
         0,   0,   0,   0,   0,   0,   0,   0,   '|', 0,   0};
-    int key_to = 0, key_shift = 0, key_leds = (binfo->leds >> 4) & 7;
+    int key_to = 0, key_shift = 0, key_leds = (binfo->leds >> 4) & 7,
+        keycmd_wait = -1;
 
     init_gdtidt();
     init_pic();
@@ -55,6 +58,7 @@ void HariMain(void) {
     enable_mouse(&fifo, 512, &mdec);
     io_out8(PIC0_IMR, 0xf8);
     io_out8(PIC1_IMR, 0xef);
+    fifo32_init(&keycmd, 32, keycmd_buf, 0);
 
     memtotal = memtest(0x00400000, 0xbfffffff);
     memman_init(memman);
@@ -121,7 +125,15 @@ void HariMain(void) {
             memman_total(memman) / 1024);
     putfonts8_asc_sht(sht_back, 0, 32, COL8_FFFFFF, COL8_000000, s, 40);
 
+    fifo32_put(&keycmd, KEYCMD_LED);
+    fifo32_put(&keycmd, key_leds);
+
     for (;;) {
+        if (fifo32_status(&keycmd) > 0 && keycmd_wait < 0) {
+            keycmd_wait = fifo32_get(&keycmd);
+            wait_KBC_sendready();
+            io_out8(PORT_KEYDAT, keycmd_wait);
+        }
         io_cli();
         if (fifo32_status(&fifo) == 0) {
             task_sleep(task_a);
@@ -196,6 +208,23 @@ void HariMain(void) {
                 if (i == 256 + 0xb6) {
                     key_shift &= ~2;
                 }
+                if (i == 256 + 0x3a) {
+                    key_leds ^= 4;
+                    fifo32_put(&keycmd, KEYCMD_LED);
+                    fifo32_put(&keycmd, key_leds);
+                }
+                if (i == 256 + 0x45) {
+                    key_leds ^= 1;
+                    fifo32_put(&keycmd, KEYCMD_LED);
+                    fifo32_put(&keycmd, key_leds);
+                }
+                if (i == 256 + 0xfa) {
+                    keycmd_wait = -1;
+                }
+                if (i == 256 + 0xfe) {
+                    wait_KBC_sendready();
+                    io_out8(PORT_KEYDAT, keycmd_wait);
+                }
 
                 boxfill8(sht_win->buf, sht_win->bxsize, cursor_c, cursor_x, 28,
                          cursor_x + 7, 43);
@@ -214,8 +243,10 @@ void HariMain(void) {
                     }
                     putfonts8_asc_sht(sht_back, 32, 16, COL8_FFFFFF,
                                       COL8_000000, s, 15);
+
                     mx += mdec.x;
                     my += mdec.y;
+
                     if (mx < 0) {
                         mx = 0;
                     }
@@ -228,6 +259,7 @@ void HariMain(void) {
                     if (my > binfo->scrny - 1) {
                         my = binfo->scrny - 1;
                     }
+
                     sprintf(s, "(%d, %d)", mx, my);
                     putfonts8_asc_sht(sht_back, 0, 0, COL8_FFFFFF, COL8_000000,
                                       s, 10);
