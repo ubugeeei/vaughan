@@ -5,6 +5,7 @@ void make_window8(unsigned char *buf, int xsize, int ysize, char *title,
 void putfonts8_asc_sht(struct SHEET *sht, int x, int y, int c, int b, char *s,
                        int l);
 void make_textbox8(struct SHEET *sht, int x0, int y0, int sx, int sy, int c);
+void make_wtitle8(unsigned char *buf, int xsize, char *title, char act);
 void console_task(struct SHEET *sheet);
 
 void HariMain(void) {
@@ -28,6 +29,7 @@ void HariMain(void) {
     struct SHEET *sht_back, *sht_mouse, *sht_win, *sht_cons;
     struct TASK *task_a, *task_cons;
     struct TIMER *timer;
+    int key_to = 0;
 
     init_gdtidt();
     init_pic();
@@ -130,6 +132,19 @@ void HariMain(void) {
                                       COL8_FFFFFF, " ", 1);
                     cursor_x -= 8;
                 }
+                if (i == 256 + 0x0f) {
+                    if (key_to == 0) {
+                        key_to = 1;
+                        make_wtitle8(buf_win, sht_win->bxsize, "task_a", 0);
+                        make_wtitle8(buf_cons, sht_cons->bxsize, "console", 1);
+                    } else {
+                        key_to = 0;
+                        make_wtitle8(buf_win, sht_win->bxsize, "task_a", 1);
+                        make_wtitle8(buf_cons, sht_cons->bxsize, "console", 0);
+                    }
+                    sheet_refresh(sht_win, 0, 0, sht_win->bxsize, 21);
+                    sheet_refresh(sht_cons, 0, 0, sht_cons->bxsize, 21);
+                }
 
                 boxfill8(sht_win->buf, sht_win->bxsize, cursor_c, cursor_x, 28,
                          cursor_x + 7, 43);
@@ -189,14 +204,6 @@ void HariMain(void) {
 
 void make_window8(unsigned char *buf, int xsize, int ysize, char *title,
                   char act) {
-    static char closebtn[14][16] = {
-        "OOOOOOOOOOOOOOO@", "OQQQQQQQQQQQQQ$@", "OQQQQQQQQQQQQQ$@",
-        "OQQQ@@QQQQ@@QQ$@", "OQQQQ@@QQ@@QQQ$@", "OQQQQQ@@@@QQQQ$@",
-        "OQQQQQQ@@QQQQQ$@", "OQQQQQ@@@@QQQQ$@", "OQQQQ@@QQ@@QQQ$@",
-        "OQQQ@@QQQQ@@QQ$@", "OQQQQQQQQQQQQQ$@", "OQQQQQQQQQQQQQ$@",
-        "O$$$$$$$$$$$$$$@", "@@@@@@@@@@@@@@@@"};
-    int x, y;
-    char c;
     boxfill8(buf, xsize, COL8_C6C6C6, 0, 0, xsize - 1, 0);
     boxfill8(buf, xsize, COL8_FFFFFF, 1, 1, xsize - 2, 1);
     boxfill8(buf, xsize, COL8_C6C6C6, 0, 0, 0, ysize - 1);
@@ -207,7 +214,28 @@ void make_window8(unsigned char *buf, int xsize, int ysize, char *title,
     boxfill8(buf, xsize, COL8_000084, 3, 3, xsize - 4, 20);
     boxfill8(buf, xsize, COL8_848484, 1, ysize - 2, xsize - 2, ysize - 2);
     boxfill8(buf, xsize, COL8_000000, 0, ysize - 1, xsize - 1, ysize - 1);
-    putfonts8_asc(buf, xsize, 24, 4, COL8_FFFFFF, title);
+    make_wtitle8(buf, xsize, title, act);
+    return;
+}
+
+void make_wtitle8(unsigned char *buf, int xsize, char *title, char act) {
+    static char closebtn[14][16] = {
+        "OOOOOOOOOOOOOOO@", "OQQQQQQQQQQQQQ$@", "OQQQQQQQQQQQQQ$@",
+        "OQQQ@@QQQQ@@QQ$@", "OQQQQ@@QQ@@QQQ$@", "OQQQQQ@@@@QQQQ$@",
+        "OQQQQQQ@@QQQQQ$@", "OQQQQQ@@@@QQQQ$@", "OQQQQ@@QQ@@QQQ$@",
+        "OQQQ@@QQQQ@@QQ$@", "OQQQQQQQQQQQQQ$@", "OQQQQQQQQQQQQQ$@",
+        "O$$$$$$$$$$$$$$@", "@@@@@@@@@@@@@@@@"};
+    int x, y;
+    char c, tc, tbc;
+    if (act != 0) {
+        tc = COL8_FFFFFF;
+        tbc = COL8_000084;
+    } else {
+        tc = COL8_C6C6C6;
+        tbc = COL8_848484;
+    }
+    boxfill8(buf, xsize, tbc, 3, 3, xsize - 4, 20);
+    putfonts8_asc(buf, xsize, 24, 4, tc, title);
     for (y = 0; y < 14; y++) {
         for (x = 0; x < 16; x++) {
             c = closebtn[y][x];
