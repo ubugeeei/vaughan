@@ -1,7 +1,7 @@
-OBJS_BOOTPACK = $(OBJ_PATH)/bootpack.o $(OBJ_PATH)/naskfunc.o $(OBJ_PATH)/hankaku.o $(OBJ_PATH)/graphic.o $(OBJ_PATH)/dsctbl.o $(OBJ_PATH)/sprintf.o $(OBJ_PATH)/strcmp.o $(OBJ_PATH)/int.o $(OBJ_PATH)/fifo.o $(OBJ_PATH)/keyboard.o $(OBJ_PATH)/mouse.o $(OBJ_PATH)/memory.o $(OBJ_PATH)/sheet.o $(OBJ_PATH)/timer.o $(OBJ_PATH)/mtask.o
+OBJS_BOOTPACK = $(OBJ_PATH)/bootpack.o $(OBJ_PATH)/naskfunc.o $(OBJ_PATH)/hankaku.o $(OBJ_PATH)/graphic.o $(OBJ_PATH)/dsctbl.o $(OBJ_PATH)/int.o $(OBJ_PATH)/fifo.o $(OBJ_PATH)/keyboard.o $(OBJ_PATH)/mouse.o $(OBJ_PATH)/memory.o $(OBJ_PATH)/sheet.o $(OBJ_PATH)/timer.o $(OBJ_PATH)/mtask.o $(OBJ_PATH)/lib/sprintf.o $(OBJ_PATH)/lib/strcmp.o
 
 MAKE = make -r
-PRE_MAKE = mkdir -p target/bin && mkdir -p target/obj
+PRE_MAKE = mkdir -p target/bin && mkdir -p target/obj/lib
 DEL = rm -rf
 
 CC = i386-elf-gcc
@@ -42,6 +42,9 @@ target/haribote.img : $(TARGET_PATH)/bin/ipl10.bin $(TARGET_PATH)/haribote.sys M
 
 $(OBJ_PATH)/%.o : src/%.c
 	$(CC) $(CFLAGS) -c src/$*.c -o $(OBJ_PATH)/$*.o
+
+$(OBJ_PATH)/lib/%.o : src/lib/%.c
+	$(CC) $(CFLAGS) -c src/lib/$*.c -o $(OBJ_PATH)/lib/$*.o
 
 
 img :
