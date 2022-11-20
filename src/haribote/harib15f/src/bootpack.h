@@ -1,4 +1,6 @@
 void sprintf(char *str, char *fmt, ...);
+int strcmp(char *s1, char *s2);
+
 /* asmhead.nas */
 struct BOOTINFO {
     char cyls;
