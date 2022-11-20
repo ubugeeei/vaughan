@@ -10,7 +10,7 @@ SECTIONS
     LONG(SIZEOF(.data))
     LONG(LOADADDR(.data))
     LONG(0xE9000000)
-    LONG(HariMain - 0x20)
+    LONG(Boot - 0x20)
     LONG(0)
   }
 

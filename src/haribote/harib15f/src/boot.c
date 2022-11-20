@@ -11,7 +11,7 @@ int cons_newline(int cursor_y, struct SHEET *sheet);
 
 #define KEYCMD_LED 0xed
 
-void HariMain(void) {
+void Boot(void) {
     struct BOOTINFO *binfo = (struct BOOTINFO *)ADR_BOOTINFO;
     struct SHTCTL *shtctl;
     char s[40];
