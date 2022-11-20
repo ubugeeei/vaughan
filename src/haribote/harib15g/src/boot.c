@@ -16,7 +16,7 @@ void Boot(void) {
     struct SHTCTL *shtctl;
     char s[40];
     struct Queue32 queue, keycmd;
-    int queuebuf[128], keycmd_buf[32];
+    int queue_buf[128], keycmd_buf[32];
     int mx, my, i, cursor_x, cursor_c;
     unsigned int memtotal;
     struct MOUSE_DEC mdec;
@@ -53,7 +53,7 @@ void Boot(void) {
     init_gdtidt();
     init_pic();
     io_sti();
-    queue32_init(&queue, 128, queuebuf, 0);
+    queue32_init(&queue, 128, queue_buf, 0);
     init_pit();
     init_keyboard(&queue, 256);
     enable_mouse(&queue, 512, &mdec);
@@ -368,12 +368,12 @@ void make_textbox8(struct SHEET *sht, int x0, int y0, int sx, int sy, int c) {
 void console_task(struct SHEET *sheet, unsigned int memtotal) {
     struct TIMER *timer;
     struct TASK *task = task_now();
-    int i, queuebuf[128], cursor_x = 16, cursor_y = 28, cursor_c = -1;
+    int i, queue_buf[128], cursor_x = 16, cursor_y = 28, cursor_c = -1;
     char s[30], cmdline[30];
     struct MEMMAN *memman = (struct MEMMAN *)MEMMAN_ADDR;
     int x, y;
 
-    queue32_init(&task->queue, 128, queuebuf, task);
+    queue32_init(&task->queue, 128, queue_buf, task);
     timer = timer_alloc();
     timer_init(timer, &task->queue, 1);
     timer_settime(timer, 50);
