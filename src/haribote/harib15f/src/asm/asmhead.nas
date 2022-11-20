@@ -111,8 +111,8 @@ pipelineflush:
 		MOV		GS,AX
 		MOV		SS,AX
 
-		; bootpack
-		MOV		ESI,bootpack
+		; boot
+		MOV		ESI,boot
 		MOV		EDI,BOTPAK
 		MOV		ECX,512*1024/4
 		CALL	memcpy
@@ -133,7 +133,7 @@ pipelineflush:
 		SUB		ECX,512/4
 		CALL	memcpy
 
-		; Boot up bootpack
+		; Boot up boot
 		MOV		EBX,BOTPAK
 		MOV		ECX,[EBX+16]
 		ADD		ECX,3
@@ -175,4 +175,4 @@ GDTR0:
 		DD		GDT0
 		ALIGNB	16, DB 0
 
-bootpack:
+boot:

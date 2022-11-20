@@ -1,4 +1,4 @@
-#include "bootpack.h"
+#include "boot.h"
 
 void init_pic(void) {
     io_out8(PIC0_IMR, 0xff);

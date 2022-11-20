@@ -1,4 +1,4 @@
-OBJS_BOOTPACK = $(OBJ_PATH)/bootpack.o $(OBJ_PATH)/naskfunc.o $(OBJ_PATH)/hankaku.o $(OBJ_PATH)/graphic.o $(OBJ_PATH)/dsctbl.o $(OBJ_PATH)/int.o $(OBJ_PATH)/fifo.o $(OBJ_PATH)/keyboard.o $(OBJ_PATH)/mouse.o $(OBJ_PATH)/memory.o $(OBJ_PATH)/sheet.o $(OBJ_PATH)/timer.o $(OBJ_PATH)/mtask.o $(OBJ_PATH)/lib/sprintf.o $(OBJ_PATH)/lib/strcmp.o
+OBJS_boot = $(OBJ_PATH)/boot.o $(OBJ_PATH)/naskfunc.o $(OBJ_PATH)/hankaku.o $(OBJ_PATH)/graphic.o $(OBJ_PATH)/dsctbl.o $(OBJ_PATH)/int.o $(OBJ_PATH)/fifo.o $(OBJ_PATH)/keyboard.o $(OBJ_PATH)/mouse.o $(OBJ_PATH)/memory.o $(OBJ_PATH)/sheet.o $(OBJ_PATH)/timer.o $(OBJ_PATH)/mtask.o $(OBJ_PATH)/lib/sprintf.o $(OBJ_PATH)/lib/strcmp.o
 
 MAKE = make -r
 PRE_MAKE = mkdir -p target/bin && mkdir -p target/obj/lib
@@ -29,11 +29,11 @@ target/bin/asmhead.bin : src/asm/asmhead.nas
 $(OBJ_PATH)/naskfunc.o : src/asm/naskfunc.nas 
 	nasm -g -f elf $< -o $@ -l $(TARGET_PATH)/naskfunc.lst
 
-target/bootpack.hrb : $(OBJS_BOOTPACK) hrb.ld
-	$(CC) $(CFLAGS) -march=i486 -nostdlib -T hrb.ld -g $(OBJS_BOOTPACK) -o $@
+target/boot.hrb : $(OBJS_boot) hrb.ld
+	$(CC) $(CFLAGS) -march=i486 -nostdlib -T hrb.ld -g $(OBJS_boot) -o $@
 
-target/haribote.sys : $(TARGET_PATH)/bin/asmhead.bin $(TARGET_PATH)/bootpack.hrb Makefile
-	cat $(TARGET_PATH)/bin/asmhead.bin $(TARGET_PATH)/bootpack.hrb > $(TARGET_PATH)/haribote.sys
+target/haribote.sys : $(TARGET_PATH)/bin/asmhead.bin $(TARGET_PATH)/boot.hrb Makefile
+	cat $(TARGET_PATH)/bin/asmhead.bin $(TARGET_PATH)/boot.hrb > $(TARGET_PATH)/haribote.sys
 
 target/haribote.img : $(TARGET_PATH)/bin/ipl10.bin $(TARGET_PATH)/haribote.sys Makefile
 	mformat -f 1440 -C -B $(TARGET_PATH)/bin/ipl10.bin -i $@ ::

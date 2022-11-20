@@ -1,4 +1,4 @@
-#include "bootpack.h"
+#include "boot.h"
 #define EFLAGS_AC_BIT 0x00040000
 #define CR0_CACHE_DISABLE 0x60000000
 

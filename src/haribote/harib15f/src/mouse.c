@@ -1,6 +1,6 @@
 
 
-#include "bootpack.h"
+#include "boot.h"
 
 struct FIFO32 *mousefifo;
 int mousedata0;

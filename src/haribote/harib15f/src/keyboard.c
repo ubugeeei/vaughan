@@ -1,4 +1,4 @@
-#include "bootpack.h"
+#include "boot.h"
 
 struct FIFO32 *keyfifo;
 int keydata0;

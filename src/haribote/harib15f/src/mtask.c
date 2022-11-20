@@ -1,4 +1,4 @@
-#include "bootpack.h"
+#include "boot.h"
 
 struct TASKCTL *taskctl;
 struct TIMER *task_timer;

@@ -1,4 +1,4 @@
-#include "bootpack.h"
+#include "boot.h"
 
 void make_window8(unsigned char *buf, int xsize, int ysize, char *title,
                   char act);

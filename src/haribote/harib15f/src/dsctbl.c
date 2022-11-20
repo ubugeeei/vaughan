@@ -1,6 +1,6 @@
 /* GDT IDT, descriptor table */
 
-#include "bootpack.h"
+#include "boot.h"
 
 void init_gdtidt(void) {
     struct SEGMENT_DESCRIPTOR *gdt = (struct SEGMENT_DESCRIPTOR *)ADR_GDT;

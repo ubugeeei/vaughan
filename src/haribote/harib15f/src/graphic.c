@@ -1,6 +1,6 @@
 /* Graphics */
 
-#include "bootpack.h"
+#include "boot.h"
 
 void init_palette(void) {
     // clang-format off
