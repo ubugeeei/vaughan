@@ -1,4 +1,4 @@
-OBJS_boot = $(OBJ_PATH)/boot.o $(OBJ_PATH)/naskfunc.o $(OBJ_PATH)/hankaku.o $(OBJ_PATH)/graphic.o $(OBJ_PATH)/dsctbl.o $(OBJ_PATH)/int.o $(OBJ_PATH)/fifo.o $(OBJ_PATH)/keyboard.o $(OBJ_PATH)/mouse.o $(OBJ_PATH)/memory.o $(OBJ_PATH)/sheet.o $(OBJ_PATH)/timer.o $(OBJ_PATH)/mtask.o $(OBJ_PATH)/lib/sprintf.o $(OBJ_PATH)/lib/strcmp.o
+OBJS_boot = $(OBJ_PATH)/boot.o $(OBJ_PATH)/naskfunc.o $(OBJ_PATH)/graphic.o $(OBJ_PATH)/dsctbl.o $(OBJ_PATH)/int.o $(OBJ_PATH)/fifo.o $(OBJ_PATH)/keyboard.o $(OBJ_PATH)/mouse.o $(OBJ_PATH)/memory.o $(OBJ_PATH)/sheet.o $(OBJ_PATH)/timer.o $(OBJ_PATH)/mtask.o $(OBJ_PATH)/lib/sprintf.o $(OBJ_PATH)/lib/strcmp.o $(OBJ_PATH)/lib/hankaku.o
 
 MAKE = make -r
 PRE_MAKE = mkdir -p target/bin && mkdir -p target/obj/lib
@@ -14,10 +14,10 @@ BIN_PATH = ./target/bin
 default : 
 	$(MAKE) img
 
-target/bin/hankaku_txt_compiler : src/hankaku_txt_compiler.c
+target/bin/hankaku_txt_compiler : src/lib/hankaku_txt_compiler.c
 	gcc $< -o $@
 
-src/hankaku.c : static/hankaku.txt $(BIN_PATH)/hankaku_txt_compiler
+src/lib/hankaku.c : static/hankaku.txt $(BIN_PATH)/hankaku_txt_compiler
 	./$(BIN_PATH)/hankaku_txt_compiler
 
 target/bin/ipl10.bin : src/asm/ipl10.nas

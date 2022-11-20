@@ -19,7 +19,7 @@ int main() {
     }
 
     // Write error
-    if ((outfp = fopen("src/hankaku.c", "w")) == NULL) {
+    if ((outfp = fopen("src/lib/hankaku.c", "w")) == NULL) {
         printf("output file open error\n");
         return 0;
     }
