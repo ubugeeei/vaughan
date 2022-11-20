@@ -1,13 +1,13 @@
 #include "boot.h"
 
-struct FIFO32 *keyfifo;
+struct Queue32 *keyqueue;
 int keydata0;
 
 void inthandler21(int *esp) {
     int data;
     io_out8(PIC0_OCW2, 0x61);
     data = io_in8(PORT_KEYDAT);
-    fifo32_put(keyfifo, data + keydata0);
+    queue32_put(keyqueue, data + keydata0);
     return;
 }
 
@@ -25,8 +25,8 @@ void wait_KBC_sendready(void) {
     return;
 }
 
-void init_keyboard(struct FIFO32 *fifo, int data0) {
-    keyfifo = fifo;
+void init_keyboard(struct Queue32 *queue, int data0) {
+    keyqueue = queue;
     keydata0 = data0;
 
     wait_KBC_sendready();

@@ -43,8 +43,8 @@ void timer_free(struct TIMER *timer) {
     return;
 }
 
-void timer_init(struct TIMER *timer, struct FIFO32 *fifo, int data) {
-    timer->fifo = fifo;
+void timer_init(struct TIMER *timer, struct Queue32 *queue, int data) {
+    timer->queue = queue;
     timer->data = data;
     return;
 }
@@ -92,7 +92,7 @@ void inthandler20(int *esp) {
         }
         timer->flags = TIMER_FLAGS_ALLOC;
         if (timer != task_timer) {
-            fifo32_put(timer->fifo, timer->data);
+            queue32_put(timer->queue, timer->data);
         } else {
             ts = 1;
         }

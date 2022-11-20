@@ -15,8 +15,8 @@ void HariMain(void) {
     struct BOOTINFO *binfo = (struct BOOTINFO *)ADR_BOOTINFO;
     struct SHTCTL *shtctl;
     char s[40];
-    struct FIFO32 fifo, keycmd;
-    int fifobuf[128], keycmd_buf[32];
+    struct Queue32 queue, keycmd;
+    int queuebuf[128], keycmd_buf[32];
     int mx, my, i, cursor_x, cursor_c;
     unsigned int memtotal;
     struct MOUSE_DEC mdec;
@@ -53,13 +53,13 @@ void HariMain(void) {
     init_gdtidt();
     init_pic();
     io_sti();
-    fifo32_init(&fifo, 128, fifobuf, 0);
+    queue32_init(&queue, 128, queuebuf, 0);
     init_pit();
-    init_keyboard(&fifo, 256);
-    enable_mouse(&fifo, 512, &mdec);
+    init_keyboard(&queue, 256);
+    enable_mouse(&queue, 512, &mdec);
     io_out8(PIC0_IMR, 0xf8);
     io_out8(PIC1_IMR, 0xef);
-    fifo32_init(&keycmd, 32, keycmd_buf, 0);
+    queue32_init(&keycmd, 32, keycmd_buf, 0);
 
     memtotal = memtest(0x00400000, 0xbfffffff);
     memman_init(memman);
@@ -69,7 +69,7 @@ void HariMain(void) {
     init_palette();
     shtctl = shtctl_init(memman, binfo->vram, binfo->scrnx, binfo->scrny);
     task_a = task_init(memman);
-    fifo.task = task_a;
+    queue.task = task_a;
     task_run(task_a, 1, 2);
 
     sht_back = sheet_alloc(shtctl);
@@ -104,7 +104,7 @@ void HariMain(void) {
     cursor_x = 8;
     cursor_c = COL8_FFFFFF;
     timer = timer_alloc();
-    timer_init(timer, &fifo, 1);
+    timer_init(timer, &queue, 1);
     timer_settime(timer, 50);
 
     sht_mouse = sheet_alloc(shtctl);
@@ -122,21 +122,21 @@ void HariMain(void) {
     sheet_updown(sht_win, 2);
     sheet_updown(sht_mouse, 3);
 
-    fifo32_put(&keycmd, KEYCMD_LED);
-    fifo32_put(&keycmd, key_leds);
+    queue32_put(&keycmd, KEYCMD_LED);
+    queue32_put(&keycmd, key_leds);
 
     for (;;) {
-        if (fifo32_status(&keycmd) > 0 && keycmd_wait < 0) {
-            keycmd_wait = fifo32_get(&keycmd);
+        if (queue32_status(&keycmd) > 0 && keycmd_wait < 0) {
+            keycmd_wait = queue32_get(&keycmd);
             wait_KBC_sendready();
             io_out8(PORT_KEYDAT, keycmd_wait);
         }
         io_cli();
-        if (fifo32_status(&fifo) == 0) {
+        if (queue32_status(&queue) == 0) {
             task_sleep(task_a);
             io_sti();
         } else {
-            i = fifo32_get(&fifo);
+            i = queue32_get(&queue);
             io_sti();
             if (256 <= i && i <= 511) {
                 if (i < 0x80 + 256) {
@@ -163,7 +163,7 @@ void HariMain(void) {
                             cursor_x += 8;
                         }
                     } else {
-                        fifo32_put(&task_cons->fifo, s[0] + 256);
+                        queue32_put(&task_cons->queue, s[0] + 256);
                     }
                 }
                 if (i == 256 + 0x0e) {
@@ -174,12 +174,12 @@ void HariMain(void) {
                             cursor_x -= 8;
                         }
                     } else {
-                        fifo32_put(&task_cons->fifo, 8 + 256);
+                        queue32_put(&task_cons->queue, 8 + 256);
                     }
                 }
                 if (i == 256 + 0x1c) {
                     if (key_to != 0) {
-                        fifo32_put(&task_cons->fifo, 10 + 256);
+                        queue32_put(&task_cons->queue, 10 + 256);
                     }
                 }
                 if (i == 256 + 0x0f) {
@@ -190,13 +190,13 @@ void HariMain(void) {
                         cursor_c = -1;
                         boxfill8(sht_win->buf, sht_win->bxsize, COL8_FFFFFF,
                                  cursor_x, 28, cursor_x + 7, 43);
-                        fifo32_put(&task_cons->fifo, 2);
+                        queue32_put(&task_cons->queue, 2);
                     } else {
                         key_to = 0;
                         make_wtitle8(buf_win, sht_win->bxsize, "task_a", 1);
                         make_wtitle8(buf_cons, sht_cons->bxsize, "console", 0);
                         cursor_c = COL8_000000;
-                        fifo32_put(&task_cons->fifo, 3);
+                        queue32_put(&task_cons->queue, 3);
                     }
                     sheet_refresh(sht_win, 0, 0, sht_win->bxsize, 21);
                     sheet_refresh(sht_cons, 0, 0, sht_cons->bxsize, 21);
@@ -215,13 +215,13 @@ void HariMain(void) {
                 }
                 if (i == 256 + 0x3a) {
                     key_leds ^= 4;
-                    fifo32_put(&keycmd, KEYCMD_LED);
-                    fifo32_put(&keycmd, key_leds);
+                    queue32_put(&keycmd, KEYCMD_LED);
+                    queue32_put(&keycmd, key_leds);
                 }
                 if (i == 256 + 0x45) {
                     key_leds ^= 1;
-                    fifo32_put(&keycmd, KEYCMD_LED);
-                    fifo32_put(&keycmd, key_leds);
+                    queue32_put(&keycmd, KEYCMD_LED);
+                    queue32_put(&keycmd, key_leds);
                 }
                 if (i == 256 + 0xfa) {
                     keycmd_wait = -1;
@@ -262,12 +262,12 @@ void HariMain(void) {
                 }
             } else if (i <= 1) {
                 if (i != 0) {
-                    timer_init(timer, &fifo, 0);
+                    timer_init(timer, &queue, 0);
                     if (cursor_c >= 0) {
                         cursor_c = COL8_000000;
                     }
                 } else {
-                    timer_init(timer, &fifo, 1);
+                    timer_init(timer, &queue, 1);
                     if (cursor_c >= 0) {
                         cursor_c = COL8_FFFFFF;
                     }
@@ -368,34 +368,34 @@ void make_textbox8(struct SHEET *sht, int x0, int y0, int sx, int sy, int c) {
 void console_task(struct SHEET *sheet, unsigned int memtotal) {
     struct TIMER *timer;
     struct TASK *task = task_now();
-    int i, fifobuf[128], cursor_x = 16, cursor_y = 28, cursor_c = -1;
+    int i, queuebuf[128], cursor_x = 16, cursor_y = 28, cursor_c = -1;
     char s[30], cmdline[30];
     struct MEMMAN *memman = (struct MEMMAN *)MEMMAN_ADDR;
     int x, y;
 
-    fifo32_init(&task->fifo, 128, fifobuf, task);
+    queue32_init(&task->queue, 128, queuebuf, task);
     timer = timer_alloc();
-    timer_init(timer, &task->fifo, 1);
+    timer_init(timer, &task->queue, 1);
     timer_settime(timer, 50);
 
     putfonts8_asc_sht(sheet, 8, 28, COL8_FFFFFF, COL8_000000, ">", 1);
 
     for (;;) {
         io_cli();
-        if (fifo32_status(&task->fifo) == 0) {
+        if (queue32_status(&task->queue) == 0) {
             task_sleep(task);
             io_sti();
         } else {
-            i = fifo32_get(&task->fifo);
+            i = queue32_get(&task->queue);
             io_sti();
             if (i <= 1) {
                 if (i != 0) {
-                    timer_init(timer, &task->fifo, 0);
+                    timer_init(timer, &task->queue, 0);
                     if (cursor_c >= 0) {
                         cursor_c = COL8_FFFFFF;
                     }
                 } else {
-                    timer_init(timer, &task->fifo, 1);
+                    timer_init(timer, &task->queue, 1);
                     if (cursor_c >= 0) {
                         cursor_c = COL8_000000;
                     }
