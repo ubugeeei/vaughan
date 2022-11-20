@@ -38,6 +38,10 @@ target/haribote.sys : $(TARGET_PATH)/bin/asmhead.bin $(TARGET_PATH)/boot.hrb Mak
 target/haribote.img : $(TARGET_PATH)/bin/ipl10.bin $(TARGET_PATH)/haribote.sys Makefile
 	mformat -f 1440 -C -B $(TARGET_PATH)/bin/ipl10.bin -i $@ ::
 	mcopy -i $@ $(TARGET_PATH)/haribote.sys ::
+	# tset
+	mcopy -i $@ $(TARGET_PATH)/ipl10.lst ::
+	mcopy -i $@ $(TARGET_PATH)/naskfunc.lst ::
+	mcopy -i $@ $(TARGET_PATH)/boot.hrb ::
 
 
 $(OBJ_PATH)/%.o : src/%.c
