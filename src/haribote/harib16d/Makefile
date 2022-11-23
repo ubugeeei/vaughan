@@ -1,4 +1,4 @@
-OBJS_boot = $(OBJ_PATH)/boot.o $(OBJ_PATH)/naskfunc.o $(OBJ_PATH)/graphic.o $(OBJ_PATH)/dsctbl.o $(OBJ_PATH)/int.o $(OBJ_PATH)/queue.o $(OBJ_PATH)/keyboard.o $(OBJ_PATH)/mouse.o $(OBJ_PATH)/memory.o $(OBJ_PATH)/sheet.o $(OBJ_PATH)/timer.o $(OBJ_PATH)/mtask.o $(OBJ_PATH)/lib/sprintf.o $(OBJ_PATH)/lib/strcmp.o $(OBJ_PATH)/lib/hankaku.o
+OBJS_boot = $(OBJ_PATH)/boot.o $(OBJ_PATH)/naskfunc.o $(OBJ_PATH)/graphic.o $(OBJ_PATH)/dsctbl.o $(OBJ_PATH)/int.o $(OBJ_PATH)/queue.o $(OBJ_PATH)/keyboard.o $(OBJ_PATH)/mouse.o $(OBJ_PATH)/memory.o $(OBJ_PATH)/sheet.o $(OBJ_PATH)/timer.o $(OBJ_PATH)/mtask.o $(OBJ_PATH)/window.o $(OBJ_PATH)/console.o $(OBJ_PATH)/file.o $(OBJ_PATH)/lib/sprintf.o $(OBJ_PATH)/lib/strcmp.o $(OBJ_PATH)/lib/hankaku.o
 
 MAKE = make -r
 PRE_MAKE = mkdir -p target/bin && mkdir -p target/obj/lib
