@@ -213,4 +213,4 @@ asm_cons_putchar:
 	PUSH	DWORD [0x0fec]
 	CALL	cons_putchar
 	ADD		ESP,12
-	RET
+	RETF
