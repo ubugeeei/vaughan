@@ -40,7 +40,7 @@ target/app/hlt.hrb : src/app/hlt.nas Makefile
 
 target/haribote.img : $(TARGET_PATH)/bin/ipl10.bin $(TARGET_PATH)/haribote.sys $(TARGET_PATH)/app/hlt.hrb Makefile
 	mformat -f 1440 -C -B $(TARGET_PATH)/bin/ipl10.bin -i $@ ::
-	mcopy -i $(TARGET_PATH)/haribote.img $(TARGET_PATH)/haribote.sys $(TARGET_PATH)/app/hlt.hrb ::
+	mcopy -i $(TARGET_PATH)/haribote.img $(TARGET_PATH)/haribote.sys $(TARGET_PATH)/app/hlt.hrb static/main.c ::
 
 $(OBJ_PATH)/%.o : src/%.c
 	$(CC) $(CFLAGS) -c src/$*.c -o $(OBJ_PATH)/$*.o
