@@ -11,6 +11,7 @@ void console_task(struct SHEET *sheet, unsigned int memtotal) {
     cons.cur_x = 8;
     cons.cur_y = 28;
     cons.cur_c = -1;
+    *((int *)0x0fec) = (int)&cons;
 
     queue32_init(&task->queue, 128, queue_buf, task);
     timer = timer_alloc();

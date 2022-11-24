@@ -30,7 +30,7 @@ $(OBJ_PATH)/naskfunc.o : src/asm/naskfunc.nas
 	nasm -g -f elf $< -o $@ -l $(TARGET_PATH)/naskfunc.lst
 
 target/boot.hrb : $(OBJS_boot) hrb.ld
-	$(CC) $(CFLAGS) -march=i486 -nostdlib -T hrb.ld -g $(OBJS_boot) -o $@
+	$(CC) $(CFLAGS) -march=i486 -nostdlib -T hrb.ld -Xlinker -Map=$(TARGET_PATH)/boot.map -g $(OBJS_boot) -o $@
 
 target/haribote.sys : $(TARGET_PATH)/bin/asmhead.bin $(TARGET_PATH)/boot.hrb Makefile
 	cat $(TARGET_PATH)/bin/asmhead.bin $(TARGET_PATH)/boot.hrb > $(TARGET_PATH)/haribote.sys
