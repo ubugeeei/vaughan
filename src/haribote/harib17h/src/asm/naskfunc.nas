@@ -10,10 +10,10 @@ GLOBAL  load_tr
 GLOBAL	asm_inthandler20, asm_inthandler21, asm_inthandler27, asm_inthandler2c
 GLOBAL	memtest_sub
 GLOBAL  farjmp, farcall
-GLOBAL	asm_cons_putchar
+GLOBAL	asm_hrb_api
 
 EXTERN	inthandler20, inthandler21, inthandler27, inthandler2c
-EXTERN	cons_putchar
+EXTERN	hrb_api
 
 [SECTION .text]
 
@@ -209,14 +209,11 @@ mts_fin:
 	POP	EDI
 	RET
 
-asm_cons_putchar:
+asm_hrb_api:
 	STI
 	PUSHAD
-	PUSH	1
-	AND		EAX,0xff
-	PUSH	EAX
-	PUSH	DWORD [0x0fec]
-	CALL	cons_putchar
-	ADD		ESP,12
+	PUSHAD
+	CALL	hrb_api
+	ADD		ESP,32
 	POPAD
 	IRETD
