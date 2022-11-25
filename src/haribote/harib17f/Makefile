@@ -35,12 +35,12 @@ target/boot.hrb : $(OBJS_boot) hrb.ld
 target/haribote.sys : $(TARGET_PATH)/bin/asmhead.bin $(TARGET_PATH)/boot.hrb Makefile
 	cat $(TARGET_PATH)/bin/asmhead.bin $(TARGET_PATH)/boot.hrb > $(TARGET_PATH)/haribote.sys
 
-target/app/hlt.hrb : src/app/hlt.nas Makefile
-	nasm $< -o $@ -l $(TARGET_PATH)/app/hlt.lst
+target/app/hello.hrb : src/app/hello.nas Makefile
+	nasm $< -o $@ -l $(TARGET_PATH)/app/hello.lst
 
-target/haribote.img : $(TARGET_PATH)/bin/ipl10.bin $(TARGET_PATH)/haribote.sys $(TARGET_PATH)/app/hlt.hrb Makefile
+target/haribote.img : $(TARGET_PATH)/bin/ipl10.bin $(TARGET_PATH)/haribote.sys $(TARGET_PATH)/app/hello.hrb Makefile
 	mformat -f 1440 -C -B $(TARGET_PATH)/bin/ipl10.bin -i $@ ::
-	mcopy -i $(TARGET_PATH)/haribote.img $(TARGET_PATH)/haribote.sys $(TARGET_PATH)/app/hlt.hrb static/main.c ::
+	mcopy -i $(TARGET_PATH)/haribote.img $(TARGET_PATH)/haribote.sys $(TARGET_PATH)/app/hello.hrb static/main.c ::
 
 $(OBJ_PATH)/%.o : src/%.c
 	$(CC) $(CFLAGS) -c src/$*.c -o $(OBJ_PATH)/$*.o
