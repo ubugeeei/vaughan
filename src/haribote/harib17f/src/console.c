@@ -17,7 +17,7 @@ void console_task(struct SHEET *sheet, unsigned int memtotal) {
     timer = timer_alloc();
     timer_init(timer, &task->queue, 1);
     timer_settime(timer, 50);
-    file_read_fat(fat, (unsigned char *)(ADR_DISKIMG + 0x000200));
+    file_read_fat(fat, (unsigned char *)(ADR_DISK_IMG + 0x000200));
 
     cons_putchar(&cons, '>', 1);
 
@@ -186,7 +186,7 @@ void cmd_clear(struct CONSOLE *cons) {
 }
 
 void cmd_ls(struct CONSOLE *cons) {
-    struct FILEINFO *finfo = (struct FILEINFO *)(ADR_DISKIMG + 0x002600);
+    struct FILEINFO *finfo = (struct FILEINFO *)(ADR_DISK_IMG + 0x002600);
     int i, j;
     char s[30];
     for (i = 0; i < 224; i++) {
@@ -215,14 +215,14 @@ void cmd_ls(struct CONSOLE *cons) {
 void cmd_cat(struct CONSOLE *cons, int *fat, char *cmdline) {
     struct MEMMAN *memman = (struct MEMMAN *)MEMMAN_ADDR;
     struct FILEINFO *finfo = file_search(
-        cmdline + 4, (struct FILEINFO *)(ADR_DISKIMG + 0x002600), 224);
+        cmdline + 4, (struct FILEINFO *)(ADR_DISK_IMG + 0x002600), 224);
     char *p;
     int i;
 
     if (finfo != 0) {
         p = (char *)memman_alloc_4k(memman, finfo->size);
-        file_load_file(finfo->clustno, finfo->size, p, fat,
-                       (char *)(ADR_DISKIMG + 0x003e00));
+        file_load_file(finfo->cluster_num, finfo->size, p, fat,
+                       (char *)(ADR_DISK_IMG + 0x003e00));
         for (i = 0; i < finfo->size; i++) {
             cons_putchar(cons, p[i], 1);
         }
@@ -251,7 +251,7 @@ int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline) {
     }
     name[i] = 0;
 
-    finfo = file_search(name, (struct FILEINFO *)(ADR_DISKIMG + 0x002600), 224);
+    finfo = file_search(name, (struct FILEINFO *)(ADR_DISK_IMG + 0x002600), 224);
 
     if (finfo == 0 && name[i - 1] != '.') {
         name[i] = '.';
@@ -260,13 +260,13 @@ int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline) {
         name[i + 3] = 'B';
         name[i + 4] = 0;
         finfo =
-            file_search(name, (struct FILEINFO *)(ADR_DISKIMG + 0x002600), 224);
+            file_search(name, (struct FILEINFO *)(ADR_DISK_IMG + 0x002600), 224);
     }
 
     if (finfo != 0) {
         p = (char *)memman_alloc_4k(memman, finfo->size);
-        file_load_file(finfo->clustno, finfo->size, p, fat,
-                      (char *)(ADR_DISKIMG + 0x003e00));
+        file_load_file(finfo->cluster_num, finfo->size, p, fat,
+                      (char *)(ADR_DISK_IMG + 0x003e00));
         set_segmdesc(gdt + 1003, finfo->size - 1, (int)p, AR_CODE32_ER);
         farcall(0, 1003 * 8);
         memman_free_4k(memman, (int)p, finfo->size);

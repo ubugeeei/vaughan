@@ -10,21 +10,21 @@ void file_read_fat(int *fat, unsigned char *img) {
     return;
 }
 
-void file_load_file(int clustno, int size, char *buf, int *fat, char *img) {
+void file_load_file(int cluster_num, int size, char *buf, int *fat, char *img) {
     int i;
     for (;;) {
         if (size <= 512) {
             for (i = 0; i < size; i++) {
-                buf[i] = img[clustno * 512 + i];
+                buf[i] = img[cluster_num * 512 + i];
             }
             break;
         }
         for (i = 0; i < 512; i++) {
-            buf[i] = img[clustno * 512 + i];
+            buf[i] = img[cluster_num * 512 + i];
         }
         size -= 512;
         buf += 512;
-        clustno = fat[clustno];
+        cluster_num = fat[cluster_num];
     }
     return;
 }

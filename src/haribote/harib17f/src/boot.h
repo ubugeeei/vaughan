@@ -12,7 +12,7 @@ struct BOOTINFO {
     char *vram;
 };
 #define ADR_BOOTINFO 0x00000ff0
-#define ADR_DISKIMG 0x00100000
+#define ADR_DISK_IMG 0x00100000
 
 /* naskfunc.nas */
 void io_hlt(void);
@@ -261,9 +261,9 @@ int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline);
 struct FILEINFO {
     unsigned char name[8], ext[3], type;
     char reserve[10];
-    unsigned short time, date, clustno;
+    unsigned short time, date, cluster_num;
     unsigned int size;
 };
 void file_read_fat(int *fat, unsigned char *img);
-void file_load_file(int clustno, int size, char *buf, int *fat, char *img);
+void file_load_file(int cluster_num, int size, char *buf, int *fat, char *img);
 struct FILEINFO *file_search(char *name, struct FILEINFO *finfo, int max);
