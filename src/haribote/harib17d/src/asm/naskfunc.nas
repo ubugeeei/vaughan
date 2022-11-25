@@ -9,7 +9,7 @@ GLOBAL	load_cr0, store_cr0
 GLOBAL  load_tr
 GLOBAL	asm_inthandler20, asm_inthandler21, asm_inthandler27, asm_inthandler2c
 GLOBAL	memtest_sub
-GLOBAL  farjmp
+GLOBAL  farjmp, farcall
 GLOBAL	asm_cons_putchar
 
 EXTERN	inthandler20, inthandler21, inthandler27, inthandler2c
@@ -171,6 +171,9 @@ asm_inthandler2c:
 
 farjmp: ; void farjmp(int eip, int cs);
 		JMP FAR [ESP+4]
+		RET
+farcall:
+		CALL	FAR [ESP+4]
 		RET
 
 memtest_sub:	; unsigned int memtest_sub(unsigned int start, unsigned int end)
