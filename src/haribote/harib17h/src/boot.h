@@ -248,6 +248,8 @@ struct CONSOLE {
 };
 void console_task(struct SHEET *sheet, unsigned int memtotal);
 void cons_putchar(struct CONSOLE *cons, int chr, char move);
+void cons_putstr0(struct CONSOLE *cons, char *s);
+void cons_putstr1(struct CONSOLE *cons, char *s, int l);
 void cons_newline(struct CONSOLE *cons);
 void cons_run_cmd(char *cmdline, struct CONSOLE *cons, int *fat,
                   unsigned int memtotal);
