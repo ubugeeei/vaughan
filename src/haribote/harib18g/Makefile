@@ -71,9 +71,9 @@ target/app/a.hrb : $(OBJ_PATH)/app/a.o $(OBJ_PATH)/app/a_nask.o src/app/app.ld
 	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/a.o $(OBJ_PATH)/app/a_nask.o -o $@
 target/app/hello3.hrb : $(OBJ_PATH)/app/hello3.o $(OBJ_PATH)/app/a_nask.o src/app/app.ld 
 	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/hello3.o $(OBJ_PATH)/app/a_nask.o -o $@
-target/app/crack1.hrb : $(OBJ_PATH)/app/crack1.o src/app/app.ld 
-	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/crack1.o -o $@
-target/app/crack2.hrb : src/app/crack2.nas Makefile
+target/app/crack1.hrb : $(OBJ_PATH)/app/crack1.o $(OBJ_PATH)/app/a_nask.o src/app/app.ld 
+	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/crack1.o $(OBJ_PATH)/app/a_nask.o -o $@
+target/app/crack2.hrb : src/app/crack2.nas $(OBJ_PATH)/app/a_nask.o Makefile
 	nasm $< -o $@ -l $(TARGET_PATH)/app/crack2.lst
 $(OBJ_PATH)/app/%.o : src/app/%.c
 	$(CC) $(CFLAGS) -c src/app/$*.c -o $(OBJ_PATH)/app/$*.o
