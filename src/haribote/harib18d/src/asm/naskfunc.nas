@@ -11,6 +11,7 @@ GLOBAL	asm_inthandler20, asm_inthandler21, asm_inthandler27, asm_inthandler2c
 GLOBAL	memtest_sub
 GLOBAL  farjmp, farcall
 GLOBAL	asm_hrb_api
+GLOBAL	start_app
 
 EXTERN	inthandler20, inthandler21, inthandler27, inthandler2c
 EXTERN	hrb_api
@@ -210,10 +211,78 @@ mts_fin:
 	RET
 
 asm_hrb_api:
-	STI
-	PUSHAD
-	PUSHAD
-	CALL	hrb_api
-	ADD		ESP,32
-	POPAD
-	IRETD
+		PUSH	DS
+		PUSH	ES
+		PUSHAD
+		MOV		EAX,1*8
+		MOV		DS,AX
+		MOV		ECX,[0xfe4]
+		ADD		ECX,-40
+		MOV		[ECX+32],ESP
+		MOV		[ECX+36],SS
+
+		MOV		EDX,[ESP]
+		MOV		EBX,[ESP+4]
+		MOV		[ECX],EDX
+		MOV		[ECX+4],EBX
+		MOV		EDX,[ESP+8]
+		MOV		EBX,[ESP+12]
+		MOV		[ECX+8],EDX
+		MOV		[ECX+12],EBX
+		MOV		EDX,[ESP+16]
+		MOV		EBX,[ESP+20]
+		MOV		[ECX+16],EDX
+		MOV		[ECX+20],EBX
+		MOV		EDX,[ESP+24]
+		MOV		EBX,[ESP+28]
+		MOV		[ECX+24],EDX
+		MOV		[ECX+28],EBX
+
+		MOV		ES,AX
+		MOV		SS,AX
+		MOV		ESP,ECX
+		STI
+
+		CALL	hrb_api
+
+		MOV		ECX,[ESP+32]
+		MOV		EAX,[ESP+36]
+		CLI
+		MOV		SS,AX
+		MOV		ESP,ECX
+		POPAD
+		POP		ES
+		POP		DS
+		IRETD
+
+start_app:
+		PUSHAD
+		MOV		EAX,[ESP+36]
+		MOV		ECX,[ESP+40]
+		MOV		EDX,[ESP+44]
+		MOV		EBX,[ESP+48]
+		MOV		[0xfe4],ESP
+		CLI
+		MOV		ES,BX
+		MOV		SS,BX
+		MOV		DS,BX
+		MOV		FS,BX
+		MOV		GS,BX
+		MOV		ESP,EDX
+		STI
+		PUSH	ECX	
+		PUSH	EAX
+		CALL	FAR [ESP]
+
+
+		MOV		EAX,1*8
+		CLI
+		MOV		ES,AX
+		MOV		SS,AX
+		MOV		DS,AX
+		MOV		FS,AX
+		MOV		GS,AX
+		MOV		ESP,[0xfe4]
+		STI
+		POPAD
+		RET
