@@ -30,9 +30,9 @@ src_only :
 
 
 # os img
-target/haribote.img : $(TARGET_PATH)/bin/ipl10.bin $(TARGET_PATH)/haribote.sys $(TARGET_PATH)/app/hello.hrb $(TARGET_PATH)/app/hello2.hrb $(TARGET_PATH)/app/a.hrb $(TARGET_PATH)/app/hello3.hrb $(TARGET_PATH)/app/crack1.hrb $(TARGET_PATH)/app/crack2.hrb Makefile
+target/haribote.img : $(TARGET_PATH)/bin/ipl10.bin $(TARGET_PATH)/haribote.sys $(TARGET_PATH)/app/hello.hrb $(TARGET_PATH)/app/hello2.hrb $(TARGET_PATH)/app/a.hrb $(TARGET_PATH)/app/hello3.hrb $(TARGET_PATH)/app/crack1.hrb $(TARGET_PATH)/app/crack2.hrb $(TARGET_PATH)/app/crack3.hrb Makefile
 	mformat -f 1440 -C -B $(TARGET_PATH)/bin/ipl10.bin -i $@ ::
-	mcopy -i $(TARGET_PATH)/haribote.img $(TARGET_PATH)/haribote.sys $(TARGET_PATH)/app/hello.hrb $(TARGET_PATH)/app/hello2.hrb $(TARGET_PATH)/app/a.hrb $(TARGET_PATH)/app/hello3.hrb $(TARGET_PATH)/app/crack1.hrb $(TARGET_PATH)/app/crack2.hrb static/main.c ::
+	mcopy -i $(TARGET_PATH)/haribote.img $(TARGET_PATH)/haribote.sys $(TARGET_PATH)/app/hello.hrb $(TARGET_PATH)/app/hello2.hrb $(TARGET_PATH)/app/a.hrb $(TARGET_PATH)/app/hello3.hrb $(TARGET_PATH)/app/crack1.hrb $(TARGET_PATH)/app/crack2.hrb $(TARGET_PATH)/app/crack3.hrb static/main.c ::
 
 
 
@@ -75,6 +75,8 @@ target/app/crack1.hrb : $(OBJ_PATH)/app/crack1.o $(OBJ_PATH)/app/a_nask.o src/ap
 	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/crack1.o $(OBJ_PATH)/app/a_nask.o -o $@
 target/app/crack2.hrb : src/app/crack2.nas $(OBJ_PATH)/app/a_nask.o Makefile
 	nasm $< -o $@ -l $(TARGET_PATH)/app/crack2.lst
+target/app/crack3.hrb : src/app/crack3.nas $(OBJ_PATH)/app/a_nask.o Makefile
+	nasm $< -o $@ -l $(TARGET_PATH)/app/crack3.lst
 $(OBJ_PATH)/app/%.o : src/app/%.c
 	$(CC) $(CFLAGS) -c src/app/$*.c -o $(OBJ_PATH)/app/$*.o
 $(OBJ_PATH)/app/%.o : src/app/%.nas
