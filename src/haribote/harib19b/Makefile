@@ -42,6 +42,7 @@ APPS = $(TARGET_PATH)/app/hello.hrb \
 		$(TARGET_PATH)/app/crack4.hrb \
 		$(TARGET_PATH)/app/crack5.hrb \
 		$(TARGET_PATH)/app/crack6.hrb \
+		$(TARGET_PATH)/app/bug1.hrb \
 
 
 # Commands
