@@ -81,13 +81,13 @@ $(OBJ_PATH)/lib/%.o : src/lib/%.c
 
 
 # Build
-target/bin/ipl10.bin : src/asm/ipl10.nas
+target/bin/ipl10.bin : src/asm/ipl10.nasm
 	nasm $< -o $@ -l $(TARGET_PATH)/ipl10.lst
 
-target/bin/asmhead.bin : src/asm/asmhead.nas
+target/bin/asmhead.bin : src/asm/asmhead.nasm
 	nasm $< -o $@ -l $(TARGET_PATH)/asmhead.lst
 
-$(OBJ_PATH)/naskfunc.o : src/asm/naskfunc.nas 
+$(OBJ_PATH)/naskfunc.o : src/asm/naskfunc.nasm 
 	nasm -g -f elf $< -o $@ -l $(TARGET_PATH)/naskfunc.lst
 
 target/boot.hrb : $(OBJS_boot) hrb.ld
@@ -103,11 +103,11 @@ $(OBJ_PATH)/%.o : src/%.c
 $(TARGET_PATH)/app/%.hrb : $(OBJ_PATH)/app/%.o $(OBJ_PATH)/app/a_nask.o src/app/app.ld
 	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/$*.o $(OBJ_PATH)/app/a_nask.o -o $@
 
-$(TARGET_PATH)/app/%.hrb : src/app/%.nas	
+$(TARGET_PATH)/app/%.hrb : src/app/%.nasm	
 	nasm $< -o $@ -l $(TARGET_PATH)/app/$*.lst
 
 $(OBJ_PATH)/app/%.o : src/app/%.c
 	$(CC) $(CFLAGS) -c src/app/$*.c -o $(OBJ_PATH)/app/$*.o
 
-$(OBJ_PATH)/app/%.o : src/app/%.nas
-	nasm -g -f elf src/app/$*.nas -o $(OBJ_PATH)/app/$*.o -l $(TARGET_PATH)/app/$*.lst
+$(OBJ_PATH)/app/%.o : src/app/%.nasm
+	nasm -g -f elf src/app/$*.nasm -o $(OBJ_PATH)/app/$*.o -l $(TARGET_PATH)/app/$*.lst
