@@ -41,6 +41,7 @@ APPS = $(TARGET_PATH)/app/hello.hrb \
 		$(TARGET_PATH)/app/crack3.hrb \
 		$(TARGET_PATH)/app/crack4.hrb \
 		$(TARGET_PATH)/app/crack5.hrb \
+		$(TARGET_PATH)/app/crack6.hrb \
 
 
 # Commands
@@ -106,6 +107,6 @@ $(TARGET_PATH)/app/%.hrb : src/app/%.nas
 
 $(OBJ_PATH)/app/%.o : src/app/%.c
 	$(CC) $(CFLAGS) -c src/app/$*.c -o $(OBJ_PATH)/app/$*.o
-	
+
 $(OBJ_PATH)/app/%.o : src/app/%.nas
 	nasm -g -f elf src/app/$*.nas -o $(OBJ_PATH)/app/$*.o -l $(TARGET_PATH)/app/$*.lst
