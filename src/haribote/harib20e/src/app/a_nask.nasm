@@ -1,7 +1,7 @@
 [BITS 32]
 	GLOBAL	api_putchar, api_putstr0
 	GLOBAL	api_end
-	GLOBAL	api_openwin, api_putstrwin, api_boxfilwin, api_point, api_refreshwin, api_linewin
+	GLOBAL	api_openwin, api_closewin, api_putstrwin, api_boxfilwin, api_point, api_refreshwin, api_linewin
 	GLOBAL	api_initmalloc, api_malloc, api_free
 
 [SECTION .text]
@@ -157,4 +157,12 @@ api_linewin:
 	POP		EBP
 	POP		ESI
 	POP		EDI
+	RET
+
+api_closewin:
+	PUSH	EBX
+	MOV		EDX,14
+	MOV		EBX,[ESP+8] ; win
+	INT		0x40
+	POP		EBX
 	RET
