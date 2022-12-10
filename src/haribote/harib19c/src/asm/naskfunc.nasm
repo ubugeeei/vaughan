@@ -11,7 +11,7 @@ GLOBAL	asm_inthandler20, asm_inthandler21, asm_inthandler27, asm_inthandler2c, a
 GLOBAL	memtest_sub
 GLOBAL  farjmp, farcall
 GLOBAL	asm_hrb_api
-GLOBAL	start_app
+GLOBAL	start_app, asm_end_app
 
 EXTERN	inthandler0c, inthandler0d, inthandler20, inthandler21, inthandler27, inthandler2c
 EXTERN	hrb_api
@@ -182,7 +182,7 @@ asm_inthandler0c:
 		MOV		ES,AX
 		CALL	inthandler0c
 		CMP		EAX,0
-		JNE		end_app
+		JNE		asm_end_app
 		POP		EAX
 		POPAD
 		POP		DS
@@ -202,7 +202,7 @@ asm_inthandler0d:
 		MOV		ES,AX
 		CALL	inthandler0d
 		CMP		EAX,0
-		JNE		end_app
+		JNE		asm_end_app
 		POP		EAX
 		POPAD
 		POP		DS
@@ -261,15 +261,16 @@ asm_hrb_api:
 		MOV		ES,AX
 		CALL	hrb_api
 		CMP		EAX,0
-		JNE		end_app
+		JNE		asm_end_app
 		ADD		ESP,32
 		POPAD
 		POP		ES
 		POP		DS
 		IRETD
 
-end_app:
+asm_end_app:
 		MOV		ESP,[EAX]
+		MOV		DWORD [EAX+4],0
 		POPAD
 		RET
 
