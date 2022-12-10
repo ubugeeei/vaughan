@@ -7,13 +7,13 @@ GLOBAL	io_load_eflags, io_store_eflags
 GLOBAL	load_gdtr, load_idtr
 GLOBAL	load_cr0, store_cr0
 GLOBAL  load_tr
-GLOBAL	asm_inthandler20, asm_inthandler21, asm_inthandler27, asm_inthandler2c, asm_inthandler0d
+GLOBAL	asm_inthandler20, asm_inthandler21, asm_inthandler27, asm_inthandler2c, asm_inthandler0c, asm_inthandler0d
 GLOBAL	memtest_sub
 GLOBAL  farjmp, farcall
 GLOBAL	asm_hrb_api
 GLOBAL	start_app
 
-EXTERN	inthandler0d, inthandler20, inthandler21, inthandler27, inthandler2c
+EXTERN	inthandler0c, inthandler0d, inthandler20, inthandler21, inthandler27, inthandler2c
 EXTERN	hrb_api
 
 [SECTION .text]
@@ -168,6 +168,26 @@ asm_inthandler2c:
 		POPAD
 		POP		DS
 		POP		ES
+		IRETD
+
+asm_inthandler0c:
+		STI
+		PUSH	ES
+		PUSH	DS
+		PUSHAD
+		MOV		EAX,ESP
+		PUSH	EAX
+		MOV		AX,SS
+		MOV		DS,AX
+		MOV		ES,AX
+		CALL	inthandler0c
+		CMP		EAX,0
+		JNE		end_app
+		POP		EAX
+		POPAD
+		POP		DS
+		POP		ES
+		ADD		ESP,4
 		IRETD
 
 asm_inthandler0d:
