@@ -278,7 +278,8 @@ int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline) {
             *((int *)0xfe8) = (int)q;
             set_segmdesc(gdt + 1003, finfo->size - 1, (int)p,
                          AR_CODE32_ER + 0x60);
-            set_segmdesc(gdt + 1004, segment_size - 1, (int)q, AR_DATA32_RW + 0x60);
+            set_segmdesc(gdt + 1004, segment_size - 1, (int)q,
+                         AR_DATA32_RW + 0x60);
             for (i = 0; i < data_size; i++) {
                 q[esp + i] = p[data_hrb + i];
             }
@@ -297,17 +298,32 @@ int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline) {
 
 int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx,
              int eax) {
-    int cs_base = *((int *)0xfe8);
+    int ds_base = *((int *)0xfe8);
     struct TASK *task = task_now();
     struct CONSOLE *cons = (struct CONSOLE *)*((int *)0x0fec);
+    struct SHTCTL *shtctl = (struct SHTCTL *)*((int *)0x0fe4);
+    struct SHEET *sht;
+    int *reg =
+        &eax +
+        1;  // Next address after edx
+            // reg[0] : EDI,   reg[1] : ESI,   reg[2] : EBP,   reg[3] : ESP
+            // reg[4] : EBX,   reg[5] : EDX,   reg[6] : ECX,   reg[7] : EAX
+
     if (edx == 1) {
         cons_putchar(cons, eax & 0xff, 1);
     } else if (edx == 2) {
-        cons_putstr0(cons, (char *)ebx + cs_base);
+        cons_putstr0(cons, (char *)ebx + ds_base);
     } else if (edx == 3) {
-        cons_putstr1(cons, (char *)ebx + cs_base, ecx);
+        cons_putstr1(cons, (char *)ebx + ds_base, ecx);
     } else if (edx == 4) {
         return &(task->tss.esp0);
+    } else if (edx == 5) {
+        sht = sheet_alloc(shtctl);
+        sheet_setbuf(sht, (char *)ebx + ds_base, esi, edi, eax);
+        make_window8((char *)ebx + ds_base, esi, edi, (char *)ecx + ds_base, 0);
+        sheet_slide(sht, 100, 50);
+        sheet_updown(sht, 3);
+        reg[7] = (int)sht;
     }
     return 0;
 }
@@ -331,4 +347,3 @@ int *inthandler0d(int *esp) {
     cons_putstr0(cons, s);
     return &(task->tss.esp0);  // Exception halt
 }
-
