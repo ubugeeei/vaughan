@@ -38,6 +38,7 @@ APPS = \
 		$(TARGET_PATH)/app/hello2.hrb \
 		$(TARGET_PATH)/app/hello3.hrb \
 		$(TARGET_PATH)/app/hello4.hrb \
+		$(TARGET_PATH)/app/hello5.hrb \
 		$(TARGET_PATH)/app/bug1.hrb \
 		$(TARGET_PATH)/app/bug2.hrb \
 		$(TARGET_PATH)/app/bug3.hrb
@@ -98,6 +99,9 @@ $(OBJ_PATH)/%.o : src/%.c
 	$(CC) $(CFLAGS) -c src/$*.c -o $(OBJ_PATH)/$*.o
 
 #  Application
+$(TARGET_PATH)/app/hello5.hrb : $(OBJ_PATH)/app/hello5.o src/app/app.ld
+	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/hello5.o -o $@
+
 $(TARGET_PATH)/app/%.hrb : $(OBJ_PATH)/app/%.o $(OBJ_PATH)/app/a_nask.o src/app/app.ld
 	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/$*.o $(OBJ_PATH)/app/a_nask.o -o $@
 
