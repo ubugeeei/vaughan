@@ -40,7 +40,8 @@ APPS = \
 		$(TARGET_PATH)/app/hello4.hrb \
 		$(TARGET_PATH)/app/hello5.hrb \
 		$(TARGET_PATH)/app/win.hrb \
-		$(TARGET_PATH)/app/win2.hrb
+		$(TARGET_PATH)/app/win2.hrb \
+		$(TARGET_PATH)/app/win3.hrb
 
 
 # Commands
