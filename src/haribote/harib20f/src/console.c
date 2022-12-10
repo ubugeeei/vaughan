@@ -308,6 +308,7 @@ int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx,
         1;  // Next address after edx
             // reg[0] : EDI,   reg[1] : ESI,   reg[2] : EBP,   reg[3] : ESP
             // reg[4] : EBX,   reg[5] : EDX,   reg[6] : ECX,   reg[7] : EAX
+    int i;
 
     if (edx == 1) {
         cons_putchar(cons, eax & 0xff, 1);
@@ -365,6 +366,35 @@ int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx,
         }
     } else if (edx == 14) {
         sheet_free((struct SHEET *)ebx);
+    } else if (edx == 15) {
+        for (;;) {
+            io_cli();
+            if (queue32_status(&task->queue) == 0) {
+                if (eax != 0) {
+                    task_sleep(task);
+                } else {
+                    io_sti();
+                    reg[7] = -1;
+                    return 0;
+                }
+            }
+            i = queue32_get(&task->queue);
+            io_sti();
+            if (i <= 1) {
+                timer_init(cons->timer, &task->queue, 1);
+                timer_settime(cons->timer, 50);
+            }
+            if (i == 2) {
+                cons->cur_c = COL8_FFFFFF;
+            }
+            if (i == 3) {
+                cons->cur_c = -1;
+            }
+            if (256 <= i && i <= 511) {
+                reg[7] = i - 256;
+                return 0;
+            }
+        }
     }
     return 0;
 }

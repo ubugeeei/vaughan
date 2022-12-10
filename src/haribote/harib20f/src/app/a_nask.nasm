@@ -3,6 +3,7 @@
 	GLOBAL	api_end
 	GLOBAL	api_openwin, api_closewin, api_putstrwin, api_boxfilwin, api_point, api_refreshwin, api_linewin
 	GLOBAL	api_initmalloc, api_malloc, api_free
+	GLOBAL	api_getkey
 
 [SECTION .text]
 
@@ -165,4 +166,10 @@ api_closewin:
 	MOV		EBX,[ESP+8] ; win
 	INT		0x40
 	POP		EBX
+	RET
+
+api_getkey:
+	MOV		EDX,15
+	MOV		EAX,[ESP+4] ; mode
+	INT		0x40
 	RET
