@@ -270,7 +270,7 @@ int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline) {
         q = (char *)memman_alloc_4k(memman, 64 * 1024);
         *((int *)0xfe8) = (int)p;
         file_load_file(finfo->cluster_num, finfo->size, p, fat,
-                      (char *)(ADR_DISK_IMG + 0x003e00));
+                       (char *)(ADR_DISK_IMG + 0x003e00));
         set_segmdesc(gdt + 1003, finfo->size - 1, (int)p, AR_CODE32_ER + 0x60);
         set_segmdesc(gdt + 1004, 64 * 1024 - 1, (int)q, AR_DATA32_RW + 0x60);
         if (finfo->size >= 8 && strncmp(p + 4, "Hari", 4) == 0) {
