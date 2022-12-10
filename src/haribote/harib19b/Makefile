@@ -36,12 +36,6 @@ APPS = $(TARGET_PATH)/app/hello.hrb \
 		$(TARGET_PATH)/app/hello2.hrb \
 		$(TARGET_PATH)/app/a.hrb \
 		$(TARGET_PATH)/app/hello3.hrb \
-		$(TARGET_PATH)/app/crack1.hrb \
-		$(TARGET_PATH)/app/crack2.hrb \
-		$(TARGET_PATH)/app/crack3.hrb \
-		$(TARGET_PATH)/app/crack4.hrb \
-		$(TARGET_PATH)/app/crack5.hrb \
-		$(TARGET_PATH)/app/crack6.hrb \
 		$(TARGET_PATH)/app/bug1.hrb \
 
 
