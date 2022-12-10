@@ -32,10 +32,12 @@ OBJS_boot = $(OBJ_PATH)/boot.o \
 	$(OBJ_PATH)/lib/strcmp.o \
 	$(OBJ_PATH)/lib/hankaku.o
 
-APPS = $(TARGET_PATH)/app/hello.hrb \
-		$(TARGET_PATH)/app/hello2.hrb \
+APPS = \
 		$(TARGET_PATH)/app/a.hrb \
+		$(TARGET_PATH)/app/hello.hrb \
+		$(TARGET_PATH)/app/hello2.hrb \
 		$(TARGET_PATH)/app/hello3.hrb \
+		$(TARGET_PATH)/app/hello4.hrb \
 		$(TARGET_PATH)/app/bug1.hrb \
 		$(TARGET_PATH)/app/bug2.hrb \
 		$(TARGET_PATH)/app/bug3.hrb
