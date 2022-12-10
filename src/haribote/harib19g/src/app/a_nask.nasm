@@ -1,7 +1,7 @@
 [BITS 32]
 	GLOBAL	api_putchar, api_putstr0
 	GLOBAL	api_end
-	GLOBAL	api_openwin
+	GLOBAL	api_openwin, api_putstrwin, api_boxfilwin
 
 [SECTION .text]
 
@@ -35,6 +35,44 @@ api_openwin:
 	MOV		ECX,[ESP+32] ; title
 	INT		0x40
 	POP		EBX
+	POP		ESI
+	POP		EDI
+	RET
+
+api_putstrwin:
+	PUSH	EDI
+	PUSH	ESI
+	PUSH	EBP
+	PUSH	EBX
+	MOV		EDX,6
+	MOV		EBX,[ESP+20] ; win
+	MOV		ESI,[ESP+24] ; x
+	MOV		EDI,[ESP+28] ; y
+	MOV		EAX,[ESP+32] ; col
+	MOV		ECX,[ESP+36] ; len
+	MOV		EBP,[ESP+40] ; str
+	INT		0x40
+	POP		EBX
+	POP		EBP
+	POP		ESI
+	POP		EDI
+	RET
+
+api_boxfilwin:
+	PUSH	EDI
+	PUSH	ESI
+	PUSH	EBP
+	PUSH	EBX
+	MOV		EDX,7
+	MOV		EBX,[ESP+20] ; win
+	MOV		EAX,[ESP+24] ; x0
+	MOV		ECX,[ESP+28] ; y0
+	MOV		ESI,[ESP+32] ; x1
+	MOV		EDI,[ESP+36] ; y1
+	MOV		EBP,[ESP+40] ; col
+	INT		0x40
+	POP		EBX
+	POP		EBP
 	POP		ESI
 	POP		EDI
 	RET

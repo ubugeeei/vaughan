@@ -42,7 +42,8 @@ APPS = \
 		$(TARGET_PATH)/app/bug1.hrb \
 		$(TARGET_PATH)/app/bug2.hrb \
 		$(TARGET_PATH)/app/bug3.hrb \
-		$(TARGET_PATH)/app/winhello.hrb
+		$(TARGET_PATH)/app/win.hrb \
+		$(TARGET_PATH)/app/win2.hrb
 
 
 # Commands
