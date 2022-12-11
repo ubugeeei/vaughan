@@ -279,6 +279,14 @@ void Boot(void) {
                                     y < sht->bysize) {
                                     if (sht->buf[y * sht->bxsize + x] !=
                                         sht->col_inv) {
+                                        if (sht != key_win) {
+                                            cursor_c =
+                                                keywin_off(key_win, sht_win,
+                                                           cursor_c, cursor_x);
+                                            key_win = sht;
+                                            cursor_c = keywin_on(
+                                                key_win, sht_win, cursor_c);
+                                        }
                                         sheet_updown(sht, shtctl->top - 1);
                                         if (3 <= x && x < sht->bxsize - 3 &&
                                             3 <= y && y < 21) {
