@@ -2,6 +2,10 @@
 
 #define KEYCMD_LED 0xed
 
+int keywin_off(struct SHEET *key_win, struct SHEET *sht_win, int cur_c,
+               int cur_x);
+int keywin_on(struct SHEET *key_win, struct SHEET *sht_win, int cur_c);
+
 void Boot(void) {
     struct BOOTINFO *binfo = (struct BOOTINFO *)ADR_BOOTINFO;
     struct SHTCTL *shtctl;
@@ -42,7 +46,7 @@ void Boot(void) {
         keycmd_wait = -1;
     struct CONSOLE *cons;
     int j, x, y, mmx = -1, mmy = -1;
-    struct SHEET *sht = 0;
+    struct SHEET *sht = 0, *key_win;
 
     init_gdtidt();
     init_pic();
@@ -116,6 +120,9 @@ void Boot(void) {
     sheet_updown(sht_cons, 1);
     sheet_updown(sht_win, 2);
     sheet_updown(sht_mouse, 3);
+    key_win = sht_win;
+    sht_cons->task = task_cons;
+    sht_cons->flags |= 0x20;
 
     queue32_put(&keycmd, KEYCMD_LED);
     queue32_put(&keycmd, key_leds);
@@ -133,6 +140,10 @@ void Boot(void) {
         } else {
             i = queue32_get(&queue);
             io_sti();
+            if (key_win->flags == 0) {
+                key_win = shtctl->sheets[shtctl->top - 1];
+                cursor_c = keywin_on(key_win, sht_win, cursor_c);
+            }
             if (256 <= i && i <= 511) {
                 if (i < 0x80 + 256) {
                     if (key_shift == 0) {
@@ -150,7 +161,7 @@ void Boot(void) {
                     }
                 }
                 if (s[0] != 0) {
-                    if (key_to == 0) {
+                    if (key_win == sht_win) {
                         if (cursor_x < 128) {
                             s[1] = 0;
                             putfonts8_asc_sht(sht_win, cursor_x, 28,
@@ -158,43 +169,33 @@ void Boot(void) {
                             cursor_x += 8;
                         }
                     } else {
-                        queue32_put(&task_cons->queue, s[0] + 256);
+                        queue32_put(&key_win->task->queue, s[0] + 256);
                     }
                 }
                 if (i == 256 + 0x0e) {
-                    if (key_to == 0) {
+                    if (key_win == sht_win) {
                         if (cursor_x > 8) {
                             putfonts8_asc_sht(sht_win, cursor_x, 28,
                                               COL8_000000, COL8_FFFFFF, " ", 1);
                             cursor_x -= 8;
                         }
                     } else {
-                        queue32_put(&task_cons->queue, 8 + 256);
+                        queue32_put(&key_win->task->queue, 8 + 256);
                     }
                 }
                 if (i == 256 + 0x1c) {
-                    if (key_to != 0) {
-                        queue32_put(&task_cons->queue, 10 + 256);
+                    if (key_win != sht_win) {
+                        queue32_put(&key_win->task->queue, 10 + 256);
                     }
                 }
                 if (i == 256 + 0x0f) {
-                    if (key_to == 0) {
-                        key_to = 1;
-                        make_wtitle8(buf_win, sht_win->bxsize, "task_a", 0);
-                        make_wtitle8(buf_cons, sht_cons->bxsize, "console", 1);
-                        cursor_c = -1;
-                        boxfill8(sht_win->buf, sht_win->bxsize, COL8_FFFFFF,
-                                 cursor_x, 28, cursor_x + 7, 43);
-                        queue32_put(&task_cons->queue, 2);
-                    } else {
-                        key_to = 0;
-                        make_wtitle8(buf_win, sht_win->bxsize, "task_a", 1);
-                        make_wtitle8(buf_cons, sht_cons->bxsize, "console", 0);
-                        cursor_c = COL8_000000;
-                        queue32_put(&task_cons->queue, 3);
+                    cursor_c = keywin_off(key_win, sht_win, cursor_c, cursor_x);
+                    j = key_win->height - 1;
+                    if (j == 0) {
+                        j = shtctl->top - 1;
                     }
-                    sheet_refresh(sht_win, 0, 0, sht_win->bxsize, 21);
-                    sheet_refresh(sht_cons, 0, 0, sht_cons->bxsize, 21);
+                    key_win = shtctl->sheets[j];
+                    cursor_c = keywin_on(key_win, sht_win, cursor_c);
                 }
                 if (i == 256 + 0x2a) {
                     key_shift |= 1;
@@ -214,7 +215,7 @@ void Boot(void) {
                     queue32_put(&keycmd, key_leds);
                 }
                 if (i == 256 + 0x45) {
-                    key_leds ^= 1;
+                    key_leds ^= 2;
                     queue32_put(&keycmd, KEYCMD_LED);
                     queue32_put(&keycmd, key_leds);
                 }
@@ -232,6 +233,9 @@ void Boot(void) {
                     task_cons->tss.eip = (int)asm_end_app;
                     io_sti();
                 }
+                if (i == 256 + 0x58 && shtctl->top > 2) {
+                    sheet_updown(shtctl->sheets[1], shtctl->top - 1);
+                }
                 if (i == 256 + 0xfa) {
                     keycmd_wait = -1;
                 }
@@ -243,10 +247,6 @@ void Boot(void) {
                 if (cursor_c >= 0) {
                     boxfill8(sht_win->buf, sht_win->bxsize, cursor_c, cursor_x,
                              28, cursor_x + 7, 43);
-                }
-
-                if (i == 256 + 0x58 && shtctl->top > 2) {
-                    sheet_updown(shtctl->sheets[1], shtctl->top - 1);
                 }
 
                 sheet_refresh(sht_win, cursor_x, 28, cursor_x + 8, 44);
@@ -285,10 +285,11 @@ void Boot(void) {
                                             mmx = mx;
                                             mmy = my;
                                         }
+
                                         if (sht->bxsize - 21 <= x &&
                                             x < sht->bxsize - 5 && 5 <= y &&
                                             y < 19) {
-                                            if (sht->task != 0) {
+                                            if ((sht->flags & 0x10) != 0) {
                                                 cons = (struct CONSOLE *)*(
                                                     (int *)0x0fec);
                                                 cons_putstr0(
@@ -337,4 +338,31 @@ void Boot(void) {
             }
         }
     }
+}
+
+int keywin_off(struct SHEET *key_win, struct SHEET *sht_win, int cur_c,
+               int cur_x) {
+    change_wtitle8(key_win, 0);
+    if (key_win == sht_win) {
+        cur_c = -1;
+        boxfill8(sht_win->buf, sht_win->bxsize, COL8_FFFFFF, cur_x, 28,
+                 cur_x + 7, 43);
+    } else {
+        if ((key_win->flags & 0x20) != 0) {
+            queue32_put(&key_win->task->queue, 3);
+        }
+    }
+    return cur_c;
+}
+
+int keywin_on(struct SHEET *key_win, struct SHEET *sht_win, int cur_c) {
+    change_wtitle8(key_win, 1);
+    if (key_win == sht_win) {
+        cur_c = COL8_000000;
+    } else {
+        if ((key_win->flags & 0x20) != 0) {
+            queue32_put(&key_win->task->queue, 2);
+        }
+    }
+    return cur_c;
 }
