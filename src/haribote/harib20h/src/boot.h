@@ -163,6 +163,7 @@ struct SHEET {
     unsigned char *buf;
     int bxsize, bysize, vx0, vy0, col_inv, height, flags;
     struct SHTCTL *ctl;
+    struct TASK *task;
 };
 struct SHTCTL {
     unsigned char *vram, *map;
@@ -268,7 +269,7 @@ int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx,
 int *inthandler0c(int *esp);
 int *inthandler0d(int *esp);
 void hrb_draw_line_window(struct SHEET *sht, int x0, int y0, int x1, int y1,
-                      int col);
+                          int col);
 
 /** file */
 struct FILEINFO {
