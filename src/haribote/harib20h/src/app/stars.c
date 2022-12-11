@@ -19,7 +19,6 @@ void HariMain(void) {
         y = (rand() % 67) + 26;
         draw_point_window(win, x, y, 3);
     }
-    api_end();
 }
 
 /* https://stackoverflow.com/questions/4768180/rand-implementation/4768194 */
