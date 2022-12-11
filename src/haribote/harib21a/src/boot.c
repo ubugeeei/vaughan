@@ -243,6 +243,10 @@ void Boot(void) {
                              28, cursor_x + 7, 43);
                 }
 
+                if (i == 256 + 0x58 && shtctl->top > 2) {
+                    sheet_updown(shtctl->sheets[1], shtctl->top - 1);
+                }
+
                 sheet_refresh(sht_win, cursor_x, 28, cursor_x + 8, 44);
             } else if (512 <= i && i <= 767) {
                 if (mouse_decode(&mdec, i - 512) != 0) {
