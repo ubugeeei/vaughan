@@ -360,7 +360,7 @@ int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx,
         sheet_refresh(sht, eax, ecx, esi, edi);
     } else if (edx == 13) {
         sht = (struct SHEET *)(ebx & 0xfffffffe);
-        hrb_api_linewin(sht, eax, ecx, esi, edi, ebp);
+        hrb_draw_line_window(sht, eax, ecx, esi, edi, ebp);
         if ((ebx & 1) == 0) {
             sheet_refresh(sht, eax, ecx, esi + 1, edi + 1);
         }
@@ -419,7 +419,7 @@ int *inthandler0d(int *esp) {
     return &(task->tss.esp0);  // Exception halt
 }
 
-void hrb_api_linewin(struct SHEET *sht, int x0, int y0, int x1, int y1,
+void hrb_draw_line_window(struct SHEET *sht, int x0, int y0, int x1, int y1,
                      int col) {
     int i, x, y, len, dx, dy;
 

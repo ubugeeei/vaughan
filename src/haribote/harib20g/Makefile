@@ -107,8 +107,8 @@ $(OBJ_PATH)/%.o : src/%.c
 $(TARGET_PATH)/app/hello5.hrb : $(OBJ_PATH)/app/hello5.o src/app/app.ld
 	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/hello5.o -o $@
 
-$(TARGET_PATH)/app/%.hrb : $(OBJ_PATH)/app/%.o $(OBJ_PATH)/app/a_nask.o src/app/app.ld
-	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/$*.o $(OBJ_PATH)/app/a_nask.o -o $@
+$(TARGET_PATH)/app/%.hrb : $(OBJ_PATH)/app/%.o $(OBJ_PATH)/app/_system_call.o src/app/app.ld
+	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/$*.o $(OBJ_PATH)/app/_system_call.o -o $@
 
 $(TARGET_PATH)/app/%.hrb : src/app/%.nasm	
 	nasm $< -o $@ -l $(TARGET_PATH)/app/$*.lst

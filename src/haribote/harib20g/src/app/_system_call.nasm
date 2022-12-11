@@ -1,31 +1,14 @@
 [BITS 32]
-	GLOBAL	api_putchar, api_putstr0
+	GLOBAL	open, close, putstr_window
+	GLOBAL  box_fill_window, draw_point_window, refresh_window, draw_line_window
+	GLOBAL	putchar, putstr
+	GLOBAL	get_key
+	GLOBAL	init_malloc, malloc, free
 	GLOBAL	api_end
-	GLOBAL	api_openwin, api_closewin, api_putstrwin, api_boxfilwin, api_point, api_refreshwin, api_linewin
-	GLOBAL	api_initmalloc, api_malloc, api_free
-	GLOBAL	api_getkey
 
 [SECTION .text]
 
-api_putchar:
-	MOV		EDX,1
-	MOV	 AL,[ESP+4]
-	INT	 0x40
-	RET
-
-api_putstr0:
-	PUSH	EBX
-	MOV		EDX,2
-	MOV		EBX,[ESP+8] ; s
-	INT		0x40
-	POP		EBX
-	RET
-
-api_end:
-	MOV	 EDX,4
-	INT		0x40
-
-api_openwin:
+open:
 	PUSH	EDI
 	PUSH	ESI
 	PUSH	EBX
@@ -41,7 +24,29 @@ api_openwin:
 	POP		EDI
 	RET
 
-api_putstrwin:
+close:
+	PUSH	EBX
+	MOV		EDX,14
+	MOV		EBX,[ESP+8] ; win
+	INT		0x40
+	POP		EBX
+	RET
+
+putchar:
+	MOV		EDX,1
+	MOV	 AL,[ESP+4]
+	INT	 0x40
+	RET
+
+putstr:
+	PUSH	EBX
+	MOV		EDX,2
+	MOV		EBX,[ESP+8] ; s
+	INT		0x40
+	POP		EBX
+	RET
+
+putstr_window:
 	PUSH	EDI
 	PUSH	ESI
 	PUSH	EBP
@@ -60,7 +65,7 @@ api_putstrwin:
 	POP		EDI
 	RET
 
-api_boxfilwin:
+box_fill_window:
 	PUSH	EDI
 	PUSH	ESI
 	PUSH	EBP
@@ -79,38 +84,7 @@ api_boxfilwin:
 	POP		EDI
 	RET
 
-api_initmalloc:
-	PUSH	EBX
-	MOV		EDX,8
-	MOV		EBX,[CS:0x0020]
-	MOV		EAX,EBX
-	ADD		EAX,32*1024
-	MOV		ECX,[CS:0x0000]
-	SUB		ECX,EAX
-	INT		0x40
-	POP		EBX
-	RET
-
-api_malloc:
-	PUSH	EBX
-	MOV		EDX,9
-	MOV		EBX,[CS:0x0020]
-	MOV		ECX,[ESP+8]
-	INT		0x40
-	POP		EBX
-	RET
-
-api_free:
-	PUSH	EBX
-	MOV		EDX,10
-	MOV		EBX,[CS:0x0020]
-	MOV		EAX,[ESP+ 8]
-	MOV		ECX,[ESP+12]
-	INT		0x40
-	POP		EBX
-	RET
-
-api_point:
+draw_point_window:
 	PUSH	EDI
 	PUSH	ESI
 	PUSH	EBX
@@ -125,23 +99,7 @@ api_point:
 	POP		EDI
 	RET
 
-api_refreshwin:
-	PUSH	EDI
-	PUSH	ESI
-	PUSH	EBX
-	MOV		EDX,12
-	MOV		EBX,[ESP+16] ; win
-	MOV		EAX,[ESP+20] ; x0
-	MOV		ECX,[ESP+24] ; y0
-	MOV		ESI,[ESP+28] ; x1
-	MOV		EDI,[ESP+32] ; y1
-	INT		0x40
-	POP		EBX
-	POP		ESI
-	POP		EDI
-	RET
-
-api_linewin:
+draw_line_window:
 	PUSH	EDI
 	PUSH	ESI
 	PUSH	EBP
@@ -160,16 +118,59 @@ api_linewin:
 	POP		EDI
 	RET
 
-api_closewin:
+refresh_window:
+	PUSH	EDI
+	PUSH	ESI
 	PUSH	EBX
-	MOV		EDX,14
-	MOV		EBX,[ESP+8] ; win
+	MOV		EDX,12
+	MOV		EBX,[ESP+16] ; win
+	MOV		EAX,[ESP+20] ; x0
+	MOV		ECX,[ESP+24] ; y0
+	MOV		ESI,[ESP+28] ; x1
+	MOV		EDI,[ESP+32] ; y1
 	INT		0x40
 	POP		EBX
+	POP		ESI
+	POP		EDI
 	RET
 
-api_getkey:
+get_key:
 	MOV		EDX,15
 	MOV		EAX,[ESP+4] ; mode
 	INT		0x40
 	RET
+
+init_malloc:
+	PUSH	EBX
+	MOV		EDX,8
+	MOV		EBX,[CS:0x0020]
+	MOV		EAX,EBX
+	ADD		EAX,32*1024
+	MOV		ECX,[CS:0x0000]
+	SUB		ECX,EAX
+	INT		0x40
+	POP		EBX
+	RET
+
+malloc:
+	PUSH	EBX
+	MOV		EDX,9
+	MOV		EBX,[CS:0x0020]
+	MOV		ECX,[ESP+8]
+	INT		0x40
+	POP		EBX
+	RET
+
+free:
+	PUSH	EBX
+	MOV		EDX,10
+	MOV		EBX,[CS:0x0020]
+	MOV		EAX,[ESP+ 8]
+	MOV		ECX,[ESP+12]
+	INT		0x40
+	POP		EBX
+	RET
+
+api_end:
+	MOV	 EDX,4
+	INT		0x40
