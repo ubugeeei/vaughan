@@ -4,6 +4,8 @@
 	GLOBAL	putchar, putstr
 	GLOBAL	get_key
 	GLOBAL	init_malloc, malloc, free
+	GLOBAL  alloc_timer, init_timer, set_timeout, api_freetimer
+
 	GLOBAL	api_end
 
 [SECTION .text]
@@ -167,6 +169,37 @@ free:
 	MOV		EBX,[CS:0x0020]
 	MOV		EAX,[ESP+ 8]
 	MOV		ECX,[ESP+12]
+	INT		0x40
+	POP		EBX
+	RET
+
+alloc_timer:
+	MOV		EDX,16
+	INT		0x40
+	RET
+
+init_timer:
+	PUSH	EBX
+	MOV		EDX,17
+	MOV		EBX,[ESP+8] ; timer
+	MOV		EAX,[ESP+12] ; data
+	INT		0x40
+	POP		EBX
+	RET
+
+set_timeout:
+	PUSH	EBX
+	MOV		EDX,18
+	MOV		EBX,[ESP+8] ; timer
+	MOV		EAX,[ESP+12] ; time
+	INT		0x40
+	POP		EBX
+	RET
+
+api_freetimer:
+	PUSH	EBX
+	MOV		EDX,19
+	MOV		EBX,[ESP+8] ; timer
 	INT		0x40
 	POP		EBX
 	RET

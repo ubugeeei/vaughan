@@ -46,7 +46,8 @@ APPS = \
 		$(TARGET_PATH)/app/star1.hrb \
 		$(TARGET_PATH)/app/star2.hrb \
 		$(TARGET_PATH)/app/stars.hrb \
-		$(TARGET_PATH)/app/lines.hrb
+		$(TARGET_PATH)/app/lines.hrb \
+		$(TARGET_PATH)/app/noodle.hrb
 
 
 # Commands
@@ -104,6 +105,9 @@ $(OBJ_PATH)/%.o : src/%.c
 	$(CC) $(CFLAGS) -c src/$*.c -o $(OBJ_PATH)/$*.o
 
 #  Application
+$(TARGET_PATH)/app/noodle.hrb : $(OBJ_PATH)/app/noodle.o src/app/app2.ld $(OBJ_PATH)/app/_system_call.o $(OBJ_PATH)/lib/sprintf.o
+	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app2.ld -g $(OBJ_PATH)/app/noodle.o $(OBJ_PATH)/app/_system_call.o $(OBJ_PATH)/lib/sprintf.o  -o $@
+
 $(TARGET_PATH)/app/hello5.hrb : $(OBJ_PATH)/app/hello5.o src/app/app.ld
 	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/hello5.o -o $@
 
