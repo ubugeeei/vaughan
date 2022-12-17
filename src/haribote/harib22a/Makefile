@@ -106,14 +106,14 @@ $(OBJ_PATH)/%.o : src/%.c
 	$(CC) $(CFLAGS) -c src/$*.c -o $(OBJ_PATH)/$*.o
 
 #  Application
-$(TARGET_PATH)/app/noodle.hrb : $(OBJ_PATH)/app/noodle.o src/app/app2.ld $(OBJ_PATH)/app/_system_call.o $(OBJ_PATH)/lib/sprintf.o
-	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app2.ld -g $(OBJ_PATH)/app/noodle.o $(OBJ_PATH)/app/_system_call.o $(OBJ_PATH)/lib/sprintf.o  -o $@
+$(TARGET_PATH)/app/noodle.hrb : $(OBJ_PATH)/app/noodle.o src/app/app2.ld $(OBJ_PATH)/system_call.o $(OBJ_PATH)/lib/sprintf.o
+	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app2.ld -g $(OBJ_PATH)/app/noodle.o $(OBJ_PATH)/system_call.o $(OBJ_PATH)/lib/sprintf.o  -o $@
 
 $(TARGET_PATH)/app/hello5.hrb : $(OBJ_PATH)/app/hello5.o src/app/app.ld
 	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/hello5.o -o $@
 
-$(TARGET_PATH)/app/%.hrb : $(OBJ_PATH)/app/%.o $(OBJ_PATH)/app/_system_call.o src/app/app.ld
-	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/$*.o $(OBJ_PATH)/app/_system_call.o -o $@
+$(TARGET_PATH)/app/%.hrb : $(OBJ_PATH)/app/%.o $(OBJ_PATH)/system_call.o src/app/app.ld
+	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/$*.o $(OBJ_PATH)/system_call.o -o $@
 
 $(TARGET_PATH)/app/%.hrb : src/app/%.nasm	
 	nasm $< -o $@ -l $(TARGET_PATH)/app/$*.lst
@@ -123,3 +123,6 @@ $(OBJ_PATH)/app/%.o : src/app/%.c
 
 $(OBJ_PATH)/app/%.o : src/app/%.nasm
 	nasm -g -f elf src/app/$*.nasm -o $(OBJ_PATH)/app/$*.o -l $(TARGET_PATH)/app/$*.lst
+
+$(OBJ_PATH)/system_call.o : src/asm/system_call.nasm	
+	nasm -g -f elf src/asm/system_call.nasm -o $(OBJ_PATH)/system_call.o
