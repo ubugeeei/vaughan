@@ -49,7 +49,8 @@ APPS = \
 		$(TARGET_PATH)/app/lines.hrb \
 		$(TARGET_PATH)/app/noodle.hrb \
 		$(TARGET_PATH)/app/beepdown.hrb \
-		$(TARGET_PATH)/app/color.hrb
+		$(TARGET_PATH)/app/color.hrb \
+		$(TARGET_PATH)/app/color2.hrb
 
 
 # Commands
