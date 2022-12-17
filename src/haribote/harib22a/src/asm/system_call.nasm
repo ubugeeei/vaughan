@@ -4,7 +4,7 @@
 	GLOBAL	putchar, putstr
 	GLOBAL	get_key
 	GLOBAL	init_malloc, malloc, free
-	GLOBAL  alloc_timer, init_timer, set_timeout, api_freetimer
+	GLOBAL  alloc_timer, init_timer, set_timeout, clear_timeout
 	GLOBAL  beep
 	GLOBAL	api_end
 
@@ -196,7 +196,7 @@ set_timeout:
 	POP		EBX
 	RET
 
-api_freetimer:
+clear_timeout
 	PUSH	EBX
 	MOV		EDX,19
 	MOV		EBX,[ESP+8] ; timer
