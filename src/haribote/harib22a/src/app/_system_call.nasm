@@ -5,7 +5,7 @@
 	GLOBAL	get_key
 	GLOBAL	init_malloc, malloc, free
 	GLOBAL  alloc_timer, init_timer, set_timeout, api_freetimer
-
+	GLOBAL  beep
 	GLOBAL	api_end
 
 [SECTION .text]
@@ -202,6 +202,12 @@ api_freetimer:
 	MOV		EBX,[ESP+8] ; timer
 	INT		0x40
 	POP		EBX
+	RET
+
+beep: ; void api_beep(int tone)
+	MOV		EDX,20
+	MOV		EAX,[ESP+4] ; tone
+	INT		0x40
 	RET
 
 api_end:
