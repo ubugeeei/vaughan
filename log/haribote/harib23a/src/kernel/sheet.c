@@ -2,14 +2,17 @@
 
 #define SHEET_USE 1
 
-struct SHTCTL *shtctl_init(struct MEMMAN *memman, unsigned char *vram,
-                           int xsize, int ysize) {
+// clang-format off
+struct SHTCTL *shtctl_init(struct MEMMAN *memman, unsigned char *vram, int xsize, int ysize) {
+    // clang-format on
     struct SHTCTL *ctl;
     int i;
     ctl = (struct SHTCTL *)memman_alloc_4k(memman, sizeof(struct SHTCTL));
+
     if (ctl == 0) {
         goto err;
     }
+
     ctl->map = (unsigned char *)memman_alloc_4k(memman, xsize * ysize);
     if (ctl->map == 0) {
         memman_free_4k(memman, (int)ctl, sizeof(struct SHTCTL));
@@ -23,6 +26,7 @@ struct SHTCTL *shtctl_init(struct MEMMAN *memman, unsigned char *vram,
         ctl->sheets0[i].flags = 0;
         ctl->sheets0[i].ctl = ctl;
     }
+
 err:
     return ctl;
 }
@@ -42,8 +46,9 @@ struct SHEET *sheet_alloc(struct SHTCTL *ctl) {
     return 0;
 }
 
-void sheet_setbuf(struct SHEET *sht, unsigned char *buf, int xsize, int ysize,
-                  int col_inv) {
+// clang-format off
+void sheet_setbuf(struct SHEET *sht, unsigned char *buf, int xsize, int ysize, int col_inv) {
+    // clang-format on
     sht->buf = buf;
     sht->bxsize = xsize;
     sht->bysize = ysize;
@@ -51,8 +56,9 @@ void sheet_setbuf(struct SHEET *sht, unsigned char *buf, int xsize, int ysize,
     return;
 }
 
-void sheet_refreshmap(struct SHTCTL *ctl, int vx0, int vy0, int vx1, int vy1,
-                      int h0) {
+// clang-format off
+void sheet_refreshmap(struct SHTCTL *ctl, int vx0, int vy0, int vx1, int vy1, int h0) {
+    // clang-format on
     int h, bx, by, vx, vy, bx0, by0, bx1, by1;
     unsigned char *buf, sid, *map = ctl->map;
     struct SHEET *sht;
@@ -101,8 +107,9 @@ void sheet_refreshmap(struct SHTCTL *ctl, int vx0, int vy0, int vx1, int vy1,
     return;
 }
 
-void sheet_refreshsub(struct SHTCTL *ctl, int vx0, int vy0, int vx1, int vy1,
-                      int h0, int h1) {
+// clang-format off
+void sheet_refreshsub(struct SHTCTL *ctl, int vx0, int vy0, int vx1, int vy1, int h0, int h1) {
+    // clang-format on
     int h, bx, by, vx, vy, bx0, by0, bx1, by1;
     unsigned char *buf, *vram = ctl->vram, *map = ctl->map, sid;
     struct SHEET *sht;
@@ -170,10 +177,10 @@ void sheet_updown(struct SHEET *sht, int height) {
                 ctl->sheets[h]->height = h;
             }
             ctl->sheets[height] = sht;
-            sheet_refreshmap(ctl, sht->vx0, sht->vy0, sht->vx0 + sht->bxsize,
-                             sht->vy0 + sht->bysize, height + 1);
-            sheet_refreshsub(ctl, sht->vx0, sht->vy0, sht->vx0 + sht->bxsize,
-                             sht->vy0 + sht->bysize, height + 1, old);
+            // clang-format off
+            sheet_refreshmap(ctl, sht->vx0, sht->vy0, sht->vx0 + sht->bxsize, sht->vy0 + sht->bysize, height + 1);
+            sheet_refreshsub(ctl, sht->vx0, sht->vy0, sht->vx0 + sht->bxsize, sht->vy0 + sht->bysize, height + 1, old);
+            // clang-format on
         } else {
             if (ctl->top > old) {
                 for (h = old; h < ctl->top; h++) {
@@ -182,10 +189,10 @@ void sheet_updown(struct SHEET *sht, int height) {
                 }
             }
             ctl->top--;
-            sheet_refreshmap(ctl, sht->vx0, sht->vy0, sht->vx0 + sht->bxsize,
-                             sht->vy0 + sht->bysize, 0);
-            sheet_refreshsub(ctl, sht->vx0, sht->vy0, sht->vx0 + sht->bxsize,
-                             sht->vy0 + sht->bysize, 0, old - 1);
+            // clang-format off
+            sheet_refreshmap(ctl, sht->vx0, sht->vy0, sht->vx0 + sht->bxsize, sht->vy0 + sht->bysize, 0);
+            sheet_refreshsub(ctl, sht->vx0, sht->vy0, sht->vx0 + sht->bxsize, sht->vy0 + sht->bysize, 0, old - 1);
+            // clang-format on
         }
     } else if (old < height) {
         if (old >= 0) {
@@ -202,19 +209,27 @@ void sheet_updown(struct SHEET *sht, int height) {
             ctl->sheets[height] = sht;
             ctl->top++;
         }
-        sheet_refreshmap(ctl, sht->vx0, sht->vy0, sht->vx0 + sht->bxsize,
-                         sht->vy0 + sht->bysize, height);
-        sheet_refreshsub(ctl, sht->vx0, sht->vy0, sht->vx0 + sht->bxsize,
-                         sht->vy0 + sht->bysize, height, height);
+        // clang-format off
+        sheet_refreshmap(ctl, sht->vx0, sht->vy0, sht->vx0 + sht->bxsize, sht->vy0 + sht->bysize, height);
+        sheet_refreshsub(ctl, sht->vx0, sht->vy0, sht->vx0 + sht->bxsize, sht->vy0 + sht->bysize, height, height);
+        // clang-format on
     }
     return;
 }
 
 void sheet_refresh(struct SHEET *sht, int bx0, int by0, int bx1, int by1) {
     if (sht->height >= 0) {
-        sheet_refreshsub(sht->ctl, sht->vx0 + bx0, sht->vy0 + by0,
-                         sht->vx0 + bx1, sht->vy0 + by1, sht->height,
-                         sht->height);
+        // clang-format off
+        sheet_refreshsub(
+            sht->ctl,
+            sht->vx0 + bx0,
+            sht->vy0 + by0,
+            sht->vx0 + bx1,
+            sht->vy0 + by1,
+            sht->height,
+            sht->height
+        );
+        // clang-format on
     }
     return;
 }
@@ -225,14 +240,12 @@ void sheet_slide(struct SHEET *sht, int vx0, int vy0) {
     sht->vx0 = vx0;
     sht->vy0 = vy0;
     if (sht->height >= 0) {
-        sheet_refreshmap(ctl, old_vx0, old_vy0, old_vx0 + sht->bxsize,
-                         old_vy0 + sht->bysize, 0);
-        sheet_refreshmap(ctl, vx0, vy0, vx0 + sht->bxsize, vy0 + sht->bysize,
-                         sht->height);
-        sheet_refreshsub(ctl, old_vx0, old_vy0, old_vx0 + sht->bxsize,
-                         old_vy0 + sht->bysize, 0, sht->height - 1);
-        sheet_refreshsub(ctl, vx0, vy0, vx0 + sht->bxsize, vy0 + sht->bysize,
-                         sht->height, sht->height);
+        // clang-format off
+        sheet_refreshmap(ctl, old_vx0, old_vy0, old_vx0 + sht->bxsize, old_vy0 + sht->bysize, 0);
+        sheet_refreshmap(ctl, vx0, vy0, vx0 + sht->bxsize, vy0 + sht->bysize, sht->height);
+        sheet_refreshsub(ctl, old_vx0, old_vy0, old_vx0 + sht->bxsize, old_vy0 + sht->bysize, 0, sht->height - 1);
+        sheet_refreshsub(ctl, vx0, vy0, vx0 + sht->bxsize, vy0 + sht->bysize, sht->height, sht->height);
+        // clang-format on
     }
     return;
 }
