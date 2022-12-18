@@ -221,6 +221,8 @@ struct TASK {
     int level, priority;
     struct Queue32 queue;
     struct TSS32 tss;
+    struct CONSOLE *cons;
+    int ds_base;
 };
 struct TASK_LEVEL {
     int running;
