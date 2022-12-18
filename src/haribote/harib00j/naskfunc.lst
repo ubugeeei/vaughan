@@ -1,9 +1,0 @@
-     1                                  [BITS 32]
-     2                                  
-     3                                  GLOBAL	io_hlt
-     4                                  
-     5                                  [SECTION .text]
-     6                                  
-     7                                  io_hlt:
-     8 00000000 F4                          HLT
-     9 00000001 C3                          RET
