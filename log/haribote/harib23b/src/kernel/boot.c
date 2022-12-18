@@ -43,7 +43,7 @@ void Boot(void) {
     int key_to = 0, key_shift = 0, key_leds = (binfo->leds >> 4) & 7,
         keycmd_wait = -1;
     struct CONSOLE *cons;
-    int j, x, y, mmx = -1, mmy = -1;
+    int j, x, y, mmx = -1, mmy = -1, mmx2 = 0;
     struct SHEET *sht = 0, *key_win;
 
     init_gdtidt();
@@ -336,6 +336,7 @@ void Boot(void) {
                                             // clang-format on
                                             mmx = mx;
                                             mmy = my;
+                                            mmx2 = sht->vx0;
                                         }
 
                                         // clang-format off
@@ -359,8 +360,7 @@ void Boot(void) {
                         } else {
                             x = mx - mmx;
                             y = my - mmy;
-                            sheet_slide(sht, sht->vx0 + x, sht->vy0 + y);
-                            mmx = mx;
+                            sheet_slide(sht, (mmx2 + x + 2) & 0xfffffffc, sht->vy0 + y);
                             mmy = my;
                         }
                     } else {
