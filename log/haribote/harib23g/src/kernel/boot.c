@@ -351,14 +351,20 @@ void Boot(void) {
                                         if (sht->bxsize - 21 <= x && x < sht->bxsize - 5 && 5 <= y && y < 19) {
                                             // clang-format on
                                             if ((sht->flags & 0x10) != 0) {
-                                                // clang-format off
                                                 task = sht->task;
-												cons_putstr0(task->cons, "\nBreak(mouse) :\n");
+                                                // clang-format off
+												cons_putstr0(task->cons, "\nBye :\n");
 												io_cli();
 												task->tss.eax = (int) &(task->tss.esp0);
 												task->tss.eip = (int) asm_end_app;
-												io_sti();
                                                 // clang-format on
+                                                io_sti();
+                                            } else {
+                                                // console
+                                                task = sht->task;
+                                                io_cli();
+                                                queue32_put(&task->queue, 4);
+                                                io_sti();
                                             }
                                         }
                                         break;
