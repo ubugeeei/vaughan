@@ -2,8 +2,8 @@
 
 #define KEYCMD_LED 0xed
 
-void keywin_off(struct SHEET *key_win);
-void keywin_on(struct SHEET *key_win);
+void key_window_off(struct SHEET *key_win);
+void key_window_on(struct SHEET *key_win);
 
 void Boot(void) {
     struct BOOTINFO *binfo = (struct BOOTINFO *)ADR_BOOTINFO;
@@ -138,7 +138,7 @@ void Boot(void) {
     sheet_updown(sht_cons[0], 2);
     sheet_updown(sht_mouse, 3);
     key_win = sht_cons[0];
-    keywin_on(key_win);
+    key_window_on(key_win);
 
     queue32_put(&keycmd, KEYCMD_LED);
     queue32_put(&keycmd, key_leds);
@@ -167,7 +167,7 @@ void Boot(void) {
             io_sti();
             if (key_win->flags == 0) {
                 key_win = shtctl->sheets[shtctl->top - 1];
-                keywin_on(key_win);
+                key_window_on(key_win);
             }
 
             if (256 <= i && i <= 511) {
@@ -211,13 +211,13 @@ void Boot(void) {
 
                 // Tab
                 if (i == 256 + 0x0f) {  // Tab
-                    keywin_off(key_win);
+                    key_window_off(key_win);
                     j = key_win->height - 1;
                     if (j == 0) {
                         j = shtctl->top - 1;
                     }
                     key_win = shtctl->sheets[j];
-                    keywin_on(key_win);
+                    key_window_on(key_win);
                 }
 
                 // LShift ON
@@ -324,9 +324,9 @@ void Boot(void) {
                                         // clang-format on
                                         if (sht != key_win) {
                                             // clang-format off
-                                            keywin_off(key_win);
+                                            key_window_off(key_win);
                                             key_win = sht;
-                                            keywin_on(key_win);
+                                            key_window_on(key_win);
                                             // clang-format on
                                         }
                                         sheet_updown(sht, shtctl->top - 1);
@@ -372,7 +372,7 @@ void Boot(void) {
     }
 }
 
-void keywin_off(struct SHEET *key_win) {
+void key_window_off(struct SHEET *key_win) {
     change_wtitle8(key_win, 0);
     if ((key_win->flags & 0x20) != 0) {
         queue32_put(&key_win->task->queue, 3);
@@ -380,7 +380,7 @@ void keywin_off(struct SHEET *key_win) {
     return;
 }
 
-void keywin_on(struct SHEET *key_win) {
+void key_window_on(struct SHEET *key_win) {
     change_wtitle8(key_win, 1);
     if ((key_win->flags & 0x20) != 0) {
         queue32_put(&key_win->task->queue, 2);
