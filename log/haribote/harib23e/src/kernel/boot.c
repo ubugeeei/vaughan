@@ -4,6 +4,7 @@
 
 void key_window_off(struct SHEET *key_win);
 void key_window_on(struct SHEET *key_win);
+struct SHEET *open_console(struct SHTCTL *shtctl, unsigned int memtotal);
 
 void Boot(void) {
     struct BOOTINFO *binfo = (struct BOOTINFO *)ADR_BOOTINFO;
@@ -92,30 +93,7 @@ void Boot(void) {
     /*
      * sht_cons
      */
-    for (i = 0; i < 2; i++) {
-        sht_cons[i] = sheet_alloc(shtctl);
-        buf_cons[i] = (unsigned char *)memman_alloc_4k(memman, 256 * 165);
-        sheet_setbuf(sht_cons[i], buf_cons[i], 256, 165, -1);
-        make_window8(buf_cons[i], 256, 165, "console", 0);
-        make_textbox8(sht_cons[i], 8, 28, 240, 128, COL8_000000);
-        task_cons[i] = task_alloc();
-        task_cons[i]->tss.esp =
-            memman_alloc_4k(memman, 64 * 1024) + 64 * 1024 - 12;
-        task_cons[i]->tss.eip = (int)&console_task;
-        task_cons[i]->tss.es = 1 * 8;
-        task_cons[i]->tss.cs = 2 * 8;
-        task_cons[i]->tss.ss = 1 * 8;
-        task_cons[i]->tss.ds = 1 * 8;
-        task_cons[i]->tss.fs = 1 * 8;
-        task_cons[i]->tss.gs = 1 * 8;
-        *((int *)(task_cons[i]->tss.esp + 4)) = (int)sht_cons[i];
-        *((int *)(task_cons[i]->tss.esp + 8)) = memtotal;
-        task_run(task_cons[i], 2, 2);
-        sht_cons[i]->task = task_cons[i];
-        sht_cons[i]->flags |= 0x20;
-        cons_queue[i] = (int *)memman_alloc_4k(memman, 128 * 4);
-        queue32_init(&task_cons[i]->queue, 128, cons_queue[i], task_cons[i]);
-    }
+    key_win = open_console(shtctl, memtotal);
 
     /*
      * sht_mouse
@@ -130,14 +108,11 @@ void Boot(void) {
      * sheet layouts
      */
     sheet_slide(sht_back, 0, 0);
-    sheet_slide(sht_cons[1], 56, 6);
-    sheet_slide(sht_cons[0], 8, 2);
+    sheet_slide(key_win, 32, 4);
     sheet_slide(sht_mouse, mx, my);
     sheet_updown(sht_back, 0);
-    sheet_updown(sht_cons[1], 1);
-    sheet_updown(sht_cons[0], 2);
-    sheet_updown(sht_mouse, 3);
-    key_win = sht_cons[0];
+    sheet_updown(key_win, 1);
+    sheet_updown(sht_mouse, 2);
     key_window_on(key_win);
 
     queue32_put(&keycmd, KEYCMD_LED);
@@ -284,6 +259,14 @@ void Boot(void) {
                     }
                 }
 
+                if (i == 256 + 0x3c && key_shift != 0) {  // Shift + F2
+                    key_window_off(key_win);
+                    key_win = open_console(shtctl, memtotal);
+                    sheet_slide(key_win, 32, 4);
+                    sheet_updown(key_win, shtctl->top);
+                    key_window_on(key_win);
+                }
+
                 // F12
                 if (i == 256 + 0x58 && shtctl->top > 2) {
                     sheet_updown(shtctl->sheets[1], shtctl->top - 1);
@@ -406,4 +389,30 @@ void key_window_on(struct SHEET *key_win) {
         queue32_put(&key_win->task->queue, 2);
     }
     return;
+}
+
+struct SHEET *open_console(struct SHTCTL *shtctl, unsigned int memtotal) {
+    struct MEMMAN *memman = (struct MEMMAN *)MEMMAN_ADDR;
+    struct SHEET *sht = sheet_alloc(shtctl);
+    unsigned char *buf = (unsigned char *)memman_alloc_4k(memman, 256 * 165);
+    struct TASK *task = task_alloc();
+    int *cons_queue = (int *)memman_alloc_4k(memman, 128 * 4);
+    sheet_setbuf(sht, buf, 256, 165, -1);
+    make_window8(buf, 256, 165, "console", 0);
+    make_textbox8(sht, 8, 28, 240, 128, COL8_000000);
+    task->tss.esp = memman_alloc_4k(memman, 64 * 1024) + 64 * 1024 - 12;
+    task->tss.eip = (int)&console_task;
+    task->tss.es = 1 * 8;
+    task->tss.cs = 2 * 8;
+    task->tss.ss = 1 * 8;
+    task->tss.ds = 1 * 8;
+    task->tss.fs = 1 * 8;
+    task->tss.gs = 1 * 8;
+    *((int *)(task->tss.esp + 4)) = (int)sht;
+    *((int *)(task->tss.esp + 8)) = memtotal;
+    task_run(task, 2, 2);
+    sht->task = task;
+    sht->flags |= 0x20;  // cursor
+    queue32_init(&task->queue, 128, cons_queue, task);
+    return sht;
 }
