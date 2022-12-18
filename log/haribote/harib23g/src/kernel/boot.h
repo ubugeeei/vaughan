@@ -222,7 +222,7 @@ struct TASK {
     struct Queue32 queue;
     struct TSS32 tss;
     struct CONSOLE *cons;
-    int ds_base;
+    int ds_base, cons_stack;
 };
 struct TASK_LEVEL {
     int running;

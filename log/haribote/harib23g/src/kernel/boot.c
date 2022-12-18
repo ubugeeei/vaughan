@@ -5,6 +5,8 @@
 void key_window_off(struct SHEET *key_win);
 void key_window_on(struct SHEET *key_win);
 struct SHEET *open_console(struct SHTCTL *shtctl, unsigned int memtotal);
+void close_console(struct SHEET *sht);
+void close_console_task(struct TASK *task);
 
 void Boot(void) {
     struct BOOTINFO *binfo = (struct BOOTINFO *)ADR_BOOTINFO;
@@ -51,6 +53,7 @@ void Boot(void) {
     init_pic();
     io_sti();
     queue32_init(&queue, 128, queue_buf, 0);
+    *((int *)0x0fec) = (int)&queue;
     init_pit();
     init_keyboard(&queue, 256);
     enable_mouse(&queue, 512, &mdec);
@@ -152,9 +155,13 @@ void Boot(void) {
             // handle event
             i = queue32_get(&queue);
             io_sti();
-            if (key_win->flags == 0) {
-                key_win = shtctl->sheets[shtctl->top - 1];
-                key_window_on(key_win);
+            if (key_win != 0 && key_win->flags == 0) {  // Window close
+                if (shtctl->top == 1) {
+                    key_win = 0;
+                } else {
+                    key_win = shtctl->sheets[shtctl->top - 1];
+                    key_window_on(key_win);
+                }
             }
 
             if (256 <= i && i <= 511) {
@@ -182,22 +189,22 @@ void Boot(void) {
                 }
 
                 // normal characters
-                if (s[0] != 0) {
+                if (s[0] != 0 && key_win != 0) {
                     queue32_put(&key_win->task->queue, s[0] + 256);
                 }
 
                 // BackSpace
-                if (i == 256 + 0x0e) {  // Backspace
+                if (i == 256 + 0x0e && key_win != 0) {  // Backspace
                     queue32_put(&key_win->task->queue, 8 + 256);
                 }
 
                 // Enter
-                if (i == 256 + 0x1c) {  // Enter
+                if (i == 256 + 0x1c && key_win != 0) {  // Enter
                     queue32_put(&key_win->task->queue, 10 + 256);
                 }
 
                 // Tab
-                if (i == 256 + 0x0f) {  // Tab
+                if (i == 256 + 0x0f && key_win != 0) {  // Tab
                     key_window_off(key_win);
                     j = key_win->height - 1;
                     if (j == 0) {
@@ -246,9 +253,7 @@ void Boot(void) {
                 }
 
                 // Shift + F1
-                // clang-format off
-                if (i == 256 + 0x3b && key_shift != 0 && task_cons[0]->tss.ss0 != 0) {
-                    // clang-format on
+                if (i == 256 + 0x3b && key_shift != 0) {
                     task = key_win->task;
                     if (task != 0 && task->tss.ss0 != 0) {
                         cons_putstr0(task->cons, "\nBreak(key) :\n");
@@ -259,7 +264,12 @@ void Boot(void) {
                     }
                 }
 
-                if (i == 256 + 0x3c && key_shift != 0) {  // Shift + F2
+                // Shift + F2
+                if (i == 256 + 0x3c && key_shift != 0) {
+                    if (key_win != 0) {
+                        // focus on console
+                        key_window_off(key_win);
+                    }
                     key_window_off(key_win);
                     key_win = open_console(shtctl, memtotal);
                     sheet_slide(key_win, 32, 4);
@@ -370,6 +380,8 @@ void Boot(void) {
                         }
                     }
                 }
+            } else if (768 <= i && i <= 1023) {  // Close console
+                close_console(shtctl->sheets0 + (i - 768));
             }
         }
     }
@@ -400,7 +412,8 @@ struct SHEET *open_console(struct SHTCTL *shtctl, unsigned int memtotal) {
     sheet_setbuf(sht, buf, 256, 165, -1);
     make_window8(buf, 256, 165, "console", 0);
     make_textbox8(sht, 8, 28, 240, 128, COL8_000000);
-    task->tss.esp = memman_alloc_4k(memman, 64 * 1024) + 64 * 1024 - 12;
+    task->cons_stack = memman_alloc_4k(memman, 64 * 1024);
+    task->tss.esp = task->cons_stack + 64 * 1024 - 12;
     task->tss.eip = (int)&console_task;
     task->tss.es = 1 * 8;
     task->tss.cs = 2 * 8;
@@ -415,4 +428,22 @@ struct SHEET *open_console(struct SHTCTL *shtctl, unsigned int memtotal) {
     sht->flags |= 0x20;  // cursor
     queue32_init(&task->queue, 128, cons_queue, task);
     return sht;
+}
+
+void close_console_task(struct TASK *task) {
+    struct MEMMAN *memman = (struct MEMMAN *)MEMMAN_ADDR;
+    task_sleep(task);
+    memman_free_4k(memman, task->cons_stack, 64 * 1024);
+    memman_free_4k(memman, (int)task->queue.buf, 128 * 4);
+    task->flags = 0;
+    return;
+}
+
+void close_console(struct SHEET *sht) {
+    struct MEMMAN *memman = (struct MEMMAN *)MEMMAN_ADDR;
+    struct TASK *task = sht->task;
+    memman_free_4k(memman, (int)sht->buf, 256 * 165);
+    sheet_free(sht);
+    close_console_task(task);
+    return;
 }
