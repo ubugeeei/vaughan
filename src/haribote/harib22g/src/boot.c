@@ -215,8 +215,9 @@ void Boot(void) {
                     if (key_win == sht_win) {
                         if (cursor_x < 128) {
                             s[1] = 0;
-                            putfonts8_asc_sht(sht_win, cursor_x, 28,
-                                              COL8_000000, COL8_FFFFFF, s, 1);
+                            // clang-format off
+                            putfonts8_asc_sht(sht_win, cursor_x, 28, COL8_000000, COL8_FFFFFF, s, 1);
+                            // clang-format on
                             cursor_x += 8;
                         }
                     } else {
@@ -228,8 +229,9 @@ void Boot(void) {
                 if (i == 256 + 0x0e) {
                     if (key_win == sht_win) {
                         if (cursor_x > 8) {
-                            putfonts8_asc_sht(sht_win, cursor_x, 28,
-                                              COL8_000000, COL8_FFFFFF, " ", 1);
+                            // clang-format off
+                            putfonts8_asc_sht(sht_win, cursor_x, 28, COL8_000000, COL8_FFFFFF, " ", 1);
+                            // clang-format on
                             cursor_x -= 8;
                         }
                     } else {
