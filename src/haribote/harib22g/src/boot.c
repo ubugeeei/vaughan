@@ -5,6 +5,7 @@
 // clang-format off
 int keywin_off(struct SHEET *key_win, struct SHEET *sht_win, int cur_c, int cur_x);
 int keywin_on(struct SHEET *key_win, struct SHEET *sht_win, int cur_c);
+// clang-format on
 
 void Boot(void) {
     struct BOOTINFO *binfo = (struct BOOTINFO *)ADR_BOOTINFO;
@@ -42,7 +43,8 @@ void Boot(void) {
         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   '_', 0,
         0,   0,   0,   0,   0,   0,   0,   0,   '|', 0,   0};
-    int key_to = 0, key_shift = 0, key_leds = (binfo->leds >> 4) & 7, keycmd_wait = -1;
+    int key_to = 0, key_shift = 0, key_leds = (binfo->leds >> 4) & 7,
+        keycmd_wait = -1;
     struct CONSOLE *cons;
     int j, x, y, mmx = -1, mmy = -1;
     struct SHEET *sht = 0, *key_win;
@@ -85,7 +87,8 @@ void Boot(void) {
      * sht_back
      */
     sht_back = sheet_alloc(shtctl);
-    buf_back = (unsigned char *)memman_alloc_4k(memman, binfo->scrnx * binfo->scrny);
+    buf_back =
+        (unsigned char *)memman_alloc_4k(memman, binfo->scrnx * binfo->scrny);
     sheet_setbuf(sht_back, buf_back, binfo->scrnx, binfo->scrny, -1);
     init_screen8(buf_back, binfo->scrnx, binfo->scrny);
 
@@ -99,7 +102,8 @@ void Boot(void) {
         make_window8(buf_cons[i], 256, 165, "console", 0);
         make_textbox8(sht_cons[i], 8, 28, 240, 128, COL8_000000);
         task_cons[i] = task_alloc();
-        task_cons[i]->tss.esp = memman_alloc_4k(memman, 64 * 1024) + 64 * 1024 - 12;
+        task_cons[i]->tss.esp =
+            memman_alloc_4k(memman, 64 * 1024) + 64 * 1024 - 12;
         task_cons[i]->tss.eip = (int)&console_task;
         task_cons[i]->tss.es = 1 * 8;
         task_cons[i]->tss.cs = 2 * 8;
@@ -211,7 +215,8 @@ void Boot(void) {
                     if (key_win == sht_win) {
                         if (cursor_x < 128) {
                             s[1] = 0;
-                            putfonts8_asc_sht(sht_win, cursor_x, 28, COL8_000000, COL8_FFFFFF, s, 1);
+                            putfonts8_asc_sht(sht_win, cursor_x, 28,
+                                              COL8_000000, COL8_FFFFFF, s, 1);
                             cursor_x += 8;
                         }
                     } else {
@@ -223,7 +228,8 @@ void Boot(void) {
                 if (i == 256 + 0x0e) {
                     if (key_win == sht_win) {
                         if (cursor_x > 8) {
-                            putfonts8_asc_sht(sht_win, cursor_x, 28, COL8_000000, COL8_FFFFFF, " ", 1);
+                            putfonts8_asc_sht(sht_win, cursor_x, 28,
+                                              COL8_000000, COL8_FFFFFF, " ", 1);
                             cursor_x -= 8;
                         }
                     } else {
@@ -290,6 +296,7 @@ void Boot(void) {
                 // Shift + F1
                 // clang-format off
                 if (i == 256 + 0x3b && key_shift != 0 && task_cons[0]->tss.ss0 != 0) {
+                    // clang-format on
                     cons = (struct CONSOLE *)*((int *)0x0fec);
                     cons_putstr0(cons, "\nBreak(key) :\n");
                     io_cli();
@@ -318,16 +325,17 @@ void Boot(void) {
                 if (cursor_c >= 0) {
                     // clang-format off
                     boxfill8(sht_win->buf, sht_win->bxsize, cursor_c, cursor_x, 28, cursor_x + 7, 43);
+                    // clang-format on
                 } else {
                     // do nothing
                 }
                 sheet_refresh(sht_win, cursor_x, 28, cursor_x + 8, 44);
             } else if (512 <= i && i <= 767) {
-                /* 
-                 * 
+                /*
+                 *
                  * handle mouse event
-                 * 
-                */
+                 *
+                 */
                 if (mouse_decode(&mdec, i - 512) != 0) {
                     mx += mdec.x;
                     my += mdec.y;
@@ -355,25 +363,27 @@ void Boot(void) {
 
                                 // clang-format off
                                 if (0 <= x && x < sht->bxsize && 0 <= y && y < sht->bysize) {
-                                    // clang-format off
                                     if (sht->buf[y * sht->bxsize + x] != sht->col_inv) {
+                                        // clang-format on
                                         if (sht != key_win) {
                                             // clang-format off
                                             cursor_c = keywin_off(key_win, sht_win, cursor_c, cursor_x);
                                             key_win = sht;
-                                            // clang-format off
                                             cursor_c = keywin_on(key_win, sht_win, cursor_c);
+                                            // clang-format on
                                         }
                                         sheet_updown(sht, shtctl->top - 1);
 
                                         // clang-format off
                                         if (3 <= x && x < sht->bxsize - 3 && 3 <= y && y < 21) {
+                                            // clang-format on
                                             mmx = mx;
                                             mmy = my;
                                         }
 
                                         // clang-format off
                                         if (sht->bxsize - 21 <= x && x < sht->bxsize - 5 && 5 <= y && y < 19) {
+                                            // clang-format on
                                             if ((sht->flags & 0x10) != 0) {
                                                 // clang-format off
                                                 cons = (struct CONSOLE *)*((int *)0x0fec);
@@ -382,6 +392,7 @@ void Boot(void) {
                                                 task_cons[0]->tss.eax = (int)&(task_cons[0]->tss.esp0);
                                                 task_cons[0]->tss.eip = (int)asm_end_app;
                                                 io_sti();
+                                                // clang-format on
                                             }
                                         }
                                         break;
@@ -401,9 +412,9 @@ void Boot(void) {
                 }
             } else if (i <= 1) {
                 /*
-                 * 
+                 *
                  * cursor blink
-                 * 
+                 *
                  */
                 if (i != 0) {
                     timer_init(timer, &queue, 0);
@@ -418,19 +429,25 @@ void Boot(void) {
                 }
                 timer_settime(timer, 50);
                 if (cursor_c >= 0) {
+                    // clang-format off
                     boxfill8(sht_win->buf, sht_win->bxsize, cursor_c, cursor_x, 28, cursor_x + 7, 43);
                     sheet_refresh(sht_win, cursor_x, 28, cursor_x + 8, 44);
+                    // clang-format on
                 }
             }
         }
     }
 }
 
+// clang-format off
 int keywin_off(struct SHEET *key_win, struct SHEET *sht_win, int cur_c, int cur_x) {
+    // clang-format on
     change_wtitle8(key_win, 0);
     if (key_win == sht_win) {
         cur_c = -1;
+        // clang-format off
         boxfill8(sht_win->buf, sht_win->bxsize, COL8_FFFFFF, cur_x, 28, cur_x + 7, 43);
+        // clang-format on
     } else {
         if ((key_win->flags & 0x20) != 0) {
             queue32_put(&key_win->task->queue, 3);
