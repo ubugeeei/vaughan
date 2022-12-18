@@ -3,7 +3,7 @@
 void console_task(struct SHEET *sheet, unsigned int memtotal) {
     struct TASK *task = task_now();
     struct MEMMAN *memman = (struct MEMMAN *)MEMMAN_ADDR;
-    int i, queue_buf[128], *fat = (int *)memman_alloc_4k(memman, 4 * 2880);
+    int i, *fat = (int *)memman_alloc_4k(memman, 4 * 2880);
     struct CONSOLE cons;
     char cmdline[30];
     cons.sht = sheet;
@@ -12,7 +12,6 @@ void console_task(struct SHEET *sheet, unsigned int memtotal) {
     cons.cur_c = -1;
     task->cons = &cons;
 
-    queue32_init(&task->queue, 128, queue_buf, task);
     cons.timer = timer_alloc();
     timer_init(cons.timer, &task->queue, 1);
     timer_settime(cons.timer, 50);

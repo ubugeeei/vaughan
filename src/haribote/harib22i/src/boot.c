@@ -2,30 +2,27 @@
 
 #define KEYCMD_LED 0xed
 
-// clang-format off
-int keywin_off(struct SHEET *key_win, struct SHEET *sht_win, int cur_c, int cur_x);
-int keywin_on(struct SHEET *key_win, struct SHEET *sht_win, int cur_c);
-// clang-format on
+void keywin_off(struct SHEET *key_win);
+void keywin_on(struct SHEET *key_win);
 
 void Boot(void) {
     struct BOOTINFO *binfo = (struct BOOTINFO *)ADR_BOOTINFO;
     struct SHTCTL *shtctl;
     char s[40];
     struct Queue32 queue, keycmd;
-    int queue_buf[128], keycmd_buf[32];
-    int mx, my, i, cursor_x, cursor_c;
+    int queue_buf[128], keycmd_buf[32], *cons_queue[2];
+    int mx, my, i;
     unsigned int memtotal;
     struct MOUSE_DEC mdec;
     struct MEMMAN *memman = (struct MEMMAN *)MEMMAN_ADDR;
-    unsigned char *buf_back, buf_mouse[256], *buf_win, *buf_cons[2];
-    struct SHEET *sht_back, *sht_mouse, *sht_win, *sht_cons[2];
+    unsigned char *buf_back, buf_mouse[256], *buf_cons[2];
+    struct SHEET *sht_back, *sht_mouse, *sht_cons[2];
     struct TASK *task_a, *task_cons[2], *task;
-    struct TIMER *timer;
     static char keytable0[0x80] = {
         0,   0,    '1', '2', '3', '4', '5', '6', '7',  '8', '9', '0',  '-',
         '=', 0,    0,   'Q', 'W', 'E', 'R', 'T', 'Y',  'U', 'I', 'O',  'P',
         '[', ']',  0,   0,   'A', 'S', 'D', 'F', 'G',  'H', 'J', 'K',  'L',
-        ';', '\'', 0,   0,   ']', 'Z', 'X', 'C', 'V',  'B', 'N', 'M',  ',',
+        ':', '\'', 0,   0,   0,   'Z', 'X', 'C', 'V',  'B', 'N', 'M',  ',',
         '.', '/',  0,   '*', 0,   ' ', 0,   0,   0,    0,   0,   0,    0,
         0,   0,    0,   0,   0,   0,   '7', '8', '9',  '-', '4', '5',  '6',
         '+', '1',  '2', '3', '0', '.', 0,   0,   0,    0,   0,   0,    0,
@@ -116,21 +113,9 @@ void Boot(void) {
         task_run(task_cons[i], 2, 2);
         sht_cons[i]->task = task_cons[i];
         sht_cons[i]->flags |= 0x20;
+        cons_queue[i] = (int *)memman_alloc_4k(memman, 128 * 4);
+        queue32_init(&task_cons[i]->queue, 128, cons_queue[i], task_cons[i]);
     }
-
-    /*
-     * sht_win
-     */
-    sht_win = sheet_alloc(shtctl);
-    buf_win = (unsigned char *)memman_alloc_4k(memman, 160 * 52);
-    sheet_setbuf(sht_win, buf_win, 144, 52, -1);
-    make_window8(buf_win, 144, 52, "task_a", 1);
-    make_textbox8(sht_win, 8, 28, 128, 16, COL8_FFFFFF);
-    cursor_x = 8;
-    cursor_c = COL8_FFFFFF;
-    timer = timer_alloc();
-    timer_init(timer, &queue, 1);
-    timer_settime(timer, 50);
 
     /*
      * sht_mouse
@@ -147,14 +132,13 @@ void Boot(void) {
     sheet_slide(sht_back, 0, 0);
     sheet_slide(sht_cons[1], 56, 6);
     sheet_slide(sht_cons[0], 8, 2);
-    sheet_slide(sht_win, 64, 56);
     sheet_slide(sht_mouse, mx, my);
     sheet_updown(sht_back, 0);
     sheet_updown(sht_cons[1], 1);
     sheet_updown(sht_cons[0], 2);
-    sheet_updown(sht_win, 3);
-    sheet_updown(sht_mouse, 4);
-    key_win = sht_win;
+    sheet_updown(sht_mouse, 3);
+    key_win = sht_cons[0];
+    keywin_on(key_win);
 
     queue32_put(&keycmd, KEYCMD_LED);
     queue32_put(&keycmd, key_leds);
@@ -183,7 +167,7 @@ void Boot(void) {
             io_sti();
             if (key_win->flags == 0) {
                 key_win = shtctl->sheets[shtctl->top - 1];
-                cursor_c = keywin_on(key_win, sht_win, cursor_c);
+                keywin_on(key_win);
             }
 
             if (256 <= i && i <= 511) {
@@ -212,49 +196,28 @@ void Boot(void) {
 
                 // normal characters
                 if (s[0] != 0) {
-                    if (key_win == sht_win) {
-                        if (cursor_x < 128) {
-                            s[1] = 0;
-                            // clang-format off
-                            putfonts8_asc_sht(sht_win, cursor_x, 28, COL8_000000, COL8_FFFFFF, s, 1);
-                            // clang-format on
-                            cursor_x += 8;
-                        }
-                    } else {
-                        queue32_put(&key_win->task->queue, s[0] + 256);
-                    }
+                    queue32_put(&key_win->task->queue, s[0] + 256);
                 }
 
                 // BackSpace
-                if (i == 256 + 0x0e) {
-                    if (key_win == sht_win) {
-                        if (cursor_x > 8) {
-                            // clang-format off
-                            putfonts8_asc_sht(sht_win, cursor_x, 28, COL8_000000, COL8_FFFFFF, " ", 1);
-                            // clang-format on
-                            cursor_x -= 8;
-                        }
-                    } else {
-                        queue32_put(&key_win->task->queue, 8 + 256);
-                    }
+                if (i == 256 + 0x0e) {  // Backspace
+                    queue32_put(&key_win->task->queue, 8 + 256);
                 }
 
                 // Enter
-                if (i == 256 + 0x1c) {
-                    if (key_win != sht_win) {
-                        queue32_put(&key_win->task->queue, 10 + 256);
-                    }
+                if (i == 256 + 0x1c) {  // Enter
+                    queue32_put(&key_win->task->queue, 10 + 256);
                 }
 
                 // Tab
-                if (i == 256 + 0x0f) {
-                    cursor_c = keywin_off(key_win, sht_win, cursor_c, cursor_x);
+                if (i == 256 + 0x0f) {  // Tab
+                    keywin_off(key_win);
                     j = key_win->height - 1;
                     if (j == 0) {
                         j = shtctl->top - 1;
                     }
                     key_win = shtctl->sheets[j];
-                    cursor_c = keywin_on(key_win, sht_win, cursor_c);
+                    keywin_on(key_win);
                 }
 
                 // LShift ON
@@ -324,16 +287,6 @@ void Boot(void) {
                     wait_KBC_sendready();
                     io_out8(PORT_KEYDAT, keycmd_wait);
                 }
-
-                // redraw cursor
-                if (cursor_c >= 0) {
-                    // clang-format off
-                    boxfill8(sht_win->buf, sht_win->bxsize, cursor_c, cursor_x, 28, cursor_x + 7, 43);
-                    // clang-format on
-                } else {
-                    // do nothing
-                }
-                sheet_refresh(sht_win, cursor_x, 28, cursor_x + 8, 44);
             } else if (512 <= i && i <= 767) {
                 /*
                  *
@@ -371,9 +324,9 @@ void Boot(void) {
                                         // clang-format on
                                         if (sht != key_win) {
                                             // clang-format off
-                                            cursor_c = keywin_off(key_win, sht_win, cursor_c, cursor_x);
+                                            keywin_off(key_win);
                                             key_win = sht;
-                                            cursor_c = keywin_on(key_win, sht_win, cursor_c);
+                                            keywin_on(key_win);
                                             // clang-format on
                                         }
                                         sheet_updown(sht, shtctl->top - 1);
@@ -414,60 +367,23 @@ void Boot(void) {
                         mmx = -1;
                     }
                 }
-            } else if (i <= 1) {
-                /*
-                 *
-                 * cursor blink
-                 *
-                 */
-                if (i != 0) {
-                    timer_init(timer, &queue, 0);
-                    if (cursor_c >= 0) {
-                        cursor_c = COL8_000000;
-                    }
-                } else {
-                    timer_init(timer, &queue, 1);
-                    if (cursor_c >= 0) {
-                        cursor_c = COL8_FFFFFF;
-                    }
-                }
-                timer_settime(timer, 50);
-                if (cursor_c >= 0) {
-                    // clang-format off
-                    boxfill8(sht_win->buf, sht_win->bxsize, cursor_c, cursor_x, 28, cursor_x + 7, 43);
-                    sheet_refresh(sht_win, cursor_x, 28, cursor_x + 8, 44);
-                    // clang-format on
-                }
             }
         }
     }
 }
 
-// clang-format off
-int keywin_off(struct SHEET *key_win, struct SHEET *sht_win, int cur_c, int cur_x) {
-    // clang-format on
+void keywin_off(struct SHEET *key_win) {
     change_wtitle8(key_win, 0);
-    if (key_win == sht_win) {
-        cur_c = -1;
-        // clang-format off
-        boxfill8(sht_win->buf, sht_win->bxsize, COL8_FFFFFF, cur_x, 28, cur_x + 7, 43);
-        // clang-format on
-    } else {
-        if ((key_win->flags & 0x20) != 0) {
-            queue32_put(&key_win->task->queue, 3);
-        }
+    if ((key_win->flags & 0x20) != 0) {
+        queue32_put(&key_win->task->queue, 3);
     }
-    return cur_c;
+    return;
 }
 
-int keywin_on(struct SHEET *key_win, struct SHEET *sht_win, int cur_c) {
+void keywin_on(struct SHEET *key_win) {
     change_wtitle8(key_win, 1);
-    if (key_win == sht_win) {
-        cur_c = COL8_000000;
-    } else {
-        if ((key_win->flags & 0x20) != 0) {
-            queue32_put(&key_win->task->queue, 2);
-        }
+    if ((key_win->flags & 0x20) != 0) {
+        queue32_put(&key_win->task->queue, 2);
     }
-    return cur_c;
+    return;
 }
