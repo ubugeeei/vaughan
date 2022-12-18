@@ -50,6 +50,9 @@ void console_task(struct SHEET *sheet, unsigned int memtotal) {
                 // clang-format on
                 cons.cur_c = -1;
             }
+            if (i == 4) {
+                cmd_exit(&cons, fat);
+            }
             if (256 <= i && i <= 511) {
                 if (i == 8 + 256) {
                     if (cons.cur_x > 16) {
@@ -166,6 +169,8 @@ void cons_run_cmd(char *cmdline, struct CONSOLE *cons, int *fat, unsigned int me
         cmd_ls(cons);
     } else if (strncmp(cmdline, "cat ", 4) == 0) {
         cmd_cat(cons, fat, cmdline);
+    } else if (strcmp(cmdline, "exit") == 0) {
+        cmd_exit(cons, fat);
     } else if (cmdline[0] != 0) {
         if (cmd_app(cons, fat, cmdline) == 0) {
             cons_putstr0(cons, "Bad command.\n\n");
@@ -241,6 +246,21 @@ void cmd_cat(struct CONSOLE *cons, int *fat, char *cmdline) {
     }
     cons_newline(cons);
     return;
+}
+
+void cmd_exit(struct CONSOLE *cons, int *fat) {
+    struct MEMMAN *memman = (struct MEMMAN *)MEMMAN_ADDR;
+    struct TASK *task = task_now();
+    struct SHTCTL *shtctl = (struct SHTCTL *)*((int *)0x0fe4);
+    struct Queue32 *queue = (struct Queue32 *)*((int *)0x0fec);
+    timer_cancel(cons->timer);
+    memman_free_4k(memman, (int)fat, 4 * 2880);
+    io_cli();
+    queue32_put(queue, cons->sht - shtctl->sheets0 + 768);  // 768~1023
+    io_sti();
+    for (;;) {
+        task_sleep(task);
+    }
 }
 
 int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline) {
