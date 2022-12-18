@@ -11,7 +11,7 @@ void Boot(void) {
     char s[40];
     struct Queue32 queue, keycmd;
     int queue_buf[128], keycmd_buf[32], *cons_queue[2];
-    int mx, my, i;
+    int mx, my, i, new_mx = -1, new_my = 0, new_wx = 0x7fffffff, new_wy = 0;
     unsigned int memtotal;
     struct MOUSE_DEC mdec;
     struct MEMMAN *memman = (struct MEMMAN *)MEMMAN_ADDR;
@@ -158,9 +158,21 @@ void Boot(void) {
         io_cli();
 
         if (queue32_status(&queue) == 0) {
-            // sleep if there is no event
-            task_sleep(task_a);
-            io_sti();
+            if (new_mx >= 0) {
+                // draw if there is no event
+                io_sti();
+                sheet_slide(sht_mouse, new_mx, new_my);
+                new_mx = -1;
+            } else if (new_wx != 0x7fffffff) {
+                // draw if there is no event
+                io_sti();
+                sheet_slide(sht, new_wx, new_wy);
+                new_wx = 0x7fffffff;
+            } else {
+                // sleep if there is no event
+                task_sleep(task_a);
+                io_sti();
+            }
         } else {
             // handle event
             i = queue32_get(&queue);
@@ -310,7 +322,9 @@ void Boot(void) {
                         my = binfo->scrny - 1;
                     }
 
-                    sheet_slide(sht_mouse, mx, my);
+                    new_mx = mx;
+                    new_my = my;
+
                     if ((mdec.btn & 0x01) != 0) {
                         if (mmx < 0) {
                             for (j = shtctl->top - 1; j > 0; j--) {
@@ -337,6 +351,7 @@ void Boot(void) {
                                             mmx = mx;
                                             mmy = my;
                                             mmx2 = sht->vx0;
+                                            new_wy = sht->vy0;
                                         }
 
                                         // clang-format off
@@ -360,11 +375,16 @@ void Boot(void) {
                         } else {
                             x = mx - mmx;
                             y = my - mmy;
-                            sheet_slide(sht, (mmx2 + x + 2) & 0xfffffffc, sht->vy0 + y);
+                            new_wx = (mmx2 + x + 2) & ~3;
+                            new_wy = new_wy + y;
                             mmy = my;
                         }
                     } else {
                         mmx = -1;
+                        if (new_wx != 0x7fffffff) {
+                            sheet_slide(sht, new_wx, new_wy);
+                            new_wx = 0x7fffffff;
+                        }
                     }
                 }
             }
