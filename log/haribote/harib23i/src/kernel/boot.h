@@ -270,6 +270,7 @@ void cmd_clear(struct CONSOLE *cons);
 void cmd_ls(struct CONSOLE *cons);
 void cmd_cat(struct CONSOLE *cons, int *fat, char *cmdline);
 void cmd_exit(struct CONSOLE *cons, int *fat);
+void cmd_start(struct CONSOLE *cons, char *cmdline, int memtotal);
 int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline);
 int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx,
              int eax);
@@ -288,3 +289,6 @@ struct FILEINFO {
 void file_read_fat(int *fat, unsigned char *img);
 void file_load_file(int cluster_num, int size, char *buf, int *fat, char *img);
 struct FILEINFO *file_search(char *name, struct FILEINFO *finfo, int max);
+
+/* boot */
+struct SHEET *open_console(struct SHTCTL *shtctl, unsigned int memtotal);
