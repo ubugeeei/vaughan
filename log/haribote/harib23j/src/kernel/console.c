@@ -275,7 +275,7 @@ void cmd_exit(struct CONSOLE *cons, int *fat) {
     if (cons->sht != 0) {
         queue32_put(queue, cons->sht - shtctl->sheets0 + 768);  // 768~1023
     } else {
-        queue32_put(queue, cons->sht - shtctl->sheets0 + 768);  // 1024~2023
+        queue32_put(queue, task - taskctl->tasks0 + 1024);  // 1024~2023
     }
     io_sti();
     for (;;) {
