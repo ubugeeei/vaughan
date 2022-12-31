@@ -92,9 +92,11 @@ void cons_putchar(struct CONSOLE *cons, int chr, char move) {
     s[1] = 0;
     if (s[0] == 0x09) {
         for (;;) {
-            // clang-format off
-            putfonts8_asc_sht(cons->sht, cons->cur_x, cons->cur_y, COL8_FFFFFF, COL8_000000, " ", 1);
-            // clang-format on
+            if (cons->sht != 0) {
+                // clang-format off
+				putfonts8_asc_sht(cons->sht, cons->cur_x, cons->cur_y, COL8_FFFFFF, COL8_000000, " ", 1);
+                // clang-format on
+            }
             cons->cur_x += 8;
             if (cons->cur_x == 8 + 240) {
                 cons_newline(cons);
@@ -107,9 +109,11 @@ void cons_putchar(struct CONSOLE *cons, int chr, char move) {
         cons_newline(cons);
     } else if (s[0] == 0x0d) {
     } else {
-        // clang-format off
-        putfonts8_asc_sht(cons->sht, cons->cur_x, cons->cur_y, COL8_FFFFFF, COL8_000000, s, 1);
-        // clang-format on
+        if (cons->sht != 0) {
+            // clang-format off
+			putfonts8_asc_sht(cons->sht, cons->cur_x, cons->cur_y, COL8_FFFFFF, COL8_000000, s, 1);
+            // clang-format on
+        }
         if (move != 0) {
             cons->cur_x += 8;
             if (cons->cur_x == 8 + 240) {
@@ -141,18 +145,20 @@ void cons_newline(struct CONSOLE *cons) {
     if (cons->cur_y < 28 + 112) {
         cons->cur_y += 16;
     } else {
-        for (y = 28; y < 28 + 112; y++) {
-            for (x = 8; x < 8 + 240; x++) {
-                sheet->buf[x + y * sheet->bxsize] =
-                    sheet->buf[x + (y + 16) * sheet->bxsize];
+        if (sheet != 0) {
+            for (y = 28; y < 28 + 112; y++) {
+                for (x = 8; x < 8 + 240; x++) {
+                    sheet->buf[x + y * sheet->bxsize] =
+                        sheet->buf[x + (y + 16) * sheet->bxsize];
+                }
             }
-        }
-        for (y = 28 + 112; y < 28 + 128; y++) {
-            for (x = 8; x < 8 + 240; x++) {
-                sheet->buf[x + y * sheet->bxsize] = COL8_000000;
+            for (y = 28 + 112; y < 28 + 128; y++) {
+                for (x = 8; x < 8 + 240; x++) {
+                    sheet->buf[x + y * sheet->bxsize] = COL8_000000;
+                }
             }
+            sheet_refresh(sheet, 8, 28, 8 + 240, 28 + 128);
         }
-        sheet_refresh(sheet, 8, 28, 8 + 240, 28 + 128);
     }
     cons->cur_x = 8;
     return;
