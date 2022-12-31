@@ -173,6 +173,8 @@ void cons_run_cmd(char *cmdline, struct CONSOLE *cons, int *fat, unsigned int me
         cmd_exit(cons, fat);
     } else if (strncmp(cmdline, "start ", 6) == 0) {
         cmd_start(cons, cmdline, memtotal);
+    } else if (strncmp(cmdline, "ncst ", 5) == 0) {
+        cmd_ncst(cons, cmdline, memtotal);
     } else if (cmdline[0] != 0) {
         if (cmd_app(cons, fat, cmdline) == 0) {
             cons_putstr0(cons, "Bad command.\n\n");
@@ -273,6 +275,18 @@ void cmd_start(struct CONSOLE *cons, char *cmdline, int memtotal) {
     sheet_slide(sht, 32, 4);
     sheet_updown(sht, shtctl->top);
     for (i = 6; cmdline[i] != 0; i++) {
+        queue32_put(queue, cmdline[i] + 256);
+    }
+    queue32_put(queue, 10 + 256);
+    cons_newline(cons);
+    return;
+}
+
+void cmd_ncst(struct CONSOLE *cons, char *cmdline, int memtotal) {
+    struct TASK *task = open_cons_task(0, memtotal);
+    struct Queue32 *queue = &task->queue;
+    int i;
+    for (i = 5; cmdline[i] != 0; i++) {
         queue32_put(queue, cmdline[i] + 256);
     }
     queue32_put(queue, 10 + 256);

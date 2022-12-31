@@ -409,6 +409,26 @@ void key_window_on(struct SHEET *key_win) {
     return;
 }
 
+struct TASK *open_cons_task(struct SHEET *sht, unsigned int memtotal) {
+    struct MEMMAN *memman = (struct MEMMAN *)MEMMAN_ADDR;
+    struct TASK *task = task_alloc();
+    int *cons_queue = (int *)memman_alloc_4k(memman, 128 * 4);
+    task->cons_stack = memman_alloc_4k(memman, 64 * 1024);
+    task->tss.esp = task->cons_stack + 64 * 1024 - 12;
+    task->tss.eip = (int)&console_task;
+    task->tss.es = 1 * 8;
+    task->tss.cs = 2 * 8;
+    task->tss.ss = 1 * 8;
+    task->tss.ds = 1 * 8;
+    task->tss.fs = 1 * 8;
+    task->tss.gs = 1 * 8;
+    *((int *)(task->tss.esp + 4)) = (int)sht;
+    *((int *)(task->tss.esp + 8)) = memtotal;
+    task_run(task, 2, 2);
+    queue32_init(&task->queue, 128, cons_queue, task);
+    return task;
+}
+
 struct SHEET *open_console(struct SHTCTL *shtctl, unsigned int memtotal) {
     struct MEMMAN *memman = (struct MEMMAN *)MEMMAN_ADDR;
     struct SHEET *sht = sheet_alloc(shtctl);
