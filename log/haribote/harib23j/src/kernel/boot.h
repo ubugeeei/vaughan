@@ -235,6 +235,7 @@ struct TASKCTL {
     struct TASK_LEVEL level[MAX_TASK_LEVELS];
     struct TASK tasks0[MAX_TASKS];
 };
+extern struct TASKCTL *taskctl;
 extern struct TIMER *task_timer;
 struct TASK *task_now(void);
 struct TASK *task_init(struct MEMMAN *memman);

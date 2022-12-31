@@ -272,7 +272,11 @@ void cmd_exit(struct CONSOLE *cons, int *fat) {
     timer_cancel(cons->timer);
     memman_free_4k(memman, (int)fat, 4 * 2880);
     io_cli();
-    queue32_put(queue, cons->sht - shtctl->sheets0 + 768);  // 768~1023
+    if (cons->sht != 0) {
+        queue32_put(queue, cons->sht - shtctl->sheets0 + 768);  // 768~1023
+    } else {
+        queue32_put(queue, cons->sht - shtctl->sheets0 + 768);  // 1024~2023
+    }
     io_sti();
     for (;;) {
         task_sleep(task);

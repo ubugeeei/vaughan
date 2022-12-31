@@ -388,6 +388,8 @@ void Boot(void) {
                 }
             } else if (768 <= i && i <= 1023) {  // Close console
                 close_console(shtctl->sheets0 + (i - 768));
+            } else if (1024 <= i && i <= 2023) {
+                close_console_task(taskctl->tasks0 + (i - 1024));
             }
         }
     }
