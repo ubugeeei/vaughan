@@ -12,9 +12,11 @@ void console_task(struct SHEET *sheet, unsigned int memtotal) {
     cons.cur_c = -1;
     task->cons = &cons;
 
-    cons.timer = timer_alloc();
-    timer_init(cons.timer, &task->queue, 1);
-    timer_settime(cons.timer, 50);
+    if (sheet != 0) {
+        cons.timer = timer_alloc();
+        timer_init(cons.timer, &task->queue, 1);
+        timer_settime(cons.timer, 50);
+    }
     file_read_fat(fat, (unsigned char *)(ADR_DISK_IMG + 0x000200));
 
     cons_putchar(&cons, '>', 1);
@@ -64,6 +66,9 @@ void console_task(struct SHEET *sheet, unsigned int memtotal) {
                     cmdline[cons.cur_x / 8 - 2] = 0;
                     cons_newline(&cons);
                     cons_run_cmd(cmdline, &cons, fat, memtotal);
+                    if (sheet == 0) {
+                        cmd_exit(&cons, fat);
+                    }
                     cons_putchar(&cons, '>', 1);
                 } else {
                     if (cons.cur_x < 240) {
@@ -73,15 +78,16 @@ void console_task(struct SHEET *sheet, unsigned int memtotal) {
                 }
             }
 
-            if (cons.cur_c >= 0) {
+            if (sheet != 0) {
+                if (cons.cur_c >= 0) {
+                    // clang-format off
+                    boxfill8(sheet->buf, sheet->bxsize, cons.cur_c, cons.cur_x, cons.cur_y, cons.cur_x + 7, cons.cur_y + 15);
+                    // clang-format on
+                }
                 // clang-format off
-                boxfill8(sheet->buf, sheet->bxsize, cons.cur_c, cons.cur_x, cons.cur_y, cons.cur_x + 7, cons.cur_y + 15);
+                sheet_refresh(sheet, cons.cur_x, cons.cur_y, cons.cur_x + 8, cons.cur_y + 16);
                 // clang-format on
             }
-
-            // clang-format off
-            sheet_refresh(sheet, cons.cur_x, cons.cur_y, cons.cur_x + 8, cons.cur_y + 16);
-            // clang-format on
         }
     }
 }
