@@ -1,4 +1,23 @@
-APPS = a/a.hrb hello3/hello3.hrb hello4/hello4.hrb hello5/hello5.hrb win/win.hrb win2/win2.hrb win3/win3.hrb star1/star1.hrb stars/stars.hrb star2/star2.hrb lines/lines.hrb walk/walk.hrb noodle/noodle.hrb beepdown/beepdown.hrb color/color.hrb color2/color2.hrb
+APPS =\
+	a/a.hrb \
+	hello3/hello3.hrb \
+	hello4/hello4.hrb \
+	hello5/hello5.hrb \
+	win/win.hrb \
+	win2/win2.hrb \
+	win3/win3.hrb \
+	star1/star1.hrb \
+	stars/stars.hrb \
+	star2/star2.hrb \
+	lines/lines.hrb \
+	walk/walk.hrb \
+	noodle/noodle.hrb \
+	beepdown/beepdown.hrb \
+	color/color.hrb \
+	color2/color2.hrb \
+	sosu/sosu.hrb \
+	sosu2/sosu2.hrb \
+	sosu3/sosu3.hrb
 
 MAKE = make -r
 DEL = rm -f
@@ -20,6 +39,7 @@ run :
 # install :
 
 full :
+	$(MAKE) -C lib
 	$(MAKE) -C haribote
 	$(MAKE) -C apilib
 	$(MAKE) -C a
@@ -38,6 +58,9 @@ full :
 	$(MAKE) -C beepdown
 	$(MAKE) -C color
 	$(MAKE) -C color2
+	$(MAKE) -C sosu
+	$(MAKE) -C sosu2
+	$(MAKE) -C sosu3
 	$(MAKE) haribote.img
 
 run_full :
@@ -47,6 +70,7 @@ run_full :
 # install_full :
 
 run_os :
+	$(MAKE) -C lib
 	$(MAKE) -C haribote
 	$(MAKE) run
 
@@ -57,6 +81,7 @@ src_only :
 	-$(DEL) haribote.img
 
 clean_full :
+	$(MAKE) -C lib clean
 	$(MAKE) -C haribote clean
 	$(MAKE) -C apilib clean
 	$(MAKE) -C a clean
@@ -75,8 +100,12 @@ clean_full :
 	$(MAKE) -C beepdown clean
 	$(MAKE) -C color clean
 	$(MAKE) -C color2 clean
+	$(MAKE) -C sosu clean
+	$(MAKE) -C sosu2 clean
+	$(MAKE) -C sosu3 clean
 
 src_only_full :
+	$(MAKE) -C lib src_only
 	$(MAKE) -C haribote src_only
 	$(MAKE) -C apilib src_only
 	$(MAKE) -C a src_only
@@ -95,6 +124,9 @@ src_only_full :
 	$(MAKE) -C beepdown src_only
 	$(MAKE) -C color src_only
 	$(MAKE) -C color2 src_only
+	$(MAKE) -C sosu src_only
+	$(MAKE) -C sosu2 src_only
+	$(MAKE) -C sosu3 src_only
 	-$(DEL) haribote.img
 
 refresh :
