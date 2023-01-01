@@ -4,8 +4,10 @@
 #define MAX 10000
 
 void HariMain(void) {
-	char flag[MAX], s[8];
+	char *flag, s[8];
 	int i, j;
+	init_malloc();
+	flag = malloc(MAX);
 	for (i = 0; i < MAX; i++) {
 		flag[i] = 0;
 	}
