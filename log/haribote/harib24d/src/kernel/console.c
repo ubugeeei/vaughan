@@ -357,14 +357,14 @@ int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline) {
             q = (char *)memman_alloc_4k(memman, segment_size);
             task->ds_base = (int)q;
             // clang-format off
-            set_segmdesc(gdt + task->sel / 8 + 1000, finfo->size - 1, (int)p, AR_CODE32_ER + 0x60);
-            set_segmdesc(gdt + task->sel / 8 + 2000, segment_size - 1, (int)q, AR_DATA32_RW + 0x60);
+            set_segmdesc(task->ldt + 0, finfo->size - 1, (int) p, AR_CODE32_ER + 0x60);
+			set_segmdesc(task->ldt + 1, segment_size - 1, (int) q, AR_DATA32_RW + 0x60);
             // clang-format on
             for (i = 0; i < data_size; i++) {
                 q[esp + i] = p[data_hrb + i];
             }
             // clang-format off
-            start_app(0x1b, task->sel + 1000 * 8, esp, task->sel + 2000 * 8, &(task->tss.esp0));
+            start_app(0x1b, 0 * 8 + 4, esp, 1 * 8 + 4, &(task->tss.esp0));
             // clang-format on
             shtctl = (struct SHTCTL *)*((int *)0x0fe4);
             for (i = 0; i < MAX_SHEETS; i++) {
@@ -490,7 +490,8 @@ int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int 
             if (i == 4) {  // Close only console
                 timer_cancel(cons->timer);
                 io_cli();
-                queue32_put(sys_queue, cons->sht - shtctl->sheets0 + 2024);  // 2024~2279
+                queue32_put(sys_queue,
+                            cons->sht - shtctl->sheets0 + 2024);  // 2024~2279
                 cons->sht = 0;
                 io_sti();
             }
