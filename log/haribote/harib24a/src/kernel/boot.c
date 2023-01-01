@@ -261,6 +261,7 @@ void Boot(void) {
                         task->tss.eax = (int)&(task->tss.esp0);
                         task->tss.eip = (int)asm_end_app;
                         io_sti();
+                        task_run(task, -1, 0);
                     }
                 }
 
@@ -359,6 +360,7 @@ void Boot(void) {
 												task->tss.eip = (int) asm_end_app;
                                                 // clang-format on
                                                 io_sti();
+                                                task_run(task, -1, 0);
                                             } else {
                                                 // console
                                                 task = sht->task;
