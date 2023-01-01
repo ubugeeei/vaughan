@@ -47,7 +47,7 @@ void Boot(void) {
         keycmd_wait = -1;
     struct CONSOLE *cons;
     int j, x, y, mmx = -1, mmy = -1, mmx2 = 0;
-    struct SHEET *sht = 0, *key_win;
+    struct SHEET *sht = 0, *key_win, *sht2;
 
     init_gdtidt();
     init_pic();
@@ -261,6 +261,7 @@ void Boot(void) {
                         task->tss.eax = (int)&(task->tss.esp0);
                         task->tss.eip = (int)asm_end_app;
                         io_sti();
+                        task_run(task, -1, 0);
                     }
                 }
 
@@ -347,6 +348,7 @@ void Boot(void) {
                                             new_wy = sht->vy0;
                                         }
 
+                                        // onClick [X] button
                                         // clang-format off
                                         if (sht->bxsize - 21 <= x && x < sht->bxsize - 5 && 5 <= y && y < 19) {
                                             // clang-format on
@@ -359,12 +361,18 @@ void Boot(void) {
 												task->tss.eip = (int) asm_end_app;
                                                 // clang-format on
                                                 io_sti();
+                                                task_run(task, -1, 0);
                                             } else {
-                                                // console
+                                                // clang-format off
                                                 task = sht->task;
+                                                sheet_updown(sht, -1); // hide sheet
+												key_window_off(key_win);
+												key_win = shtctl->sheets[shtctl->top - 1];
+												key_window_on(key_win);
                                                 io_cli();
                                                 queue32_put(&task->queue, 4);
                                                 io_sti();
+                                                // clang-format on
                                             }
                                         }
                                         break;
@@ -386,8 +394,15 @@ void Boot(void) {
                         }
                     }
                 }
-            } else if (768 <= i && i <= 1023) {  // Close console
+            } else if (768 <= i && i <= 1023) {
                 close_console(shtctl->sheets0 + (i - 768));
+            } else if (1024 <= i && i <= 2023) {
+                close_console_task(taskctl->tasks0 + (i - 1024));
+            } else if (2024 <= i && i <= 2279) {
+                // Close only console
+                sht2 = shtctl->sheets0 + (i - 2024);
+                memman_free_4k(memman, (int)sht2->buf, 256 * 165);
+                sheet_free(sht2);
             }
         }
     }
@@ -407,6 +422,26 @@ void key_window_on(struct SHEET *key_win) {
         queue32_put(&key_win->task->queue, 2);
     }
     return;
+}
+
+struct TASK *open_console_task(struct SHEET *sht, unsigned int memtotal) {
+    struct MEMMAN *memman = (struct MEMMAN *)MEMMAN_ADDR;
+    struct TASK *task = task_alloc();
+    int *cons_queue = (int *)memman_alloc_4k(memman, 128 * 4);
+    task->cons_stack = memman_alloc_4k(memman, 64 * 1024);
+    task->tss.esp = task->cons_stack + 64 * 1024 - 12;
+    task->tss.eip = (int)&console_task;
+    task->tss.es = 1 * 8;
+    task->tss.cs = 2 * 8;
+    task->tss.ss = 1 * 8;
+    task->tss.ds = 1 * 8;
+    task->tss.fs = 1 * 8;
+    task->tss.gs = 1 * 8;
+    *((int *)(task->tss.esp + 4)) = (int)sht;
+    *((int *)(task->tss.esp + 8)) = memtotal;
+    task_run(task, 2, 2);
+    queue32_init(&task->queue, 128, cons_queue, task);
+    return task;
 }
 
 struct SHEET *open_console(struct SHTCTL *shtctl, unsigned int memtotal) {
