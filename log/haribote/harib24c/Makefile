@@ -51,7 +51,9 @@ APPS = \
 		$(TARGET_PATH)/app/noodle.hrb \
 		$(TARGET_PATH)/app/beepdown.hrb \
 		$(TARGET_PATH)/app/color.hrb \
-		$(TARGET_PATH)/app/color2.hrb
+		$(TARGET_PATH)/app/color2.hrb \
+		$(TARGET_PATH)/app/crack7.hrb
+
 
 
 # Commands
@@ -118,6 +120,9 @@ $(TARGET_PATH)/app/noodle.hrb : $(OBJ_PATH)/app/noodle.o src/app/app2.ld $(OBJ_P
 
 $(TARGET_PATH)/app/hello5.hrb : $(OBJ_PATH)/app/hello5.o src/app/app.ld
 	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/hello5.o -o $@
+
+$(TARGET_PATH)/app/crack7.hrb : $(OBJ_PATH)/app/crack7.o src/app/app.ld
+	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/crack7.o -o $@
 
 $(TARGET_PATH)/app/%.hrb : $(OBJ_PATH)/app/%.o $(OBJ_PATH)/kernel/system_call.o src/app/app.ld
 	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/$*.o $(OBJ_PATH)/kernel/system_call.o -o $@
