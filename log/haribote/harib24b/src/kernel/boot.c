@@ -47,7 +47,7 @@ void Boot(void) {
         keycmd_wait = -1;
     struct CONSOLE *cons;
     int j, x, y, mmx = -1, mmy = -1, mmx2 = 0;
-    struct SHEET *sht = 0, *key_win;
+    struct SHEET *sht = 0, *key_win, *sht2;
 
     init_gdtidt();
     init_pic();
@@ -348,6 +348,7 @@ void Boot(void) {
                                             new_wy = sht->vy0;
                                         }
 
+                                        // onClick [X] button
                                         // clang-format off
                                         if (sht->bxsize - 21 <= x && x < sht->bxsize - 5 && 5 <= y && y < 19) {
                                             // clang-format on
@@ -362,11 +363,16 @@ void Boot(void) {
                                                 io_sti();
                                                 task_run(task, -1, 0);
                                             } else {
-                                                // console
+                                                // clang-format off
                                                 task = sht->task;
+                                                sheet_updown(sht, -1); // hide sheet
+												key_window_off(key_win);
+												key_win = shtctl->sheets[shtctl->top - 1];
+												key_window_on(key_win);
                                                 io_cli();
                                                 queue32_put(&task->queue, 4);
                                                 io_sti();
+                                                // clang-format on
                                             }
                                         }
                                         break;
@@ -388,10 +394,15 @@ void Boot(void) {
                         }
                     }
                 }
-            } else if (768 <= i && i <= 1023) {  // Close console
+            } else if (768 <= i && i <= 1023) {
                 close_console(shtctl->sheets0 + (i - 768));
             } else if (1024 <= i && i <= 2023) {
                 close_console_task(taskctl->tasks0 + (i - 1024));
+            } else if (2024 <= i && i <= 2279) {
+                // Close only console
+                sht2 = shtctl->sheets0 + (i - 2024);
+                memman_free_4k(memman, (int)sht2->buf, 256 * 165);
+                sheet_free(sht2);
             }
         }
     }
