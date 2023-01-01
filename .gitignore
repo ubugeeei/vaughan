@@ -5,6 +5,8 @@ tolset
 *.img
 *.sys
 *.o
+*.a
+*.map
 .vscode
 .DS_Store
 hankaku.c
