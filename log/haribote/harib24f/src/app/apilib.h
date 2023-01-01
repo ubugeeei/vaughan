@@ -8,7 +8,7 @@ void  box_fill_window(int win, int x0, int y0, int x1, int y1, int col);
 void  init_malloc(void);
 char  *malloc(int size);
 void  free(char *addr, int size);
-void  point(int win, int x, int y, int col);
+void  draw_point_window(int win, int x, int y, int col);
 void  refresh_window(int win, int x0, int y0, int x1, int y1);
 void  draw_line_window(int win, int x0, int y0, int x1, int y1, int col);
 void  close(int win);

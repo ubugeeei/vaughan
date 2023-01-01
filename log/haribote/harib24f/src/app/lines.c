@@ -1,11 +1,4 @@
-int open(char *buf, int xsiz, int ysiz, int col_inv, char *title);
-void init_malloc(void);
-char *malloc(int size);
-void refresh_window(int win, int x0, int y0, int x1, int y1);
-void draw_line_window(int win, int x0, int y0, int x1, int y1, int col);
-void close(int win);
-int get_key(int mode);
-void api_end(void);
+#include "apilib.h"
 
 void HariMain(void) {
     char *buf;

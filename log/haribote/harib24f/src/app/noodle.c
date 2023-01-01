@@ -1,13 +1,4 @@
-int open(char *buf, int xsiz, int ysiz, int col_inv, char *title);
-void putstr_window(int win, int x, int y, int col, int len, char *str);
-void box_fill_window(int win, int x0, int y0, int x1, int y1, int col);
-void init_malloc(void);
-char *malloc(int size);
-int get_key(int mode);
-int alloc_timer(void);
-void init_timer(int timer, int data);
-void set_timeout(int timer, int time);
-void api_end(void);
+#include "apilib.h"
 
 void sprintf(char *str, char *fmt, ...);
 

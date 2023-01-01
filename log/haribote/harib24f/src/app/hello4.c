@@ -1,5 +1,4 @@
-void putstr(char *s);
-void api_end(void);
+#include "apilib.h"
 
 void HariMain(void) {
     putstr("Hello World!\n");
