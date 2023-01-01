@@ -413,7 +413,7 @@ void key_window_on(struct SHEET *key_win) {
     return;
 }
 
-struct TASK *open_cons_task(struct SHEET *sht, unsigned int memtotal) {
+struct TASK *open_console_task(struct SHEET *sht, unsigned int memtotal) {
     struct MEMMAN *memman = (struct MEMMAN *)MEMMAN_ADDR;
     struct TASK *task = task_alloc();
     int *cons_queue = (int *)memman_alloc_4k(memman, 128 * 4);

@@ -293,5 +293,5 @@ void file_load_file(int cluster_num, int size, char *buf, int *fat, char *img);
 struct FILEINFO *file_search(char *name, struct FILEINFO *finfo, int max);
 
 /* boot */
-struct TASK *open_cons_task(struct SHEET *sht, unsigned int memtotal);
+struct TASK *open_console_task(struct SHEET *sht, unsigned int memtotal);
 struct SHEET *open_console(struct SHTCTL *shtctl, unsigned int memtotal);

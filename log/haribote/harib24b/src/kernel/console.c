@@ -299,7 +299,7 @@ void cmd_start(struct CONSOLE *cons, char *cmdline, int memtotal) {
 }
 
 void cmd_ncst(struct CONSOLE *cons, char *cmdline, int memtotal) {
-    struct TASK *task = open_cons_task(0, memtotal);
+    struct TASK *task = open_console_task(0, memtotal);
     struct Queue32 *queue = &task->queue;
     int i;
     for (i = 5; cmdline[i] != 0; i++) {
