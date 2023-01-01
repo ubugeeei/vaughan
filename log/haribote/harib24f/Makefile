@@ -4,6 +4,11 @@ PRE_MAKE = mkdir -p target/bin && mkdir -p target/kernel && mkdir -p target/obj/
 DEL = rm -rf
 CC = i386-elf-gcc
 CFLAGS = -m32 -fno-builtin
+CFLAGS2 = -march=i486 -nostdlib
+LINK_OPTION = -T src/app/app.ld
+LINK_OPTION2 = -T src/app/app2.ld
+LIB_BIN = $(BIN_PATH)/hrbapi.lib
+
 
 
 # paths
@@ -122,7 +127,7 @@ $(OBJ_PATH)/kernel/naskfunc.o : src/kernel/asm/naskfunc.nasm
 	nasm -g -f elf $< -o $@ -l $(TARGET_PATH)/kernel/naskfunc.lst
 
 target/boot.hrb : $(OBJS_boot) hrb.ld
-	$(CC) $(CFLAGS) -march=i486 -nostdlib -T hrb.ld -Xlinker -Map=$(TARGET_PATH)/boot.map -g $(OBJS_boot) -o $@
+	$(CC) $(CFLAGS) $(CFLAGS2) -T hrb.ld -Xlinker -Map=$(TARGET_PATH)/boot.map -g $(OBJS_boot) -o $@
 
 target/haribote.sys : $(TARGET_PATH)/bin/asmhead.bin $(TARGET_PATH)/boot.hrb Makefile
 	cat $(TARGET_PATH)/bin/asmhead.bin $(TARGET_PATH)/boot.hrb > $(TARGET_PATH)/haribote.sys
@@ -134,6 +139,10 @@ $(OBJ_PATH)/kernel/system_call/%.o : src/kernel/asm/system_call/%.nasm
 	nasm -g -f elf src/kernel/asm/system_call/$*.nasm -o $(OBJ_PATH)/kernel/system_call/$*.o -l $(TARGET_PATH)/kernel/$*.lst
 
 
+# Libraies Build
+$(LIB_BIN) : $(SYS_CALL_OBJS)
+	i386-elf-ar rcs $@ $^
+
 
 #  Application Build
 $(TARGET_PATH)/app/hello.hrb : src/app/hello.nasm
@@ -142,56 +151,18 @@ $(TARGET_PATH)/app/hello.hrb : src/app/hello.nasm
 $(TARGET_PATH)/app/hello2.hrb : src/app/hello2.nasm
 	nasm $< -o $@ -l hello2.lst
 
-$(TARGET_PATH)/app/a.hrb : $(OBJ_PATH)/app/a.o $(SYS_CALL_OBJS) src/app/app.ld 
-	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/a.o $(SYS_CALL_OBJS) -o $@
-
-$(TARGET_PATH)/app/hello3.hrb : $(OBJ_PATH)/app/hello3.o $(SYS_CALL_OBJS) src/app/app.ld 
-	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/hello3.o $(SYS_CALL_OBJS) -o $@
-
-$(TARGET_PATH)/app/hello4.hrb : $(OBJ_PATH)/app/hello4.o $(SYS_CALL_OBJS) src/app/app.ld 
-	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/hello4.o $(SYS_CALL_OBJS) -o $@
-
 $(TARGET_PATH)/app/hello5.hrb : $(OBJ_PATH)/app/hello5.o src/app/app.ld
-	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/hello5.o -o $@
+	$(CC) $(CFLAGS) $(CFLAGS2) $(LINK_OPTION) -g $(OBJ_PATH)/app/hello5.o -o $@
 
-$(TARGET_PATH)/app/win.hrb : $(OBJ_PATH)/app/win.o $(SYS_CALL_OBJS) src/app/app.ld
-	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/win.o $(SYS_CALL_OBJS) -o $@
+$(TARGET_PATH)/app/noodle.hrb : $(OBJ_PATH)/app/noodle.o $(LIB_BIN) $(OBJ_PATH)/lib/sprintf.o src/app/app2.ld
+	$(CC) $(CFLAGS) $(CFLAGS2) $(LINK_OPTION2) -g $(OBJ_PATH)/app/noodle.o $(LIB_BIN) $(OBJ_PATH)/lib/sprintf.o -o $@
 
-$(TARGET_PATH)/app/win2.hrb : $(OBJ_PATH)/app/win2.o $(SYS_CALL_OBJS) src/app/app.ld
-	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/win2.o $(SYS_CALL_OBJS) -o $@
+$(TARGET_PATH)/app/win3.hrb : $(OBJ_PATH)/app/win3.o $(LIB_BIN) src/app/app.ld
+	$(CC) $(CFLAGS) $(CFLAGS2) $(LINK_OPTION) -Os -fdata-sections -ffunction-sections -g $(OBJ_PATH)/app/win3.o $(LIB_BIN) -o $@ -Wl,--gc-sections
 
-$(TARGET_PATH)/app/win3.hrb : $(OBJ_PATH)/app/win3.o $(SYS_CALL_OBJS) src/app/app.ld
-	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -Os -fdata-sections -ffunction-sections -g $(OBJ_PATH)/app/win3.o $(SYS_CALL_OBJS) -o $@ -Wl,--gc-sections
-
-$(TARGET_PATH)/app/star1.hrb : $(OBJ_PATH)/app/star1.o $(SYS_CALL_OBJS) src/app/app.ld
-	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/star1.o $(SYS_CALL_OBJS) -o $@
-
-$(TARGET_PATH)/app/star2.hrb : $(OBJ_PATH)/app/star2.o $(SYS_CALL_OBJS) src/app/app.ld
-	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/star2.o $(SYS_CALL_OBJS) -o $@
-
-$(TARGET_PATH)/app/stars.hrb : $(OBJ_PATH)/app/stars.o $(SYS_CALL_OBJS) src/app/app.ld
-	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/stars.o $(SYS_CALL_OBJS) -o $@
-
-$(TARGET_PATH)/app/lines.hrb : $(OBJ_PATH)/app/lines.o $(SYS_CALL_OBJS) src/app/app.ld
-	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/lines.o $(SYS_CALL_OBJS) -o $@
-
-$(TARGET_PATH)/app/walk.hrb : $(OBJ_PATH)/app/walk.o $(SYS_CALL_OBJS) src/app/app.ld
-	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/walk.o $(SYS_CALL_OBJS) -o $@
-
-$(TARGET_PATH)/app/noodle.hrb : $(OBJ_PATH)/app/noodle.o $(SYS_CALL_OBJS) $(OBJ_PATH)/lib/sprintf.o src/app/app2.ld
-	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app2.ld -g $(OBJ_PATH)/app/noodle.o $(SYS_CALL_OBJS) $(OBJ_PATH)/lib/sprintf.o -o $@
-
-$(TARGET_PATH)/app/beepdown.hrb : $(OBJ_PATH)/app/beepdown.o $(SYS_CALL_OBJS) src/app/app.ld
-	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/beepdown.o $(SYS_CALL_OBJS) -o $@
-
-$(TARGET_PATH)/app/color.hrb : $(OBJ_PATH)/app/color.o $(SYS_CALL_OBJS) src/app/app.ld
-	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/color.o $(SYS_CALL_OBJS) -o $@
-
-$(TARGET_PATH)/app/color2.hrb : $(OBJ_PATH)/app/color2.o $(SYS_CALL_OBJS) src/app/app.ld
-	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app2.ld -g $(OBJ_PATH)/app/color2.o $(SYS_CALL_OBJS) -o $@
-
-$(TARGET_PATH)/app/crack7.hrb : $(OBJ_PATH)/app/crack7.o src/app/app.ld
-	$(CC) $(CFLAGS) -march=i486 -nostdlib -T src/app/app.ld -g $(OBJ_PATH)/app/crack7.o -o $@
+# template
+$(TARGET_PATH)/app/%.hrb : $(OBJ_PATH)/app/%.o $(LIB_BIN) src/app/app.ld
+	$(CC) $(CFLAGS) $(CFLAGS2) $(LINK_OPTION) -g $(OBJ_PATH)/app/$*.o $(LIB_BIN) -o $@
 
 $(OBJ_PATH)/app/%.o : src/app/%.c
 	$(CC) $(CFLAGS) -c src/app/$*.c -o $(OBJ_PATH)/app/$*.o
