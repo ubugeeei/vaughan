@@ -1,4 +1,22 @@
-APPS = a/a.hrb hello3/hello3.hrb hello4/hello4.hrb hello5/hello5.hrb win/win.hrb win2/win2.hrb win3/win3.hrb star1/star1.hrb stars/stars.hrb star2/star2.hrb lines/lines.hrb walk/walk.hrb noodle/noodle.hrb beepdown/beepdown.hrb color/color.hrb color2/color2.hrb sosu/sosu.hrb
+APPS =\
+	a/a.hrb \
+	hello3/hello3.hrb \
+	hello4/hello4.hrb \
+	hello5/hello5.hrb \
+	win/win.hrb \
+	win2/win2.hrb \
+	win3/win3.hrb \
+	star1/star1.hrb \
+	stars/stars.hrb \
+	star2/star2.hrb \
+	lines/lines.hrb \
+	walk/walk.hrb \
+	noodle/noodle.hrb \
+	beepdown/beepdown.hrb \
+	color/color.hrb \
+	color2/color2.hrb \
+	sosu/sosu.hrb \
+	sosu2/sosu2.hrb
 
 MAKE = make -r
 DEL = rm -f
@@ -40,6 +58,7 @@ full :
 	$(MAKE) -C color
 	$(MAKE) -C color2
 	$(MAKE) -C sosu
+	$(MAKE) -C sosu2
 	$(MAKE) haribote.img
 
 run_full :
@@ -80,6 +99,7 @@ clean_full :
 	$(MAKE) -C color clean
 	$(MAKE) -C color2 clean
 	$(MAKE) -C sosu clean
+	$(MAKE) -C sosu2 clean
 
 src_only_full :
 	$(MAKE) -C lib src_only
@@ -102,6 +122,7 @@ src_only_full :
 	$(MAKE) -C color src_only
 	$(MAKE) -C color2 src_only
 	$(MAKE) -C sosu src_only
+	$(MAKE) -C sosu2 src_only
 	-$(DEL) haribote.img
 
 refresh :
