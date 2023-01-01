@@ -1,6 +1,5 @@
 #include "../apilib.h"
-
-void sprintf(char *str, char *fmt, ...);
+#include "../include/stdio.h"
 
 void HariMain(void) {
     char *buf, s[12];
