@@ -12,11 +12,15 @@ COSLD = -T hrb.ld
 CAPPLD = -T ../app.ld
 CC_WITH_OPTION = i386-elf-gcc -m32 -march=i486 -nostdlib
 
+ifndef STACK
+	STACK = 0x500
+endif
+
 default :
 	$(MAKE) $(APP).hrb
 
 $(APP).hrb : $(APP).o $(LIBPATH)libstdio.a $(APILIBPATH)libapi.a ../app.ld
-	$(CC_WITH_OPTION) $(CAPPLD) -o $@ $< $(LIBPATH)libstdio.a $(APILIBPATH)libapi.a
+	$(CC_WITH_OPTION) $(CAPPLD) -Wl,'--defsym=__stack=$(STACK)' -g -o $@ $< $(LIBPATH)libstdio.a $(APILIBPATH)libapi.a
 
 # Image
 haribote.img : $(HARIBOTEPATH)ipl10.bin $(HARIBOTEPATH)haribote.sys $(APP).hrb
