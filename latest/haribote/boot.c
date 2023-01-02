@@ -49,6 +49,12 @@ void Boot(void) {
     int j, x, y, mmx = -1, mmy = -1, mmx2 = 0;
     struct SHEET *sht = 0, *key_win, *sht2;
 
+    // jp font
+    int *fat;
+    unsigned char *jp_fnt;
+    struct FILEINFO *finfo;
+    extern char hankaku[4096];
+
     init_gdtidt();
     init_pic();
     io_sti();
@@ -77,6 +83,7 @@ void Boot(void) {
     queue.task = task_a;
     task_run(task_a, 1, 2);
     *((int *)0x0fe4) = (int)shtctl;
+    task_a->lang_mode = 0;
 
     /*
      *
@@ -120,6 +127,30 @@ void Boot(void) {
 
     queue32_put(&keycmd, KEYCMD_LED);
     queue32_put(&keycmd, key_leds);
+
+    /*
+     *
+     * read jp.fnt
+     *
+     */
+    jp_fnt = (unsigned char *)memman_alloc_4k(memman, 16 * 256 + 32 * 94 * 47);
+    fat = (int *)memman_alloc_4k(memman, 4 * 2880);
+    file_read_fat(fat, (unsigned char *)(ADR_DISK_IMG + 0x000200));
+    // clang-format off
+    finfo = file_search("jp.fnt", (struct FILEINFO *)(ADR_DISK_IMG + 0x002600), 224);
+    if (finfo != 0) {
+        file_load_file(finfo->cluster_num, finfo->size, jp_fnt, fat, (char *)(ADR_DISK_IMG + 0x003e00));
+        // clang-format on
+    } else {
+        for (i = 0; i < 16 * 256; i++) {
+            jp_fnt[i] = hankaku[i];  // Copy hankaku characters
+        }
+        for (i = 16 * 256; i < 16 * 256 + 32 * 94 * 47; i++) {
+            jp_fnt[i] = 0xff;  // Full fill font with 0xff
+        }
+    }
+    *((int *)0x0fe8) = (int)jp_fnt;
+    memman_free_4k(memman, (int)fat, 4 * 2880);
 
     /*
      *

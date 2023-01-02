@@ -7,6 +7,7 @@ void console_task(struct SHEET *sheet, unsigned int memtotal) {
     struct CONSOLE cons;
     struct FILEHANDLE fhandle[8];
     char cmdline[30];
+    unsigned char *jp_font = (char *)*((int *)0x0fe8);
 
     cons.sht = sheet;
     cons.cur_x = 8;
@@ -26,6 +27,14 @@ void console_task(struct SHEET *sheet, unsigned int memtotal) {
     }
     task->fhandle = fhandle;
     task->fat = fat;
+
+    // Is jp font available?
+    if (jp_font[4096] != 0xff) {
+        task->lang_mode = 1;
+    } else {
+        task->lang_mode = 0;
+    }
+    task->lang_byte1 = 0;
 
     cons_putchar(&cons, '>', 1);
 
@@ -158,6 +167,7 @@ void cons_putstr1(struct CONSOLE *cons, char *s, int l) {
 void cons_newline(struct CONSOLE *cons) {
     int x, y;
     struct SHEET *sheet = cons->sht;
+    struct TASK *task = task_now();
     if (cons->cur_y < 28 + 112) {
         cons->cur_y += 16;
     } else {
@@ -177,6 +187,9 @@ void cons_newline(struct CONSOLE *cons) {
         }
     }
     cons->cur_x = 8;
+    if (task->lang_mode == 1 && task->lang_byte1 != 0) {
+        cons->cur_x = 16;
+    }
     return;
 }
 
@@ -195,6 +208,8 @@ void cons_run_cmd(char *cmdline, struct CONSOLE *cons, int *fat, unsigned int me
         cmd_start(cons, cmdline, memtotal);
     } else if (strncmp(cmdline, "ncst ", 5) == 0) {
         cmd_ncst(cons, cmdline, memtotal);
+    } else if (strncmp(cmdline, "lang ", 5) == 0) {
+        cmd_lang(cons, cmdline);
     } else if (cmdline[0] != 0) {
         if (cmd_app(cons, fat, cmdline) == 0) {
             cons_putstr0(cons, "Bad command.\n\n");
@@ -297,6 +312,18 @@ void cmd_ncst(struct CONSOLE *cons, char *cmdline, int memtotal) {
     return;
 }
 
+void cmd_lang(struct CONSOLE *cons, char *cmdline) {
+    struct TASK *task = task_now();
+    unsigned char mode = cmdline[5] - '0';
+    if (mode <= 2) {
+        task->lang_mode = mode;
+    } else {
+        cons_putstr0(cons, "mode number error.\n");
+    }
+    cons_newline(cons);
+    return;
+}
+
 int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline) {
     struct MEMMAN *memman = (struct MEMMAN *)MEMMAN_ADDR;
     struct FILEINFO *finfo;
@@ -368,6 +395,7 @@ int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline) {
             }
             timer_cancel_all(&task->queue);
             memman_free_4k(memman, (int)q, segment_size);
+            task->lang_mode = 0;
         } else {
             cons_putstr0(cons, ".hrb file format error.\n");
         }
@@ -591,6 +619,11 @@ int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int 
             i++;
         }
         reg[7] = i;
+    } else if (edx == 27) {  // lang mode
+        // 0 => ascii
+        // 1 => jis
+        // 2 => euc
+        reg[7] = task->lang_mode;
     }
     return 0;
 }

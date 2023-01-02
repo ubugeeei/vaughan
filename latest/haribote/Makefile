@@ -10,11 +10,11 @@ CFLAGS = -m32 -fno-builtin
 COPTION = -march=i486 -nostdlib
 
 default :
-	$(MAKE) ipl10.bin
+	$(MAKE) ipl20.bin
 	$(MAKE) haribote.sys
 
-ipl10.bin : ipl10.nasm
-	nasm $< -o $@ -l ipl10.lst
+ipl20.bin : ipl20.nasm
+	nasm $< -o $@ -l ipl20.lst
 
 asmhead.bin : asmhead.nasm
 	nasm $< -o $@ -l asmhead.lst
@@ -56,5 +56,5 @@ clean :
 	
 src_only :
 	$(MAKE) clean
-	-$(DEL) ipl10.bin
+	-$(DEL) ipl20.bin
 	-$(DEL) haribote.sys

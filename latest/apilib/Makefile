@@ -25,6 +25,7 @@ OBJS_API = \
 	api024.o \
 	api025.o \
 	api026.o \
+	api027.o \
 	alloca.o
 MAKE = make -r
 DEL = rm -f
