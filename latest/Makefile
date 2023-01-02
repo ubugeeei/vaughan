@@ -18,7 +18,8 @@ APPS =\
 	sosu/sosu.hrb \
 	sosu2/sosu2.hrb \
 	sosu3/sosu3.hrb \
-	typea/typea.hrb
+	typea/typea.hrb \
+	cat/cat.hrb
 
 MAKE = make -r
 DEL = rm -f
@@ -30,7 +31,7 @@ default :
 # -f: size, -C: hidden_sectors, -B: boot_sector, -i: 
 haribote.img : haribote/ipl10.bin haribote/haribote.sys $(APPS)
 	mformat -f 1440 -C -B haribote/ipl10.bin -i haribote.img ::
-	mcopy -i haribote.img haribote/haribote.sys haribote/ipl10.nasm $(APPS) ::
+	mcopy -i haribote.img haribote/haribote.sys haribote/ipl10.nasm main.c $(APPS) ::
 
 # Commands
 run :
@@ -63,6 +64,7 @@ full :
 	$(MAKE) -C sosu2
 	$(MAKE) -C sosu3
 	$(MAKE) -C typea
+	$(MAKE) -C cat
 	$(MAKE) haribote.img
 
 run_full :
@@ -106,6 +108,7 @@ clean_full :
 	$(MAKE) -C sosu2 clean
 	$(MAKE) -C sosu3 clean
 	$(MAKE) -C typea clean
+	$(MAKE) -C cat clean
 
 src_only_full :
 	$(MAKE) -C lib src_only
@@ -131,6 +134,7 @@ src_only_full :
 	$(MAKE) -C sosu2 src_only
 	$(MAKE) -C sosu3 src_only
 	$(MAKE) -C typea src_only
+	$(MAKE) -C cat src_only
 	-$(DEL) haribote.img
 
 refresh :
