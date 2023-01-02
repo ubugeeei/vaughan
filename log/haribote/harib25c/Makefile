@@ -17,7 +17,8 @@ APPS =\
 	color2/color2.hrb \
 	sosu/sosu.hrb \
 	sosu2/sosu2.hrb \
-	sosu3/sosu3.hrb
+	sosu3/sosu3.hrb \
+	typea/typea.hrb
 
 MAKE = make -r
 DEL = rm -f
@@ -61,6 +62,7 @@ full :
 	$(MAKE) -C sosu
 	$(MAKE) -C sosu2
 	$(MAKE) -C sosu3
+	$(MAKE) -C typea
 	$(MAKE) haribote.img
 
 run_full :
@@ -103,6 +105,7 @@ clean_full :
 	$(MAKE) -C sosu clean
 	$(MAKE) -C sosu2 clean
 	$(MAKE) -C sosu3 clean
+	$(MAKE) -C typea clean
 
 src_only_full :
 	$(MAKE) -C lib src_only
@@ -127,6 +130,7 @@ src_only_full :
 	$(MAKE) -C sosu src_only
 	$(MAKE) -C sosu2 src_only
 	$(MAKE) -C sosu3 src_only
+	$(MAKE) -C typea src_only
 	-$(DEL) haribote.img
 
 refresh :

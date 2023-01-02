@@ -18,3 +18,10 @@ void  init_timer(int timer, int data);
 void  set_timeout(int timer, int time);
 void  clear_timeout(int timer);
 void  beep(int tone);
+int   fopen(char *fname);
+void  fclose(int fhandle);
+void  fseek(int fhandle, int offset, int mode);
+int   fsize(int fhandle, int mode);
+int   fread(char *buf, int maxsize, int fhandle);
+
+void  *alloca(int size);
