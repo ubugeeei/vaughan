@@ -5,6 +5,5 @@ Haribote OS implementation.
 
 # Usage
 ```sh
-$ cd latest
-$ make run
+$ make run_full
 ```
