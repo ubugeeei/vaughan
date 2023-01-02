@@ -12,7 +12,7 @@ void HariMain(void) {
 	for (i = 2; i < MAX; i++) {
 		if (flag[i] == 0) {
 			sprintf(s, "%d ", i);
-			putstr(s);
+			puts(s);
 			for (j = i * 2; j < MAX; j += i) {
 				flag[j] = 1;
 			}

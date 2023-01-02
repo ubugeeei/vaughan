@@ -45,7 +45,7 @@ void HariMain(void) {
 		// BMP
 		if (info_JPEG(&env, info, file_size, filebuf) == 0) {
 			// JPEG
-			putstr("file type unknown.\n");
+			puts("file type unknown.\n");
 			api_end();
 		}
 	}
@@ -107,6 +107,6 @@ unsigned char rgb2pal(int r, int g, int b, int x, int y) {
 }
 
 void error(char *s) {
-	putstr(s);
+	puts(s);
 	api_end();
 }

@@ -46,7 +46,7 @@ void HariMain(void) {
                 }
             } else {
             err:
-                putstr(" >tview file [-w30 -h10 -t4]\n");
+                puts(" >tview file [-w30 -h10 -t4]\n");
                 api_end();
             }
         } else {  // Found file
@@ -71,7 +71,7 @@ void HariMain(void) {
     *r = 0;
     i = fopen(q);
     if (i == 0) {
-        putstr("file open error.\n");
+        puts("file open error.\n");
         api_end();
     }
     j = fsize(i, 0);

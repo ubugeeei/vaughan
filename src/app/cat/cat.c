@@ -14,7 +14,7 @@ void HariMain(void) {
 			putchar(c);
 		}
 	} else {
-		putstr("File not found.\n");
+		puts("File not found.\n");
 	}
 	api_end();
 }

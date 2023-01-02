@@ -13,11 +13,11 @@ void HariMain(void) {
                           0xa5, 0xe2, 0xa1, 0xbc, 0xa5, 0xc9, 0x0a, 0x00};
 
     if (lang_mode == 0) {
-        putstr("English ASCII mode\n");
+        puts("English ASCII mode\n");
     } else if (lang_mode == 1) {
-        putstr(s1);
+        puts(s1);
     } else if (lang_mode == 2) {
-        putstr(s2);
+        puts(s2);
     }
 
     api_end();
