@@ -1,3 +1,3 @@
 APP = bball
 
-include ../app_make.txt
+include ../app.mk

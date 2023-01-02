@@ -1,3 +1,3 @@
 APP = chklang
 
-include ../app_make.txt
+include ../app.mk

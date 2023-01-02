@@ -1,3 +1,3 @@
 APP = hello
 
-include ../app_make.txt
+include ../app.mk

@@ -1,3 +1,3 @@
 APP = typea
 
-include ../app_make.txt
+include ../app.mk

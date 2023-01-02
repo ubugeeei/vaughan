@@ -1,3 +1,3 @@
 APP = notrec
 
-include ../app_make.txt
+include ../app.mk

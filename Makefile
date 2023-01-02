@@ -193,4 +193,4 @@ NAME = new_app
 new_app:
 	mkdir src/app/$(NAME)
 	touch src/app/$(NAME)/$(NAME).c
-	echo "APP = $(NAME)\n\ninclude ../app_make.txt" > src/app/$(NAME)/Makefile
+	echo "APP = $(NAME)\n\ninclude ../app.mk" > src/app/$(NAME)/Makefile

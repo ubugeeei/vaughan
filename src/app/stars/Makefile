@@ -1,3 +1,3 @@
 APP = stars
 
-include ../app_make.txt
+include ../app.mk
