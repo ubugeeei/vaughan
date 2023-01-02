@@ -12,7 +12,7 @@ void HariMain(void) {
     }
     refresh_window(win, 6, 26, 154, 90);
     for (;;) {
-        if (get_key(1) == 0x0a) {
+        if (getkey(1) == 0x0a) {
             break;
         }  // 0x0a = Enter
     }

@@ -1,10 +1,10 @@
 [BITS 32]
 
-		GLOBAL	get_key
+		GLOBAL	getkey
 
 [SECTION .text]
 
-get_key:		; int get_key(int mode);
+getkey:		; int getkey(int mode);
 		MOV		EDX,15
 		MOV		EAX,[ESP+4]	; mode
 		INT		0x40

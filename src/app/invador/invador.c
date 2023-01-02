@@ -263,7 +263,7 @@ void wait(int i, int timer, char *key_flag) {
         i = 0x0a; /* Enter */
     }
     for (;;) {
-        j = get_key(1);
+        j = getkey(1);
         if (i == j) {
             break;
         }

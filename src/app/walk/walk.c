@@ -11,7 +11,7 @@ void HariMain(void) {
     y = 56;
     putstr_window(win, x, y, 3, 1, "*");
     for (;;) {
-        i = get_key(1);
+        i = getkey(1);
         putstr_window(win, x, y, 0, 1, "*");
         if (i == '4' && x > 4) {
             x -= 8;

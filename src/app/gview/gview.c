@@ -84,7 +84,7 @@ void HariMain(void) {
 
 	// Wait for quit
 	for (;;) {
-		i = get_key(1);
+		i = getkey(1);
 		if (i == 'Q' || i == 'q') {
 			api_end();
 		}

@@ -244,7 +244,7 @@ void wait_timer(int timer, int time) {
 	int i;
 	set_timeout(timer, time);
 	for (;;) {
-		i = get_key(1);
+		i = getkey(1);
 		if (i == 'Q' || i == 'q') {
 			beep(0);
 			api_end();

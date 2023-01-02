@@ -95,7 +95,7 @@ void HariMain(void) {
     p = txt_buf + 1;
     for (;;) {
         text_view(win, w, h, xskip, p, t, lang);
-        i = get_key(1);
+        i = getkey(1);
         if (i == 'Q' || i == 'q') {
             api_end();
         }
@@ -118,7 +118,7 @@ void HariMain(void) {
                     xskip = 0;
                 }
                 // If not '4' is pressed
-                if (get_key(0) != '4') {
+                if (getkey(0) != '4') {
                     break;
                 }
             }
@@ -126,7 +126,7 @@ void HariMain(void) {
         if (i == '6') {
             for (;;) {
                 xskip += spd_x;
-                if (get_key(0) != '6') {
+                if (getkey(0) != '6') {
                     break;
                 }
             }
@@ -140,7 +140,7 @@ void HariMain(void) {
                     for (p--; p[-1] != 0x0a; p--) {
                     }  // Go back until 0x0a
                 }
-                if (get_key(0) != '8') {
+                if (getkey(0) != '8') {
                     break;
                 }
             }
@@ -155,7 +155,7 @@ void HariMain(void) {
                     }
                     p = q + 1;
                 }
-                if (get_key(0) != '2') {
+                if (getkey(0) != '2') {
                     break;
                 }
             }

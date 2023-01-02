@@ -28,7 +28,7 @@ void HariMain(void) {
     }
 
     for (;;) {
-        if (get_key(1) == 0x0a) {
+        if (getkey(1) == 0x0a) {
             break;
         }  // Enter to break
     }

@@ -14,7 +14,7 @@ void HariMain(void) {
         box_fill_window(win, 28, 27, 115, 41, 7);
         putstr_window(win, 28, 27, 0, 11, s);
         set_timeout(timer, 100);
-        if (get_key(1) != 128) {
+        if (getkey(1) != 128) {
             break;
         }
         sec++;

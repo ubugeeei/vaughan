@@ -9,7 +9,7 @@ void HariMain(void) {
         // decrement i 1%
         beep(i);
         set_timeout(timer, 1);  // 0.01s
-        if (get_key(1) != 128) {
+        if (getkey(1) != 128) {
             break;
         }
     }
