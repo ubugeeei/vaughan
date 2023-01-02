@@ -53,7 +53,7 @@ $(OUT_DIR)/haribote.img : src/kernel/ipl10.bin src/kernel/haribote.sys $(APPS)
 		src/app/mmldata/daiku.mml \
 		src/app/pictdata/fujisan.jpg \
 		src/app/pictdata/night.bmp \
-		src/font/jp.fnt ::
+		font/jp.fnt ::
 
 # Commands
 run :
