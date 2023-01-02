@@ -26,7 +26,8 @@ APPS =\
 	bball/bball.hrb \
 	calc/calc.hrb \
 	invador/invador.hrb \
-	tview/tview.hrb
+	tview/tview.hrb \
+	mmlplay/mmlplay.hrb
 
 MAKE = make -r
 DEL = rm -f
@@ -38,12 +39,12 @@ default :
 # -f: size, -C: hidden_sectors, -B: boot_sector, -i: 
 haribote.img : haribote/ipl20.bin haribote/haribote.sys $(APPS)
 	mformat -f 1440 -C -B haribote/ipl20.bin -i haribote.img ::
-	mcopy -i haribote.img haribote/haribote.sys haribote/ipl20.nasm main.c $(APPS) font/jp.fnt ::
+	mcopy -i haribote.img haribote/haribote.sys haribote/ipl20.nasm main.c $(APPS) font/jp.fnt mmldata/kirakira.mml mmldata/fujisan.mml mmldata/daigo.mml mmldata/daiku.mml ::
 
 # Commands
 run :
 	$(MAKE) haribote.img
-	qemu-system-i386 -drive file=haribote.img,format=raw,if=floppy -boot a
+	qemu-system-i386 -soundhw pcspk -drive file=haribote.img,format=raw,if=floppy -boot a
 
 # install :
 
@@ -79,6 +80,7 @@ full :
 	$(MAKE) -C invador
 	$(MAKE) -C calc
 	$(MAKE) -C tview
+	$(MAKE) -C mmlplay
 	$(MAKE) haribote.img
 
 run_full :
@@ -130,6 +132,7 @@ clean_full :
 	$(MAKE) -C invador clean
 	$(MAKE) -C calc clean
 	$(MAKE) -C tview clean
+	$(MAKE) -C mmlplay clean
 
 src_only_full :
 	$(MAKE) -C lib src_only
@@ -163,6 +166,7 @@ src_only_full :
 	$(MAKE) -C invador src_only
 	$(MAKE) -C calc src_only
 	$(MAKE) -C tview src_only
+	$(MAKE) -C mmlplay src_only
 	-$(DEL) haribote.img
 
 refresh :
