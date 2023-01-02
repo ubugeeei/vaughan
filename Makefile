@@ -1,3 +1,5 @@
+OUT_DIR = target
+
 APPS = \
 	src/app/a/a.hrb \
 	src/app/hello3/hello3.hrb \
@@ -31,16 +33,17 @@ APPS = \
 
 MAKE = make -r
 DEL = rm -f
+PRE_MAKE = mkdir -p $(OUT_DIR)
 
 default : 
-	$(MAKE) haribote.img
+	$(MAKE) $(OUT_DIR)/haribote.img
 
 # mtool: https://www.gnu.org/software/mtools/manual/html_node/mformat.html
 # -f: size, -C: hidden_sectors, -B: boot_sector, -i: 
-haribote.img : src/kernel/ipl10.bin src/kernel/haribote.sys $(APPS)
-	mformat -f 1440 -C -B src/kernel/ipl10.bin -i haribote.img ::
+$(OUT_DIR)/haribote.img : src/kernel/ipl10.bin src/kernel/haribote.sys $(APPS)
+	mformat -f 1440 -C -B src/kernel/ipl10.bin -i $(OUT_DIR)/haribote.img ::
 	mcopy -i \
-		haribote.img \
+		$(OUT_DIR)/haribote.img \
 		src/kernel/haribote.sys \
 		src/kernel/ipl10.nasm \
 		$(APPS) \
@@ -54,12 +57,13 @@ haribote.img : src/kernel/ipl10.bin src/kernel/haribote.sys $(APPS)
 
 # Commands
 run :
-	$(MAKE) haribote.img
-	qemu-system-i386 -soundhw pcspk -drive file=haribote.img,format=raw,if=floppy -boot a
+	$(MAKE) $(OUT_DIR)/haribote.img
+	qemu-system-i386 -soundhw pcspk -drive file=$(OUT_DIR)/haribote.img,format=raw,if=floppy -boot a
 
 # install :
 
 full :
+	$(PRE_MAKE)
 	$(MAKE) -C src/lib
 	$(MAKE) -C src/kernel
 	$(MAKE) -C src/app/apilib
@@ -92,11 +96,11 @@ full :
 	$(MAKE) -C src/app/tview
 	$(MAKE) -C src/app/mmlplay
 	$(MAKE) -C src/app/gview
-	$(MAKE) haribote.img
+	$(MAKE) $(OUT_DIR)/haribote.img
 
 run_full :
 	$(MAKE) full
-	qemu-system-i386 -drive file=haribote.img,format=raw,if=floppy -boot a
+	qemu-system-i386 -drive file=$(OUT_DIR)/haribote.img,format=raw,if=floppy -boot a
 
 # install_full :
 
@@ -109,7 +113,7 @@ clean :
 
 src_only :
 	$(MAKE) clean
-	-$(DEL) haribote.img
+	-$(DEL) $(OUT_DIR)/haribote.img
 
 clean_full :
 	$(MAKE) -C src/lib clean
@@ -178,12 +182,12 @@ src_only_full :
 	$(MAKE) -C src/app/tview src_only
 	$(MAKE) -C src/app/mmlplay src_only
 	$(MAKE) -C src/app/gview src_only
-	-$(DEL) haribote.img
+	-$(DEL) $(OUT_DIR)/haribote.img
 
 refresh :
 	$(MAKE) full
 	$(MAKE) clean_full
-	-$(DEL) haribote.img
+	-$(DEL) $(OUT_DIR)/haribote.img
 
 NAME = new_app
 new_app:

@@ -23,9 +23,9 @@ $(APP).hrb : $(APP).o bmp.o jpeg.o $(APILIBPATH)libapi.a ../app.ld
 	$(CC_WITH_OPTION) $(CAPPLD) -Wl,'--defsym=__stack=$(STACK)' -g -o $@ $< bmp.o jpeg.o $(APILIBPATH)libapi.a
 
 # Image
-haribote.img : $(HARIBOTEPATH)ipl10.bin $(HARIBOTEPATH)haribote.sys $(APP).hrb
-	mformat -f 1440 -C -B $(HARIBOTEPATH)ipl10.bin -i haribote.img ::
-	mcopy -i haribote.img $(HARIBOTEPATH)haribote.sys $(APP).hrb ../nihongo/nihongo.fnt ::
+$(OUT_DIR)/haribote.img : $(HARIBOTEPATH)ipl10.bin $(HARIBOTEPATH)haribote.sys $(APP).hrb
+	mformat -f 1440 -C -B $(HARIBOTEPATH)ipl10.bin -i $(OUT_DIR)/haribote.img ::
+	mcopy -i $(OUT_DIR)/haribote.img $(HARIBOTEPATH)haribote.sys $(APP).hrb ../nihongo/nihongo.fnt ::
 
 # Rule
 %.o : %.c
@@ -37,8 +37,8 @@ haribote.img : $(HARIBOTEPATH)ipl10.bin $(HARIBOTEPATH)haribote.sys $(APP).hrb
 
 # Commands
 run :
-	$(MAKE) haribote.img
-	qemu-system-i386 -drive file=haribote.img,format=raw,if=floppy -boot a
+	$(MAKE) $(OUT_DIR)/haribote.img
+	qemu-system-i386 -drive file=$(OUT_DIR)/haribote.img,format=raw,if=floppy -boot a
 
 full :
 	$(MAKE) -C $(APILIBPATH)
@@ -53,7 +53,7 @@ clean :
 	-$(DEL) *.o
 	-$(DEL) *.lst
 	-$(DEL) *.map
-	-$(DEL) haribote.img
+	-$(DEL) $(OUT_DIR)/haribote.img
 
 src_only :
 	$(MAKE) clean
