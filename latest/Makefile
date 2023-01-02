@@ -1,33 +1,33 @@
 APPS = \
-	a/a.hrb \
-	hello3/hello3.hrb \
-	hello4/hello4.hrb \
-	hello5/hello5.hrb \
-	win/win.hrb \
-	win2/win2.hrb \
-	win3/win3.hrb \
-	star1/star1.hrb \
-	stars/stars.hrb \
-	star2/star2.hrb \
-	lines/lines.hrb \
-	walk/walk.hrb \
-	noodle/noodle.hrb \
-	beepdown/beepdown.hrb \
-	color/color.hrb \
-	color2/color2.hrb \
-	sosu/sosu.hrb \
-	sosu2/sosu2.hrb \
-	sosu3/sosu3.hrb \
-	cat/cat.hrb \
-	iroha/iroha.hrb \
-	chklang/chklang.hrb \
-	notrec/notrec.hrb \
-	bball/bball.hrb \
-	invador/invador.hrb \
-	calc/calc.hrb \
-	tview/tview.hrb \
-	mmlplay/mmlplay.hrb \
-	gview/gview.hrb
+	app/a/a.hrb \
+	app/hello3/hello3.hrb \
+	app/hello4/hello4.hrb \
+	app/hello5/hello5.hrb \
+	app/win/win.hrb \
+	app/win2/win2.hrb \
+	app/win3/win3.hrb \
+	app/star1/star1.hrb \
+	app/stars/stars.hrb \
+	app/star2/star2.hrb \
+	app/lines/lines.hrb \
+	app/walk/walk.hrb \
+	app/noodle/noodle.hrb \
+	app/beepdown/beepdown.hrb \
+	app/color/color.hrb \
+	app/color2/color2.hrb \
+	app/sosu/sosu.hrb \
+	app/sosu2/sosu2.hrb \
+	app/sosu3/sosu3.hrb \
+	app/cat/cat.hrb \
+	app/iroha/iroha.hrb \
+	app/chklang/chklang.hrb \
+	app/notrec/notrec.hrb \
+	app/bball/bball.hrb \
+	app/invador/invador.hrb \
+	app/calc/calc.hrb \
+	app/tview/tview.hrb \
+	app/mmlplay/mmlplay.hrb \
+	app/gview/gview.hrb
 
 MAKE = make -r
 DEL = rm -f
@@ -37,9 +37,9 @@ default :
 
 # mtool: https://www.gnu.org/software/mtools/manual/html_node/mformat.html
 # -f: size, -C: hidden_sectors, -B: boot_sector, -i: 
-haribote.img : haribote/ipl10.bin haribote/haribote.sys $(APPS)
-	mformat -f 1440 -C -B haribote/ipl10.bin -i haribote.img ::
-	mcopy -i haribote.img haribote/haribote.sys haribote/ipl10.nasm $(APPS) mmldata/kirakira.mml mmldata/fujisan.mml mmldata/daigo.mml mmldata/daiku.mml pictdata/fujisan.jpg pictdata/night.bmp font/jp.fnt ::
+haribote.img : app/haribote/ipl10.bin app/haribote/haribote.sys $(APPS)
+	mformat -f 1440 -C -B app/haribote/ipl10.bin -i haribote.img ::
+	mcopy -i haribote.img app/haribote/haribote.sys app/haribote/ipl10.nasm $(APPS) mmldata/kirakira.mml mmldata/fujisan.mml mmldata/daigo.mml mmldata/daiku.mml pictdata/fujisan.jpg pictdata/night.bmp font/jp.fnt ::
 
 # Commands
 run :
@@ -50,37 +50,37 @@ run :
 
 full :
 	$(MAKE) -C lib
-	$(MAKE) -C haribote
-	$(MAKE) -C apilib
-	$(MAKE) -C a
-	$(MAKE) -C hello3
-	$(MAKE) -C hello4
-	$(MAKE) -C hello5
-	$(MAKE) -C win
-	$(MAKE) -C win2
-	$(MAKE) -C win3
-	$(MAKE) -C star1
-	$(MAKE) -C stars
-	$(MAKE) -C star2
-	$(MAKE) -C lines
-	$(MAKE) -C walk
-	$(MAKE) -C noodle
-	$(MAKE) -C beepdown
-	$(MAKE) -C color
-	$(MAKE) -C color2
-	$(MAKE) -C sosu
-	$(MAKE) -C sosu2
-	$(MAKE) -C sosu3
-	$(MAKE) -C cat
-	$(MAKE) -C iroha
-	$(MAKE) -C chklang
-	$(MAKE) -C notrec
-	$(MAKE) -C bball
-	$(MAKE) -C invador
-	$(MAKE) -C calc
-	$(MAKE) -C tview
-	$(MAKE) -C mmlplay
-	$(MAKE) -C gview
+	$(MAKE) -C app/haribote
+	$(MAKE) -C app/apilib
+	$(MAKE) -C app/a
+	$(MAKE) -C app/hello3
+	$(MAKE) -C app/hello4
+	$(MAKE) -C app/hello5
+	$(MAKE) -C app/win
+	$(MAKE) -C app/win2
+	$(MAKE) -C app/win3
+	$(MAKE) -C app/star1
+	$(MAKE) -C app/stars
+	$(MAKE) -C app/star2
+	$(MAKE) -C app/lines
+	$(MAKE) -C app/walk
+	$(MAKE) -C app/noodle
+	$(MAKE) -C app/beepdown
+	$(MAKE) -C app/color
+	$(MAKE) -C app/color2
+	$(MAKE) -C app/sosu
+	$(MAKE) -C app/sosu2
+	$(MAKE) -C app/sosu3
+	$(MAKE) -C app/cat
+	$(MAKE) -C app/iroha
+	$(MAKE) -C app/chklang
+	$(MAKE) -C app/notrec
+	$(MAKE) -C app/bball
+	$(MAKE) -C app/invador
+	$(MAKE) -C app/calc
+	$(MAKE) -C app/tview
+	$(MAKE) -C app/mmlplay
+	$(MAKE) -C app/gview
 	$(MAKE) haribote.img
 
 run_full :
@@ -91,7 +91,7 @@ run_full :
 
 run_os :
 	$(MAKE) -C lib
-	$(MAKE) -C haribote
+	$(MAKE) -C app/haribote
 	$(MAKE) run
 
 clean :
@@ -102,71 +102,71 @@ src_only :
 
 clean_full :
 	$(MAKE) -C lib clean
-	$(MAKE) -C haribote clean
-	$(MAKE) -C apilib clean
-	$(MAKE) -C a clean
-	$(MAKE) -C hello3 clean
-	$(MAKE) -C hello4 clean
-	$(MAKE) -C hello5 clean
-	$(MAKE) -C win clean
-	$(MAKE) -C win2 clean
-	$(MAKE) -C win3 clean
-	$(MAKE) -C star1 clean
-	$(MAKE) -C stars clean
-	$(MAKE) -C star2 clean
-	$(MAKE) -C lines clean
-	$(MAKE) -C walk	 clean
-	$(MAKE) -C noodle clean
-	$(MAKE) -C beepdown clean
-	$(MAKE) -C color clean
-	$(MAKE) -C color2 clean
-	$(MAKE) -C sosu clean
-	$(MAKE) -C sosu2 clean
-	$(MAKE) -C sosu3 clean
-	$(MAKE) -C cat clean
-	$(MAKE) -C iroha clean
-	$(MAKE) -C chklang clean
-	$(MAKE) -C notrec clean
-	$(MAKE) -C bball clean
-	$(MAKE) -C invador clean
-	$(MAKE) -C calc clean
-	$(MAKE) -C tview clean
-	$(MAKE) -C mmlplay clean
-	$(MAKE) -C gview clean
+	$(MAKE) -C app/haribote clean
+	$(MAKE) -C app/apilib clean
+	$(MAKE) -C app/a clean
+	$(MAKE) -C app/hello3 clean
+	$(MAKE) -C app/hello4 clean
+	$(MAKE) -C app/hello5 clean
+	$(MAKE) -C app/win clean
+	$(MAKE) -C app/win2 clean
+	$(MAKE) -C app/win3 clean
+	$(MAKE) -C app/star1 clean
+	$(MAKE) -C app/stars clean
+	$(MAKE) -C app/star2 clean
+	$(MAKE) -C app/lines clean
+	$(MAKE) -C app/walk	 clean
+	$(MAKE) -C app/noodle clean
+	$(MAKE) -C app/beepdown clean
+	$(MAKE) -C app/color clean
+	$(MAKE) -C app/color2 clean
+	$(MAKE) -C app/sosu clean
+	$(MAKE) -C app/sosu2 clean
+	$(MAKE) -C app/sosu3 clean
+	$(MAKE) -C app/cat clean
+	$(MAKE) -C app/iroha clean
+	$(MAKE) -C app/chklang clean
+	$(MAKE) -C app/notrec clean
+	$(MAKE) -C app/bball clean
+	$(MAKE) -C app/invador clean
+	$(MAKE) -C app/calc clean
+	$(MAKE) -C app/tview clean
+	$(MAKE) -C app/mmlplay clean
+	$(MAKE) -C app/gview clean
 
 src_only_full :
 	$(MAKE) -C lib src_only
-	$(MAKE) -C haribote src_only
-	$(MAKE) -C apilib src_only
-	$(MAKE) -C a src_only
-	$(MAKE) -C hello3 src_only
-	$(MAKE) -C hello4 src_only
-	$(MAKE) -C hello5 src_only
-	$(MAKE) -C win src_only
-	$(MAKE) -C win2 src_only
-	$(MAKE) -C win3 src_only
-	$(MAKE) -C star1 src_only
-	$(MAKE) -C stars src_only
-	$(MAKE) -C star2 src_only
-	$(MAKE) -C lines src_only
-	$(MAKE) -C walk	 src_only
-	$(MAKE) -C noodle src_only
-	$(MAKE) -C beepdown src_only
-	$(MAKE) -C color src_only
-	$(MAKE) -C color2 src_only
-	$(MAKE) -C sosu src_only
-	$(MAKE) -C sosu2 src_only
-	$(MAKE) -C sosu3 src_only
-	$(MAKE) -C cat src_only
-	$(MAKE) -C iroha src_only
-	$(MAKE) -C chklang src_only
-	$(MAKE) -C notrec src_only
-	$(MAKE) -C bball src_only
-	$(MAKE) -C invador src_only
-	$(MAKE) -C calc src_only
-	$(MAKE) -C tview src_only
-	$(MAKE) -C mmlplay src_only
-	$(MAKE) -C gview src_only
+	$(MAKE) -C app/haribote src_only
+	$(MAKE) -C app/apilib src_only
+	$(MAKE) -C app/a src_only
+	$(MAKE) -C app/hello3 src_only
+	$(MAKE) -C app/hello4 src_only
+	$(MAKE) -C app/hello5 src_only
+	$(MAKE) -C app/win src_only
+	$(MAKE) -C app/win2 src_only
+	$(MAKE) -C app/win3 src_only
+	$(MAKE) -C app/star1 src_only
+	$(MAKE) -C app/stars src_only
+	$(MAKE) -C app/star2 src_only
+	$(MAKE) -C app/lines src_only
+	$(MAKE) -C app/walk	 src_only
+	$(MAKE) -C app/noodle src_only
+	$(MAKE) -C app/beepdown src_only
+	$(MAKE) -C app/color src_only
+	$(MAKE) -C app/color2 src_only
+	$(MAKE) -C app/sosu src_only
+	$(MAKE) -C app/sosu2 src_only
+	$(MAKE) -C app/sosu3 src_only
+	$(MAKE) -C app/cat src_only
+	$(MAKE) -C app/iroha src_only
+	$(MAKE) -C app/chklang src_only
+	$(MAKE) -C app/notrec src_only
+	$(MAKE) -C app/bball src_only
+	$(MAKE) -C app/invador src_only
+	$(MAKE) -C app/calc src_only
+	$(MAKE) -C app/tview src_only
+	$(MAKE) -C app/mmlplay src_only
+	$(MAKE) -C app/gview src_only
 	-$(DEL) haribote.img
 
 refresh :
