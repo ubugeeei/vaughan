@@ -149,3 +149,10 @@ refresh :
 	$(MAKE) full
 	$(MAKE) clean_full
 	-$(DEL) haribote.img
+
+
+NAME = new_app
+new_app:
+	mkdir $(NAME)
+	touch $(NAME)/$(NAME).c
+	echo "APP = $(NAME)\n\ninclude ../app_make.txt" > $(NAME)/Makefile
