@@ -39,7 +39,7 @@ default :
 # -f: size, -C: hidden_sectors, -B: boot_sector, -i: 
 haribote.img : app/haribote/ipl10.bin app/haribote/haribote.sys $(APPS)
 	mformat -f 1440 -C -B app/haribote/ipl10.bin -i haribote.img ::
-	mcopy -i haribote.img app/haribote/haribote.sys app/haribote/ipl10.nasm $(APPS) mmldata/kirakira.mml mmldata/fujisan.mml mmldata/daigo.mml mmldata/daiku.mml pictdata/fujisan.jpg pictdata/night.bmp font/jp.fnt ::
+	mcopy -i haribote.img app/haribote/haribote.sys app/haribote/ipl10.nasm $(APPS) app/mmldata/kirakira.mml app/mmldata/fujisan.mml app/mmldata/daigo.mml app/mmldata/daiku.mml app/pictdata/fujisan.jpg app/pictdata/night.bmp font/jp.fnt ::
 
 # Commands
 run :
