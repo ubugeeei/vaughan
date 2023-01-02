@@ -307,6 +307,7 @@ struct FILEINFO {
 void file_read_fat(int *fat, unsigned char *img);
 void file_load_file(int cluster_num, int size, char *buf, int *fat, char *img);
 struct FILEINFO *file_search(char *name, struct FILEINFO *finfo, int max);
+char *file_load_file2(int cluster_num, int *psize, int *fat);
 
 /* tek.c */
 int tek_getsize(unsigned char *p);

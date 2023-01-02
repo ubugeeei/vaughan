@@ -1,7 +1,7 @@
 #include "../include/setjmp.h"
-#include "bootpack.h"
+#include "boot.h"
 // #include <string.h>
-// #define NULL 0
+#define NULL 0
 
 typedef unsigned char UCHAR;
 typedef unsigned int UINT32;
@@ -339,10 +339,8 @@ static int tek_rdget1(struct tek_STR_RNGDEC *rd, tek_TPRB *prob0, int n, int j,
                     i = tek_rdget1(rd, rd->probs.tbmt, 0x74, 1, &rd->bm[2]) &
                         15;
                     if (i == 15) goto err;
-                    tek_setbm5(
-                        bm, i,
-                        // clang-format off
-                        (((tek_rdget1(rd, rd->probs.tbmm, 0x74, 1, &rd->bm[2]) - 1) & 15) + 1);
+                    // clang-format off
+                    tek_setbm5(bm, i, ((tek_rdget1(rd, rd->probs.tbmm, 0x74, 1, &rd->bm[2]) - 1) & 15) + 1);
                     // clang-format on
                 }
                 bm->lt = bm->lt0;
