@@ -1,6 +1,6 @@
 OUT_DIR = ../../../target
 LIB_PATH = $(OUT_DIR)/lib/bin/
-API_LIB_PATH   = ../apilib/
+API_LIB_PATH   = ../../kernel/system_call/
 KERNEL_PATH = ../../kernel/
 
 MAKE = make -r

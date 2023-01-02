@@ -1,4 +1,4 @@
-#include "../apilib.h"
+#include "../syscall.h"
 #include "../../include/stdio.h"
 
 void HariMain(void) {

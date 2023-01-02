@@ -3,7 +3,7 @@ STACK = 0x445C00
 # 4480k(4480000) = 0x445C00
 
 LIBPATH = ../../lib/
-APILIBPATH   = ../apilib/
+APILIBPATH   = ../../kernel/system_call/
 HARIBOTEPATH = ../../kernel/
 
 MAKE = make -r

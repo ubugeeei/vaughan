@@ -66,7 +66,7 @@ full :
 	$(PRE_MAKE)
 	$(MAKE) -C src/lib
 	$(MAKE) -C src/kernel
-	$(MAKE) -C src/app/apilib
+	$(MAKE) -C src/kernel/system_call
 	$(MAKE) -C src/app/a
 	$(MAKE) -C src/app/hello3
 	$(MAKE) -C src/app/hello4
@@ -119,7 +119,7 @@ src_only :
 clean_full :
 	$(MAKE) -C src/lib clean
 	$(MAKE) -C src/kernel clean
-	$(MAKE) -C src/app/apilib clean
+	$(MAKE) -C src/kernel/system_call clean
 	$(MAKE) -C src/app/a clean
 	$(MAKE) -C src/app/hello3 clean
 	$(MAKE) -C src/app/hello4 clean
@@ -154,7 +154,7 @@ clean_full :
 src_only_full :
 	$(MAKE) -C src/lib src_only
 	$(MAKE) -C src/kernel src_only
-	$(MAKE) -C src/app/apilib src_only
+	$(MAKE) -C src/kernel/system_call src_only
 	$(MAKE) -C src/app/a src_only
 	$(MAKE) -C src/app/hello3 src_only
 	$(MAKE) -C src/app/hello4 src_only

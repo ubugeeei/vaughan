@@ -1,4 +1,4 @@
-#include "../apilib.h"
+#include "../syscall.h"
 #include "../../include/string.h" // strlen
 
 int strtol(char *s, char **endp, int base); // stdlib.h

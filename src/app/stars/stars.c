@@ -1,4 +1,4 @@
-#include "../apilib.h"
+#include "../syscall.h"
 
 int rand(void);  // 0~32767
 

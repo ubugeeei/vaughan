@@ -1,4 +1,4 @@
-#include "../apilib.h"
+#include "../syscall.h"
 
 void HariMain(void) {
     putstr("Hello World!\n");

@@ -1,4 +1,4 @@
-#include "../apilib.h"
+#include "../syscall.h"
 
 unsigned char rgb2pal(int r, int g, int b, int x, int y);
 
