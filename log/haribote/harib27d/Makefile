@@ -27,7 +27,8 @@ APPS =\
 	calc/calc.hrb \
 	invador/invador.hrb \
 	tview/tview.hrb \
-	mmlplay/mmlplay.hrb
+	mmlplay/mmlplay.hrb \
+	gview/gview.hrb
 
 MAKE = make -r
 DEL = rm -f
@@ -37,9 +38,9 @@ default :
 
 # mtool: https://www.gnu.org/software/mtools/manual/html_node/mformat.html
 # -f: size, -C: hidden_sectors, -B: boot_sector, -i: 
-haribote.img : haribote/ipl20.bin haribote/haribote.sys $(APPS)
-	mformat -f 1440 -C -B haribote/ipl20.bin -i haribote.img ::
-	mcopy -i haribote.img haribote/haribote.sys haribote/ipl20.nasm main.c $(APPS) font/jp.fnt mmldata/kirakira.mml mmldata/fujisan.mml mmldata/daigo.mml mmldata/daiku.mml ::
+haribote.img : haribote/ipl10.bin haribote/haribote.sys $(APPS)
+	mformat -f 1440 -C -B haribote/ipl10.bin -i haribote.img ::
+	mcopy -i haribote.img haribote/haribote.sys haribote/ipl10.nasm main.c $(APPS) font/jp.fnt mmldata/kirakira.mml mmldata/fujisan.mml mmldata/daigo.mml mmldata/daiku.mml pictdata/fujisan.jpg pictdata/night.bmp ::
 
 # Commands
 run :
@@ -81,6 +82,7 @@ full :
 	$(MAKE) -C calc
 	$(MAKE) -C tview
 	$(MAKE) -C mmlplay
+	$(MAKE) -C gview
 	$(MAKE) haribote.img
 
 run_full :
@@ -133,6 +135,7 @@ clean_full :
 	$(MAKE) -C calc clean
 	$(MAKE) -C tview clean
 	$(MAKE) -C mmlplay clean
+	$(MAKE) -C gview clean
 
 src_only_full :
 	$(MAKE) -C lib src_only
@@ -167,6 +170,7 @@ src_only_full :
 	$(MAKE) -C calc src_only
 	$(MAKE) -C tview src_only
 	$(MAKE) -C mmlplay src_only
+	$(MAKE) -C gview src_only
 	-$(DEL) haribote.img
 
 refresh :

@@ -1,7 +1,7 @@
 ; hello-os
 ; TAB=4
 
-		CYLS	EQU	20
+		CYLS	EQU	10
 		ORG 0x7c00	; Where to start the program
 
 ; For FAT12(floppy disc) format
