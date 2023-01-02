@@ -2,7 +2,7 @@ OUT_DIR = ../../target
 MAKE = make -r
 DEL = rm -f
 PRE_MAKE = \
-	mkdir -p $(OUT_DIR)/lib/bin \
+	mkdir -p $(OUT_DIR)/lib/bin &&\
 	mkdir -p $(OUT_DIR)/lib/obj
 
 CC = i386-elf-gcc
