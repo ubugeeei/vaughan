@@ -30,9 +30,9 @@ default :
 
 # mtool: https://www.gnu.org/software/mtools/manual/html_node/mformat.html
 # -f: size, -C: hidden_sectors, -B: boot_sector, -i: 
-haribote.img : haribote/ipl10.bin haribote/haribote.sys $(APPS)
-	mformat -f 1440 -C -B haribote/ipl10.bin -i haribote.img ::
-	mcopy -i haribote.img haribote/haribote.sys haribote/ipl10.nasm main.c $(APPS) font/jp.fnt ::
+haribote.img : haribote/ipl20.bin haribote/haribote.sys $(APPS)
+	mformat -f 1440 -C -B haribote/ipl20.bin -i haribote.img ::
+	mcopy -i haribote.img haribote/haribote.sys haribote/ipl20.nasm main.c $(APPS) font/jp.fnt ::
 
 # Commands
 run :

@@ -23,8 +23,8 @@ $(APP).hrb : $(APP).o $(LIBPATH)libstdio.a $(APILIBPATH)libapi.a ../app.ld
 	$(CC_WITH_OPTION) $(CAPPLD) -Wl,'--defsym=__stack=$(STACK)' -g -o $@ $< $(LIBPATH)libstdio.a $(APILIBPATH)libapi.a
 
 # Image
-haribote.img : $(HARIBOTEPATH)ipl10.bin $(HARIBOTEPATH)haribote.sys $(APP).hrb
-	mformat -f 1440 -C -B ipl10.bin -i haribote.img ::
+haribote.img : $(HARIBOTEPATH)ipl20.bin $(HARIBOTEPATH)haribote.sys $(APP).hrb
+	mformat -f 1440 -C -B ipl20.bin -i haribote.img ::
 	mcopy -i haribote.img $(HARIBOTEPATH)haribote.sys $(APP).hrb ::
 
 # Rule
