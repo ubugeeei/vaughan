@@ -23,5 +23,6 @@ void  fclose(int fhandle);
 void  fseek(int fhandle, int offset, int mode);
 int   fsize(int fhandle, int mode);
 int   fread(char *buf, int maxsize, int fhandle);
+int   cmdline(char *buf, int maxsize);
 
 void  *alloca(int size);

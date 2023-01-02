@@ -13,6 +13,7 @@ void console_task(struct SHEET *sheet, unsigned int memtotal) {
     cons.cur_y = 28;
     cons.cur_c = -1;
     task->cons = &cons;
+    task->cmdline = cmdline;
 
     if (cons.sht != 0) {
         cons.timer = timer_alloc();
@@ -188,8 +189,6 @@ void cons_run_cmd(char *cmdline, struct CONSOLE *cons, int *fat, unsigned int me
         cmd_clear(cons);
     } else if (strcmp(cmdline, "ls") == 0) {
         cmd_ls(cons);
-    } else if (strncmp(cmdline, "cat ", 4) == 0) {
-        // TODO: cat command
     } else if (strcmp(cmdline, "exit") == 0) {
         cmd_exit(cons, fat);
     } else if (strncmp(cmdline, "start ", 6) == 0) {
@@ -577,6 +576,19 @@ int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int 
             }
             *((char *)ebx + ds_base + i) = fh->buf[fh->pos];
             fh->pos++;
+        }
+        reg[7] = i;
+    } else if (edx == 26) {  // Command line
+        i = 0;
+        for (;;) {
+            *((char *)ebx + ds_base + i) = task->cmdline[i];
+            if (task->cmdline[i] == 0) {
+                break;
+            }
+            if (i >= ecx) {
+                break;
+            }
+            i++;
         }
         reg[7] = i;
     }
