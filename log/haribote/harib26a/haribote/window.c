@@ -68,9 +68,15 @@ void make_wtitle8(unsigned char *buf, int xsize, char *title, char act) {
 // clang-format off
 void putfonts8_asc_sht(struct SHEET *sht, int x, int y, int c, int b, char *s, int l) {
     // clang-format on
+    struct TASK *task = task_now();
     boxfill8(sht->buf, sht->bxsize, b, x, y, x + l * 8 - 1, y + 15);
-    putfonts8_asc(sht->buf, sht->bxsize, x, y, c, s);
-    sheet_refresh(sht, x, y, x + l * 8, y + 16);
+    if (task->lang_mode != 0 && task->lang_byte1 != 0) {
+        putfonts8_asc(sht->buf, sht->bxsize, x, y, c, s);
+        sheet_refresh(sht, x - 8, y, x + l * 8, y + 16);
+    } else {
+        putfonts8_asc(sht->buf, sht->bxsize, x, y, c, s);
+        sheet_refresh(sht, x, y, x + l * 8, y + 16);
+    }
     return;
 }
 
