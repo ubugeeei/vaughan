@@ -229,6 +229,7 @@ struct TASK {
     struct FILEHANDLE *fhandle;
     int *fat;
     char *cmdline;
+    char lang_mode;
 };
 struct TASK_LEVEL {
     int running;
@@ -285,6 +286,7 @@ void cmd_cat(struct CONSOLE *cons, int *fat, char *cmdline);
 void cmd_exit(struct CONSOLE *cons, int *fat);
 void cmd_start(struct CONSOLE *cons, char *cmdline, int memtotal);
 void cmd_ncst(struct CONSOLE *cons, char *cmdline, int memtotal);
+void cmd_lang(struct CONSOLE *cons, char *cmdline);
 int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline);
 // clang-format off
 int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int eax);

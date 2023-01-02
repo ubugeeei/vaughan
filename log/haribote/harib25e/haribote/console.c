@@ -195,6 +195,8 @@ void cons_run_cmd(char *cmdline, struct CONSOLE *cons, int *fat, unsigned int me
         cmd_start(cons, cmdline, memtotal);
     } else if (strncmp(cmdline, "ncst ", 5) == 0) {
         cmd_ncst(cons, cmdline, memtotal);
+    } else if (strncmp(cmdline, "lang ", 5) == 0) {
+        cmd_lang(cons, cmdline);
     } else if (cmdline[0] != 0) {
         if (cmd_app(cons, fat, cmdline) == 0) {
             cons_putstr0(cons, "Bad command.\n\n");
@@ -293,6 +295,18 @@ void cmd_ncst(struct CONSOLE *cons, char *cmdline, int memtotal) {
         queue32_put(queue, cmdline[i] + 256);
     }
     queue32_put(queue, 10 + 256);
+    cons_newline(cons);
+    return;
+}
+
+void cmd_lang(struct CONSOLE *cons, char *cmdline) {
+    struct TASK *task = task_now();
+    unsigned char mode = cmdline[5] - '0';
+    if (mode <= 1) {
+        task->lang_mode = mode;
+    } else {
+        cons_putstr0(cons, "mode number error.\n");
+    }
     cons_newline(cons);
     return;
 }

@@ -118,15 +118,26 @@ void putfont8(char *vram, int xsize, int x, int y, char c, char *font) {
 	return;
 }
 
-void putfonts8_asc(char *vram, int xsize, int x, int y, char c,
-		   unsigned char *s) {
+void putfonts8_asc(char *vram, int xsize, int x, int y, char c, unsigned char *s) {
 	extern char hankaku[4096];
-	for (; *s != 0x00; s++) {
-		putfont8(vram, xsize, x, y, c, hankaku + *s * 16);
-		x += 8;
+	struct TASK *task = task_now();
+	char *jp_font = (char *) *((int *) 0x0fe8);
+
+	if (task->lang_mode == 0) {
+			for (; *s != 0x00; s++) {
+			putfont8(vram, xsize, x, y, c, hankaku + *s * 16);
+			x += 8;
+		}
+	}
+	if (task->lang_mode == 1) {
+		for (; *s != 0x00; s++) {
+			putfont8(vram, xsize, x, y, c, jp_font + *s * 16);
+			x += 8;
+		}
 	}
 	return;
 }
+
 
 void init_mouse_cursor8(char *mouse, char bc) {
 	static char cursor[16][16] = {
