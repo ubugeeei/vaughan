@@ -139,9 +139,11 @@ void Boot(void) {
     // clang-format off
     finfo = file_search("jp.fnt", (struct FILEINFO *)(ADR_DISK_IMG + 0x002600), 224);
     if (finfo != 0) {
-        file_load_file(finfo->cluster_num, finfo->size, jp_fnt, fat, (char *)(ADR_DISK_IMG + 0x003e00));
-        // clang-format on
+        i = finfo->size;
+		jp_fnt = file_load_file2(finfo->cluster_num, &i, fat);
     } else {
+        jp_fnt = (unsigned char *)memman_alloc_4k(memman, 16 * 256 + 32 * 94 * 47);
+        // clang-format on
         for (i = 0; i < 16 * 256; i++) {
             jp_fnt[i] = hankaku[i];  // Copy hankaku characters
         }

@@ -21,7 +21,10 @@ APPS =\
 	typea/typea.hrb \
 	cat/cat.hrb \
 	chklang/chklang.hrb \
-	iroha/iroha.hrb
+	iroha/iroha.hrb \
+	notrec/notrec.hrb \
+	bball/bball.hrb \
+	invador/invador.hrb
 
 MAKE = make -r
 DEL = rm -f
@@ -69,6 +72,9 @@ full :
 	$(MAKE) -C cat
 	$(MAKE) -C iroha
 	$(MAKE) -C chklang
+	$(MAKE) -C notrec
+	$(MAKE) -C bball
+	$(MAKE) -C invador
 	$(MAKE) haribote.img
 
 run_full :
@@ -115,6 +121,9 @@ clean_full :
 	$(MAKE) -C cat clean
 	$(MAKE) -C iroha clean
 	$(MAKE) -C chklang clean
+	$(MAKE) -C notrec clean
+	$(MAKE) -C bball clean
+	$(MAKE) -C invador clean
 
 src_only_full :
 	$(MAKE) -C lib src_only
@@ -143,9 +152,19 @@ src_only_full :
 	$(MAKE) -C cat src_only
 	$(MAKE) -C iroha src_only
 	$(MAKE) -C chklang src_only
+	$(MAKE) -C notrec src_only
+	$(MAKE) -C bball src_only
+	$(MAKE) -C invador src_only
 	-$(DEL) haribote.img
 
 refresh :
 	$(MAKE) full
 	$(MAKE) clean_full
 	-$(DEL) haribote.img
+
+
+NAME = new_app
+new_app:
+	mkdir $(NAME)
+	touch $(NAME)/$(NAME).c
+	echo "APP = $(NAME)\n\ninclude ../app_make.txt" > $(NAME)/Makefile
