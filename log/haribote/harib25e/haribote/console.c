@@ -7,6 +7,7 @@ void console_task(struct SHEET *sheet, unsigned int memtotal) {
     struct CONSOLE cons;
     struct FILEHANDLE fhandle[8];
     char cmdline[30];
+    unsigned char *jp_font = (char *)*((int *)0x0fe8);
 
     cons.sht = sheet;
     cons.cur_x = 8;
@@ -26,6 +27,13 @@ void console_task(struct SHEET *sheet, unsigned int memtotal) {
     }
     task->fhandle = fhandle;
     task->fat = fat;
+
+    // Is jp font available?
+    if (jp_font[4096] != 0xff) {
+        task->lang_mode = 1;
+    } else {
+        task->lang_mode = 0;
+    }
 
     cons_putchar(&cons, '>', 1);
 

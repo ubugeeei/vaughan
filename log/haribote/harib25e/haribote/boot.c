@@ -83,6 +83,7 @@ void Boot(void) {
     queue.task = task_a;
     task_run(task_a, 1, 2);
     *((int *)0x0fe4) = (int)shtctl;
+    task_a->lang_mode = 0;
 
     /*
      *
