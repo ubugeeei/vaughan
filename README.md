@@ -1,9 +1,10 @@
-# Haribote OS
+# Vaughan OS
+A toy operating system scratch implements.
 
-Haribote OS implementation.
-![スクリーンショット 2022-12-18 22 34 09](https://user-images.githubusercontent.com/71201308/208301271-2e4b03a9-120f-4483-8ed3-c0fd2948f3e6.png)
+![スクリーンショット 2023-01-03 1 55 47](https://user-images.githubusercontent.com/71201308/210260281-554bf814-cb4b-4d4e-8334-4470b2da01d6.png)
 
 # Usage
 ```sh
 $ make run_full
 ```
+
