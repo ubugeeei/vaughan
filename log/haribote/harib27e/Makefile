@@ -1,4 +1,4 @@
-APPS =\
+APPS = \
 	a/a.hrb \
 	hello3/hello3.hrb \
 	hello4/hello4.hrb \
@@ -18,14 +18,13 @@ APPS =\
 	sosu/sosu.hrb \
 	sosu2/sosu2.hrb \
 	sosu3/sosu3.hrb \
-	typea/typea.hrb \
 	cat/cat.hrb \
-	chklang/chklang.hrb \
 	iroha/iroha.hrb \
+	chklang/chklang.hrb \
 	notrec/notrec.hrb \
 	bball/bball.hrb \
-	calc/calc.hrb \
 	invador/invador.hrb \
+	calc/calc.hrb \
 	tview/tview.hrb \
 	mmlplay/mmlplay.hrb \
 	gview/gview.hrb
@@ -40,7 +39,7 @@ default :
 # -f: size, -C: hidden_sectors, -B: boot_sector, -i: 
 haribote.img : haribote/ipl10.bin haribote/haribote.sys $(APPS)
 	mformat -f 1440 -C -B haribote/ipl10.bin -i haribote.img ::
-	mcopy -i haribote.img haribote/haribote.sys haribote/ipl10.nasm main.c $(APPS) font/jp.fnt mmldata/kirakira.mml mmldata/fujisan.mml mmldata/daigo.mml mmldata/daiku.mml pictdata/fujisan.jpg pictdata/night.bmp ::
+	mcopy -i haribote.img haribote/haribote.sys haribote/ipl10.nasm $(APPS) mmldata/kirakira.mml mmldata/fujisan.mml mmldata/daigo.mml mmldata/daiku.mml pictdata/fujisan.jpg pictdata/night.bmp font/jp.fnt ::
 
 # Commands
 run :
@@ -72,7 +71,6 @@ full :
 	$(MAKE) -C sosu
 	$(MAKE) -C sosu2
 	$(MAKE) -C sosu3
-	$(MAKE) -C typea
 	$(MAKE) -C cat
 	$(MAKE) -C iroha
 	$(MAKE) -C chklang
@@ -125,7 +123,6 @@ clean_full :
 	$(MAKE) -C sosu clean
 	$(MAKE) -C sosu2 clean
 	$(MAKE) -C sosu3 clean
-	$(MAKE) -C typea clean
 	$(MAKE) -C cat clean
 	$(MAKE) -C iroha clean
 	$(MAKE) -C chklang clean
@@ -160,7 +157,6 @@ src_only_full :
 	$(MAKE) -C sosu src_only
 	$(MAKE) -C sosu2 src_only
 	$(MAKE) -C sosu3 src_only
-	$(MAKE) -C typea src_only
 	$(MAKE) -C cat src_only
 	$(MAKE) -C iroha src_only
 	$(MAKE) -C chklang src_only
@@ -177,7 +173,6 @@ refresh :
 	$(MAKE) full
 	$(MAKE) clean_full
 	-$(DEL) haribote.img
-
 
 NAME = new_app
 new_app:

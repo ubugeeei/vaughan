@@ -1,7 +1,8 @@
 ; hello-os
 ; TAB=4
 
-		CYLS	EQU	10
+CYLS	EQU	10
+
 		ORG 0x7c00	; Where to start the program
 
 ; For FAT12(floppy disc) format
@@ -36,51 +37,24 @@ entry:
 		MOV		DS,AX
 
 ; Read disc
-    
-    MOV   AX,0x0820
-    MOV   ES,AX
-    MOV   CH,0
-    MOV   DH,0
-    MOV   CL,2
-readloop:
-		MOV		SI,0
-retry:
-    MOV   AH,0x02
-    MOV   AL,1
-    MOV   BX,0
-    MOV   DL,0x00
-    INT   0x13
-		JNC		next
-		ADD		SI,1
-		CMP		SI,5
-		JAE		error
-		MOV		AH,0x00
-		MOV		DL,0x00
-		INT		0x13
-    JMP   retry
-next:
-		MOV		AX, ES
-		ADD		AX,0x0020
-		MOV		ES,AX
-		ADD		CL,1
-		CMP		CL,18
-		JBE		readloop
-		MOV		CL,1
-		ADD		DH,1
-		CMP		DH,2
-		JB		readloop
-		MOV		DH,0
-		ADD		CH,1
-		CMP		CH,CYLS
-		JB		readloop
+		
+		MOV   AX,0x0820
+		MOV   ES,AX
+		MOV   CH,0
+		MOV   DH,0
+		MOV   CL,2
+		MOV		BX,18*2*CYLS-1
+		CALL readfast
 
-; Execue haribote.sys
+; Boot haribote.sys
 
-		MOV		[0x0ff0],CH
+		MOV		BYTE [0x0ff0],CYLS
 		JMP		0xc200
 
 error:
-    MOV   SI,msg
+		MOV		AX,0
+		MOV		ES,AX
+		MOV		SI,msg
 putloop:
 		MOV		AL,[SI]
 		ADD		SI,1
@@ -94,9 +68,84 @@ fin:
 		HLT
 		JMP		fin
 msg:
-		DB      0x0a, 0x0a
-		DB      "load error"
-		DB      0x0a
-		DB      0
-		TIMES   0x1fe-($-$$) DB 0
-		DB      0x55, 0xaa
+		DB		0x0a, 0x0a
+		DB		"load error"
+		DB		0x0a
+		DB		0
+
+readfast:
+		MOV		AX,ES
+		SHL		AX,3
+		AND		AH,0x7f
+		MOV		AL,128
+		SUB		AL,AH
+
+		MOV		AH,BL
+		CMP		BH,0
+		JE		.skip1
+		MOV		AH,18
+.skip1:
+		CMP		AL,AH
+		JBE		.skip2
+		MOV		AL,AH
+.skip2:
+
+		MOV		AH,19
+		SUB		AH,CL
+		CMP		AL,AH
+		JBE		.skip3
+		MOV		AL,AH
+.skip3:
+
+		PUSH	BX
+		MOV		SI,0
+retry:
+		MOV		AH,0x02
+		MOV		BX,0
+		MOV		DL,0x00
+		PUSH	ES
+		PUSH	DX
+		PUSH	CX
+		PUSH	AX
+		INT		0x13
+		JNC		next
+		ADD		SI,1
+		CMP		SI,5
+		JAE		error
+		MOV		AH,0x00
+		MOV		DL,0x00
+		INT		0x13
+		POP		AX
+		POP		CX
+		POP		DX
+		POP		ES
+		JMP		retry
+next:
+		POP		AX
+		POP		CX
+		POP		DX
+		POP		BX
+		SHR		BX,5
+		MOV		AH,0
+		ADD		BX,AX
+		SHL		BX,5
+		MOV		ES,BX
+		POP		BX
+		SUB		BX,AX
+		JZ		.ret
+		ADD		CL,AL
+		CMP		CL,18
+		JBE		readfast
+		MOV		CL,1
+		ADD		DH,1
+		CMP		DH,2
+		JB		readfast
+		MOV		DH,0
+		ADD		CH,1
+		JMP		readfast
+.ret:
+		RET
+		; RESB	0x7dfe-$
+		; DB		0x55, 0xaa
+		TIMES		0x1fe-($-$$) DB 0
+		DB			0x55, 0xaa
