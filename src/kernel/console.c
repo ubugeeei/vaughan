@@ -385,7 +385,7 @@ int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline) {
                     sheet_free(sht);
                 }
             }
-            for (i = 0; i < 8; i++) {  // close unclosed files
+            for (i = 0; i < 8; i++) {  // close_window unclosed files
                 if (task->fhandle[i].buf != 0) {
                     // clang-format off
 					memman_free_4k(memman, (int) task->fhandle[i].buf, task->fhandle[i].size);
@@ -577,7 +577,7 @@ int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int 
                 // clang-format on
             }
         }
-    } else if (edx == 22) {  // File close
+    } else if (edx == 22) {  // File close_window
         fh = (struct FILEHANDLE *)eax;
         memman_free_4k(memman, (int)fh->buf, fh->size);
         fh->buf = 0;

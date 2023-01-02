@@ -30,6 +30,6 @@ void HariMain(void) {
         }
         putstr_window(win, x, y, 3, 1, "*");
     }
-    close(win);
+    close_window(win);
     api_end();
 }

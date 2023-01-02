@@ -12,7 +12,7 @@ void  free(char *addr, int size);
 void  draw_point_window(int win, int x, int y, int col);
 void  refresh_window(int win, int x0, int y0, int x1, int y1);
 void  draw_line_window(int win, int x0, int y0, int x1, int y1, int col);
-void  close(int win);
+void  close_window(int win);
 int   get_key(int mode);
 int   alloc_timer(void);
 void  init_timer(int timer, int data);

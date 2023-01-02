@@ -188,7 +188,7 @@ void Boot(void) {
             // handle event
             i = queue32_get(&queue);
             io_sti();
-            if (key_win != 0 && key_win->flags == 0) {  // Window close
+            if (key_win != 0 && key_win->flags == 0) {  // Window close_window
                 if (shtctl->top == 1) {
                     key_win = 0;
                 } else {

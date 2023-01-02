@@ -1,10 +1,10 @@
 [BITS 32]
 
-		GLOBAL	close
+		GLOBAL	close_window
 
 [SECTION .text]
 
-close:		; void close(int win);
+close_window:		; void close_window(int win);
 		PUSH	EBX
 		MOV		EDX,14
 		MOV		EBX,[ESP+8]	; win
