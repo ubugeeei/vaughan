@@ -137,7 +137,7 @@ void Boot(void) {
     fat = (int *)memman_alloc_4k(memman, 4 * 2880);
     file_read_fat(fat, (unsigned char *)(ADR_DISK_IMG + 0x000200));
     // clang-format off
-    finfo = file_search("jp_fnt.fnt", (struct FILEINFO *)(ADR_DISK_IMG + 0x002600), 224);
+    finfo = file_search("jp.fnt", (struct FILEINFO *)(ADR_DISK_IMG + 0x002600), 224);
     if (finfo != 0) {
         file_load_file(finfo->cluster_num, finfo->size, jp_fnt, fat, (char *)(ADR_DISK_IMG + 0x003e00));
         // clang-format on
