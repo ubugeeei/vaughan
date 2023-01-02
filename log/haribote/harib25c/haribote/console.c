@@ -5,7 +5,9 @@ void console_task(struct SHEET *sheet, unsigned int memtotal) {
     struct MEMMAN *memman = (struct MEMMAN *)MEMMAN_ADDR;
     int i, *fat = (int *)memman_alloc_4k(memman, 4 * 2880);
     struct CONSOLE cons;
+    struct FILEHANDLE fhandle[8];
     char cmdline[30];
+
     cons.sht = sheet;
     cons.cur_x = 8;
     cons.cur_y = 28;
@@ -18,6 +20,11 @@ void console_task(struct SHEET *sheet, unsigned int memtotal) {
         timer_settime(cons.timer, 50);
     }
     file_read_fat(fat, (unsigned char *)(ADR_DISK_IMG + 0x000200));
+    for (i = 0; i < 8; i++) {
+        fhandle[i].buf = 0;  // Not-in-use mark
+    }
+    task->fhandle = fhandle;
+    task->fat = fat;
 
     cons_putchar(&cons, '>', 1);
 
@@ -373,6 +380,14 @@ int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline) {
                     sheet_free(sht);
                 }
             }
+            for (i = 0; i < 8; i++) {  // close unclosed files
+                if (task->fhandle[i].buf != 0) {
+                    // clang-format off
+					memman_free_4k(memman, (int) task->fhandle[i].buf, task->fhandle[i].size);
+                    // clang-format on
+                    task->fhandle[i].buf = 0;
+                }
+            }
             timer_cancel_all(&task->queue);
             memman_free_4k(memman, (int)q, segment_size);
         } else {
@@ -401,6 +416,9 @@ int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int 
             // reg[4] : EBX,   reg[5] : EDX,   reg[6] : ECX,   reg[7] : EAX
     // clang-format on
     int i;
+    struct FILEINFO *finfo;
+    struct FILEHANDLE *fh;
+    struct MEMMAN *memman = (struct MEMMAN *)MEMMAN_ADDR;
 
     if (edx == 1) {
         cons_putchar(cons, eax & 0xff, 1);
@@ -521,6 +539,67 @@ int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int 
             i = io_in8(0x61);
             io_out8(0x61, (i | 0x03) & 0x0f);
         }
+    } else if (edx == 21) {  // File open
+        for (i = 0; i < 8; i++) {
+            if (task->fhandle[i].buf == 0) {
+                break;
+            }
+        }
+        fh = &task->fhandle[i];
+        reg[7] = 0;
+        if (i < 8) {
+            // clang-format off
+            finfo = file_search((char *)ebx + ds_base, (struct FILEINFO *)(ADR_DISK_IMG + 0x002600), 224);
+            // clang-format on
+            if (finfo != 0) {
+                reg[7] = (int)fh;
+                fh->buf = (char *)memman_alloc_4k(memman, finfo->size);
+                fh->size = finfo->size;
+                fh->pos = 0;
+                // clang-format off
+                file_load_file(finfo->cluster_num, finfo->size, fh->buf, task->fat, (char *)(ADR_DISK_IMG + 0x003e00));
+                // clang-format on
+            }
+        }
+    } else if (edx == 22) {  // File close
+        fh = (struct FILEHANDLE *)eax;
+        memman_free_4k(memman, (int)fh->buf, fh->size);
+        fh->buf = 0;
+    } else if (edx == 23) {  // File seek
+        fh = (struct FILEHANDLE *)eax;
+        if (ecx == 0) {
+            fh->pos = ebx;
+        } else if (ecx == 1) {
+            fh->pos += ebx;
+        } else if (ecx == 2) {
+            fh->pos = fh->size + ebx;
+        }
+
+        if (fh->pos < 0) {
+            fh->pos = 0;
+        }
+        if (fh->pos > fh->size) {
+            fh->pos = fh->size;
+        }
+    } else if (edx == 24) {  // Get file size
+        fh = (struct FILEHANDLE *)eax;
+        if (ecx == 0) {
+            reg[7] = fh->size;
+        } else if (ecx == 1) {
+            reg[7] = fh->pos;
+        } else if (ecx == 2) {
+            reg[7] = fh->pos - fh->size;
+        }
+    } else if (edx == 25) {  // File read
+        fh = (struct FILEHANDLE *)eax;
+        for (i = 0; i < ecx; i++) {
+            if (fh->pos == fh->size) {
+                break;
+            }
+            *((char *)ebx + ds_base + i) = fh->buf[fh->pos];
+            fh->pos++;
+        }
+        reg[7] = i;
     }
     return 0;
 }

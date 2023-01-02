@@ -54,15 +54,16 @@ int queue32_status(struct Queue32 *queue);
 /* graphic.c */
 void init_palette(void);
 void set_palette(int start, int end, unsigned char *rgb);
-void boxfill8(unsigned char *vram, int xsize, unsigned char c, int x0, int y0,
-              int x1, int y1);
+// clang-format off
+void boxfill8(unsigned char *vram, int xsize, unsigned char c, int x0, int y0, int x1, int y1);
+// clang-format on
 void init_screen8(char *vram, int x, int y);
 void putfont8(char *vram, int xsize, int x, int y, char c, char *font);
-void putfonts8_asc(char *vram, int xsize, int x, int y, char c,
-                   unsigned char *s);
+// clang-format off
+void putfonts8_asc(char *vram, int xsize, int x, int y, char c, unsigned char *s);
 void init_mouse_cursor8(char *mouse, char bc);
-void putblock8_8(char *vram, int vxsize, int pxsize, int pysize, int px0,
-                 int py0, char *buf, int bxsize);
+void putblock8_8(char *vram, int vxsize, int pxsize, int pysize, int px0, int py0, char *buf, int bxsize);
+// clang-format on
 #define COL8_000000 0
 #define COL8_FF0000 1
 #define COL8_00FF00 2
@@ -172,11 +173,11 @@ struct SHTCTL {
     struct SHEET *sheets[MAX_SHEETS];
     struct SHEET sheets0[MAX_SHEETS];
 };
-struct SHTCTL *shtctl_init(struct MEMMAN *memman, unsigned char *vram,
-                           int xsize, int ysize);
+// clang-format off
+struct SHTCTL *shtctl_init(struct MEMMAN *memman, unsigned char *vram, int xsize, int ysize);
 struct SHEET *sheet_alloc(struct SHTCTL *ctl);
-void sheet_setbuf(struct SHEET *sht, unsigned char *buf, int xsize, int ysize,
-                  int col_inv);
+void sheet_setbuf(struct SHEET *sht, unsigned char *buf, int xsize, int ysize, int col_inv);
+// clang-format on
 void sheet_updown(struct SHEET *sht, int height);
 void sheet_refresh(struct SHEET *sht, int bx0, int by0, int bx1, int by1);
 void sheet_slide(struct SHEET *sht, int vx0, int vy0);
@@ -225,6 +226,8 @@ struct TASK {
     struct SEGMENT_DESCRIPTOR ldt[2];
     struct CONSOLE *cons;
     int ds_base, cons_stack;
+    struct FILEHANDLE *fhandle;
+    int *fat;
 };
 struct TASK_LEVEL {
     int running;
@@ -247,10 +250,10 @@ void task_switch(void);
 void task_sleep(struct TASK *task);
 
 /** window */
-void make_window8(unsigned char *buf, int xsize, int ysize, char *title,
-                  char act);
-void putfonts8_asc_sht(struct SHEET *sht, int x, int y, int c, int b, char *s,
-                       int l);
+// clang-format off
+void make_window8(unsigned char *buf, int xsize, int ysize, char *title, char act);
+void putfonts8_asc_sht(struct SHEET *sht, int x, int y, int c, int b, char *s, int l);
+// clang-format on
 void make_textbox8(struct SHEET *sht, int x0, int y0, int sx, int sy, int c);
 void make_wtitle8(unsigned char *buf, int xsize, char *title, char act);
 void change_wtitle8(struct SHEET *sht, char act);
@@ -261,13 +264,19 @@ struct CONSOLE {
     int cur_x, cur_y, cur_c;
     struct TIMER *timer;
 };
+struct FILEHANDLE {
+    char *buf;
+    int size;
+    int pos;
+};
 void console_task(struct SHEET *sheet, unsigned int memtotal);
 void cons_putchar(struct CONSOLE *cons, int chr, char move);
 void cons_putstr0(struct CONSOLE *cons, char *s);
 void cons_putstr1(struct CONSOLE *cons, char *s, int l);
 void cons_newline(struct CONSOLE *cons);
-void cons_run_cmd(char *cmdline, struct CONSOLE *cons, int *fat,
-                  unsigned int memtotal);
+// clang-format off
+void cons_run_cmd(char *cmdline, struct CONSOLE *cons, int *fat, unsigned int memtotal);
+// clang-format on
 void cmd_free(struct CONSOLE *cons, unsigned int memtotal);
 void cmd_clear(struct CONSOLE *cons);
 void cmd_ls(struct CONSOLE *cons);
@@ -276,12 +285,14 @@ void cmd_exit(struct CONSOLE *cons, int *fat);
 void cmd_start(struct CONSOLE *cons, char *cmdline, int memtotal);
 void cmd_ncst(struct CONSOLE *cons, char *cmdline, int memtotal);
 int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline);
-int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx,
-             int eax);
+// clang-format off
+int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int eax);
+// clang-format on
 int *inthandler0c(int *esp);
 int *inthandler0d(int *esp);
-void hrb_draw_line_window(struct SHEET *sht, int x0, int y0, int x1, int y1,
-                          int col);
+// clang-format off
+void hrb_draw_line_window(struct SHEET *sht, int x0, int y0, int x1, int y1, int col);
+// clang-format on
 
 /** file */
 struct FILEINFO {
