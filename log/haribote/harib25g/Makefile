@@ -20,6 +20,7 @@ APPS =\
 	sosu3/sosu3.hrb \
 	typea/typea.hrb \
 	cat/cat.hrb \
+	chklang/chklang.hrb \
 	iroha/iroha.hrb
 
 MAKE = make -r
@@ -67,6 +68,7 @@ full :
 	$(MAKE) -C typea
 	$(MAKE) -C cat
 	$(MAKE) -C iroha
+	$(MAKE) -C chklang
 	$(MAKE) haribote.img
 
 run_full :
@@ -112,6 +114,7 @@ clean_full :
 	$(MAKE) -C typea clean
 	$(MAKE) -C cat clean
 	$(MAKE) -C iroha clean
+	$(MAKE) -C chklang clean
 
 src_only_full :
 	$(MAKE) -C lib src_only
@@ -139,6 +142,7 @@ src_only_full :
 	$(MAKE) -C typea src_only
 	$(MAKE) -C cat src_only
 	$(MAKE) -C iroha src_only
+	$(MAKE) -C chklang src_only
 	-$(DEL) haribote.img
 
 refresh :

@@ -188,8 +188,8 @@ void cons_newline(struct CONSOLE *cons) {
     }
     cons->cur_x = 8;
     if (task->lang_mode == 1 && task->lang_byte1 != 0) {
-		cons->cur_x = 16;
-	}
+        cons->cur_x = 16;
+    }
     return;
 }
 
@@ -619,6 +619,11 @@ int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int 
             i++;
         }
         reg[7] = i;
+    } else if (edx == 27) {  // lang mode
+        // 0 => ascii
+        // 1 => jis
+        // 2 => euc
+        reg[7] = task->lang_mode;
     }
     return 0;
 }

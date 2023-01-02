@@ -1,3 +1,4 @@
+// clang-format off
 void  putchar(int c);
 void  putstr(char *s);
 void  putstr_with_len(char *s, int l);
@@ -24,5 +25,6 @@ void  fseek(int fhandle, int offset, int mode);
 int   fsize(int fhandle, int mode);
 int   fread(char *buf, int maxsize, int fhandle);
 int   cmdline(char *buf, int maxsize);
+int   get_lang_mode(void);
 
 void  *alloca(int size);
