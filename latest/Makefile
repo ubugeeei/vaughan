@@ -1,4 +1,4 @@
-APPS =\
+APPS = \
 	a/a.hrb \
 	hello3/hello3.hrb \
 	hello4/hello4.hrb \
@@ -18,15 +18,16 @@ APPS =\
 	sosu/sosu.hrb \
 	sosu2/sosu2.hrb \
 	sosu3/sosu3.hrb \
-	typea/typea.hrb \
 	cat/cat.hrb \
-	chklang/chklang.hrb \
 	iroha/iroha.hrb \
+	chklang/chklang.hrb \
 	notrec/notrec.hrb \
 	bball/bball.hrb \
-	calc/calc.hrb \
 	invador/invador.hrb \
-	tview/tview.hrb
+	calc/calc.hrb \
+	tview/tview.hrb \
+	mmlplay/mmlplay.hrb \
+	gview/gview.hrb
 
 MAKE = make -r
 DEL = rm -f
@@ -36,14 +37,14 @@ default :
 
 # mtool: https://www.gnu.org/software/mtools/manual/html_node/mformat.html
 # -f: size, -C: hidden_sectors, -B: boot_sector, -i: 
-haribote.img : haribote/ipl20.bin haribote/haribote.sys $(APPS)
-	mformat -f 1440 -C -B haribote/ipl20.bin -i haribote.img ::
-	mcopy -i haribote.img haribote/haribote.sys haribote/ipl20.nasm main.c $(APPS) font/jp.fnt ::
+haribote.img : haribote/ipl10.bin haribote/haribote.sys $(APPS)
+	mformat -f 1440 -C -B haribote/ipl10.bin -i haribote.img ::
+	mcopy -i haribote.img haribote/haribote.sys haribote/ipl10.nasm $(APPS) mmldata/kirakira.mml mmldata/fujisan.mml mmldata/daigo.mml mmldata/daiku.mml pictdata/fujisan.jpg pictdata/night.bmp font/jp.fnt ::
 
 # Commands
 run :
 	$(MAKE) haribote.img
-	qemu-system-i386 -drive file=haribote.img,format=raw,if=floppy -boot a
+	qemu-system-i386 -soundhw pcspk -drive file=haribote.img,format=raw,if=floppy -boot a
 
 # install :
 
@@ -70,7 +71,6 @@ full :
 	$(MAKE) -C sosu
 	$(MAKE) -C sosu2
 	$(MAKE) -C sosu3
-	$(MAKE) -C typea
 	$(MAKE) -C cat
 	$(MAKE) -C iroha
 	$(MAKE) -C chklang
@@ -79,6 +79,8 @@ full :
 	$(MAKE) -C invador
 	$(MAKE) -C calc
 	$(MAKE) -C tview
+	$(MAKE) -C mmlplay
+	$(MAKE) -C gview
 	$(MAKE) haribote.img
 
 run_full :
@@ -121,7 +123,6 @@ clean_full :
 	$(MAKE) -C sosu clean
 	$(MAKE) -C sosu2 clean
 	$(MAKE) -C sosu3 clean
-	$(MAKE) -C typea clean
 	$(MAKE) -C cat clean
 	$(MAKE) -C iroha clean
 	$(MAKE) -C chklang clean
@@ -130,6 +131,8 @@ clean_full :
 	$(MAKE) -C invador clean
 	$(MAKE) -C calc clean
 	$(MAKE) -C tview clean
+	$(MAKE) -C mmlplay clean
+	$(MAKE) -C gview clean
 
 src_only_full :
 	$(MAKE) -C lib src_only
@@ -154,7 +157,6 @@ src_only_full :
 	$(MAKE) -C sosu src_only
 	$(MAKE) -C sosu2 src_only
 	$(MAKE) -C sosu3 src_only
-	$(MAKE) -C typea src_only
 	$(MAKE) -C cat src_only
 	$(MAKE) -C iroha src_only
 	$(MAKE) -C chklang src_only
@@ -163,13 +165,14 @@ src_only_full :
 	$(MAKE) -C invador src_only
 	$(MAKE) -C calc src_only
 	$(MAKE) -C tview src_only
+	$(MAKE) -C mmlplay src_only
+	$(MAKE) -C gview src_only
 	-$(DEL) haribote.img
 
 refresh :
 	$(MAKE) full
 	$(MAKE) clean_full
 	-$(DEL) haribote.img
-
 
 NAME = new_app
 new_app:
