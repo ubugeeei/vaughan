@@ -1,5 +1,9 @@
+OUT_DIR = ../../target
 MAKE = make -r
 DEL = rm -f
+PRE_MAKE = \
+	mkdir -p $(OUT_DIR)/lib/bin \
+	mkdir -p $(OUT_DIR)/lib/obj
 
 CC = i386-elf-gcc
 CFLAGS = -m32 -fno-builtin
@@ -7,27 +11,28 @@ COPTION = -march=i486 -nostdlib
 AR = i386-elf-ar
 
 default :
-	$(MAKE) libstdio.a
-	$(MAKE) libstring.a
-	$(MAKE) libstdlib.a
+	$(PRE_MAKE)
+	$(MAKE) $(OUT_DIR)/lib/bin/libstdio.a
+	$(MAKE) $(OUT_DIR)/lib/bin/libstring.a
+	$(MAKE) $(OUT_DIR)/lib/bin/libstdlib.a
 
-libstdio.a : sprintf.o
+$(OUT_DIR)/lib/bin/libstdio.a : $(OUT_DIR)/lib/obj/sprintf.o
 	$(AR) rcs $@ $^
 
-libstring.a : strcmp.o strncmp.o strlen.o memcmp.o
+$(OUT_DIR)/lib/bin/libstring.a : $(OUT_DIR)/lib/obj/strcmp.o $(OUT_DIR)/lib/obj/strncmp.o $(OUT_DIR)/lib/obj/strlen.o $(OUT_DIR)/lib/obj/memcmp.o
 	$(AR) rcs $@ $^
 
-libstdlib.a : strtoul0.o strtol.o
+$(OUT_DIR)/lib/bin/libstdlib.a : $(OUT_DIR)/lib/obj/strtoul0.o $(OUT_DIR)/lib/obj/strtol.o
 	$(AR) rcs $@ $^
 
 # C -> Object
-%.o : %.c
-	$(CC) $(CFLAGS) -c $*.c -o $*.o
+$(OUT_DIR)/lib/obj/%.o : %.c
+	$(CC) $(CFLAGS) -c $*.c -o $(OUT_DIR)/lib/obj/$*.o
 
 # Remove
 clean :
-	-$(DEL) *.o
+	-$(DEL) $(OUT_DIR)/lib/obj/*.o
 
 src_only :
 	$(MAKE) clean
-	-$(DEL) *.a
+	-$(DEL) $(OUT_DIR)/lib/bin/*.a

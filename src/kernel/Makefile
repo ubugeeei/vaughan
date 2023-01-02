@@ -1,26 +1,27 @@
-LIBPATH = ../lib/
+OUT_DIR = ../../target
+LIBPATH = $(OUT_DIR)/lib/bin/
 
 OBJS_BOOTPACK = \
-boot.o \
-naskfunc.o \
-hankaku.o \
-graphic.o \
-dsctbl.o \
-int.o \
-queue.o \
-keyboard.o \
-mouse.o \
-memory.o \
-sheet.o \
-timer.o \
-mtask.o \
-window.o \
-console.o \
-file.o \
-tek.o \
-$(LIBPATH)libstdio.a \
-$(LIBPATH)libstring.a \
-$(LIBPATH)libstdlib.a
+	boot.o \
+	naskfunc.o \
+	hankaku.o \
+	graphic.o \
+	dsctbl.o \
+	int.o \
+	queue.o \
+	keyboard.o \
+	mouse.o \
+	memory.o \
+	sheet.o \
+	timer.o \
+	mtask.o \
+	window.o \
+	console.o \
+	file.o \
+	tek.o \
+	$(LIBPATH)libstdio.a \
+	$(LIBPATH)libstring.a \
+	$(LIBPATH)libstdlib.a
 
 MAKE = make -r
 DEL = rm -f

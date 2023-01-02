@@ -1,4 +1,5 @@
-LIB_PATH = ../../lib/
+OUT_DIR = ../../../target
+LIB_PATH = $(OUT_DIR)/lib/bin/
 API_LIB_PATH   = ../apilib/
 KERNEL_PATH = ../../kernel/
 

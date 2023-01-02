@@ -32,7 +32,7 @@ APPS = \
 	src/app/gview/gview.hrb
 
 MAKE = make -r
-DEL = rm -f
+DEL = rm -rf
 PRE_MAKE = mkdir -p $(OUT_DIR)
 
 default : 
@@ -110,6 +110,7 @@ run_os :
 	$(MAKE) run
 
 clean :
+	-$(DEL) target/
 
 src_only :
 	$(MAKE) clean
@@ -148,6 +149,7 @@ clean_full :
 	$(MAKE) -C src/app/tview clean
 	$(MAKE) -C src/app/mmlplay clean
 	$(MAKE) -C src/app/gview clean
+	$(DEL) target/
 
 src_only_full :
 	$(MAKE) -C src/lib src_only
@@ -182,7 +184,7 @@ src_only_full :
 	$(MAKE) -C src/app/tview src_only
 	$(MAKE) -C src/app/mmlplay src_only
 	$(MAKE) -C src/app/gview src_only
-	-$(DEL) $(OUT_DIR)/haribote.img
+	-$(DEL) $(OUT_DIR)/*
 
 refresh :
 	$(MAKE) full
