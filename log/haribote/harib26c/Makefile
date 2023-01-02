@@ -21,6 +21,7 @@ APPS =\
 	typea/typea.hrb \
 	cat/cat.hrb \
 	chklang/chklang.hrb \
+	notrec/notrec.hrb \
 	iroha/iroha.hrb
 
 MAKE = make -r
@@ -69,6 +70,7 @@ full :
 	$(MAKE) -C cat
 	$(MAKE) -C iroha
 	$(MAKE) -C chklang
+	$(MAKE) -C notrec
 	$(MAKE) haribote.img
 
 run_full :
@@ -115,6 +117,7 @@ clean_full :
 	$(MAKE) -C cat clean
 	$(MAKE) -C iroha clean
 	$(MAKE) -C chklang clean
+	$(MAKE) -C notrec clean
 
 src_only_full :
 	$(MAKE) -C lib src_only
@@ -143,6 +146,7 @@ src_only_full :
 	$(MAKE) -C cat src_only
 	$(MAKE) -C iroha src_only
 	$(MAKE) -C chklang src_only
+	$(MAKE) -C notrec src_only
 	-$(DEL) haribote.img
 
 refresh :
