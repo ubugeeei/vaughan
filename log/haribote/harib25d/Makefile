@@ -31,7 +31,7 @@ default :
 # -f: size, -C: hidden_sectors, -B: boot_sector, -i: 
 haribote.img : haribote/ipl10.bin haribote/haribote.sys $(APPS)
 	mformat -f 1440 -C -B haribote/ipl10.bin -i haribote.img ::
-	mcopy -i haribote.img haribote/haribote.sys haribote/ipl10.nasm $(APPS) ::
+	mcopy -i haribote.img haribote/haribote.sys haribote/ipl10.nasm main.c $(APPS) ::
 
 # Commands
 run :
