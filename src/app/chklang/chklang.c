@@ -1,4 +1,4 @@
-#include "../../apilib.h"
+#include "../apilib.h"
 
 void HariMain(void) {
     int lang_mode = get_lang_mode();

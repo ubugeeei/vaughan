@@ -1,4 +1,4 @@
-#include "../../apilib.h"
+#include "../apilib.h"
 
 struct DLL_STR_PIC_ENV {	// 64KB
 	int work[64 * 1024 / 4];

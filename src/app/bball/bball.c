@@ -1,4 +1,4 @@
-#include "../../apilib.h"
+#include "../apilib.h"
 
 void HariMain(void) {
     int win, i, j, dis;

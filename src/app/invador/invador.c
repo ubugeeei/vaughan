@@ -1,4 +1,4 @@
-#include "../../apilib.h"
+#include "../apilib.h"
 #include "../../include/stdio.h"   // sprintf
 #include "../../include/string.h"  // strlen
 
