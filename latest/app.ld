@@ -6,7 +6,7 @@ SECTIONS
 		LONG(128 * 1024)
 		LONG(0x69726148)
 		LONG(0)
-		LONG(0x0500)
+		LONG(__stack)
 		LONG(SIZEOF(.data))
 		LONG(LOADADDR(.data))
 		LONG(0xE9000000)
@@ -16,7 +16,7 @@ SECTIONS
 
 	.text : { *(.text) }
 
-	.data 0x0500 : AT ( ADDR(.text) + SIZEOF(.text) ) {
+	.data __stack : AT ( ADDR(.text) + SIZEOF(.text) ) {
 		*(.data)
 		*(.rodata*)
 		*(.bss)
