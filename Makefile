@@ -37,12 +37,12 @@ default :
 
 # mtool: https://www.gnu.org/software/mtools/manual/html_node/mformat.html
 # -f: size, -C: hidden_sectors, -B: boot_sector, -i: 
-haribote.img : src/app/haribote/ipl10.bin src/app/haribote/haribote.sys $(APPS)
-	mformat -f 1440 -C -B src/app/haribote/ipl10.bin -i haribote.img ::
+haribote.img : src/kernel/ipl10.bin src/kernel/haribote.sys $(APPS)
+	mformat -f 1440 -C -B src/kernel/ipl10.bin -i haribote.img ::
 	mcopy -i \
 		haribote.img \
-		src/app/haribote/haribote.sys \
-		src/app/haribote/ipl10.nasm \
+		src/kernel/haribote.sys \
+		src/kernel/ipl10.nasm \
 		$(APPS) \
 		src/app/mmldata/kirakira.mml \
 		src/app/mmldata/fujisan.mml \
@@ -61,7 +61,7 @@ run :
 
 full :
 	$(MAKE) -C src/lib
-	$(MAKE) -C src/app/haribote
+	$(MAKE) -C src/kernel
 	$(MAKE) -C src/app/apilib
 	$(MAKE) -C src/app/a
 	$(MAKE) -C src/app/hello3
@@ -102,7 +102,7 @@ run_full :
 
 run_os :
 	$(MAKE) -C lib
-	$(MAKE) -C src/app/haribote
+	$(MAKE) -C src/kernel
 	$(MAKE) run
 
 clean :
@@ -113,7 +113,7 @@ src_only :
 
 clean_full :
 	$(MAKE) -C src/lib clean
-	$(MAKE) -C src/app/haribote clean
+	$(MAKE) -C src/kernel clean
 	$(MAKE) -C src/app/apilib clean
 	$(MAKE) -C src/app/a clean
 	$(MAKE) -C src/app/hello3 clean
@@ -147,7 +147,7 @@ clean_full :
 
 src_only_full :
 	$(MAKE) -C src/lib src_only
-	$(MAKE) -C src/app/haribote src_only
+	$(MAKE) -C src/kernel src_only
 	$(MAKE) -C src/app/apilib src_only
 	$(MAKE) -C src/app/a src_only
 	$(MAKE) -C src/app/hello3 src_only

@@ -1,6 +1,6 @@
 LIB_PATH = ../../lib/
 API_LIB_PATH   = ../apilib/
-KERNEL_PATH = ../haribote/
+KERNEL_PATH = ../../kernel/
 
 MAKE = make -r
 DEL = rm -f

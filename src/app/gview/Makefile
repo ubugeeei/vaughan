@@ -4,7 +4,7 @@ STACK = 0x445C00
 
 LIBPATH = ../../lib/
 APILIBPATH   = ../apilib/
-HARIBOTEPATH = ../haribote/
+HARIBOTEPATH = ../../kernel/
 
 MAKE = make -r
 DEL = rm -f

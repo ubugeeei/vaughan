@@ -1,4 +1,4 @@
-LIBPATH = ../../lib/
+LIBPATH = ../lib/
 
 OBJS_BOOTPACK = \
 boot.o \
