@@ -34,6 +34,7 @@ void console_task(struct SHEET *sheet, unsigned int memtotal) {
     } else {
         task->lang_mode = 0;
     }
+    task->lang_byte1 = 0;
 
     cons_putchar(&cons, '>', 1);
 
@@ -166,6 +167,7 @@ void cons_putstr1(struct CONSOLE *cons, char *s, int l) {
 void cons_newline(struct CONSOLE *cons) {
     int x, y;
     struct SHEET *sheet = cons->sht;
+    struct TASK *task = task_now();
     if (cons->cur_y < 28 + 112) {
         cons->cur_y += 16;
     } else {
@@ -185,6 +187,9 @@ void cons_newline(struct CONSOLE *cons) {
         }
     }
     cons->cur_x = 8;
+    if (task->lang_mode == 1 && task->lang_byte1 != 0) {
+		cons->cur_x = 16;
+	}
     return;
 }
 
@@ -390,6 +395,7 @@ int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline) {
             }
             timer_cancel_all(&task->queue);
             memman_free_4k(memman, (int)q, segment_size);
+            task->lang_mode = 0;
         } else {
             cons_putstr0(cons, ".hrb file format error.\n");
         }

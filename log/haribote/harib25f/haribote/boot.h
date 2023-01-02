@@ -229,7 +229,7 @@ struct TASK {
     struct FILEHANDLE *fhandle;
     int *fat;
     char *cmdline;
-    char lang_mode;
+    char lang_mode, lang_byte1;
 };
 struct TASK_LEVEL {
     int running;
