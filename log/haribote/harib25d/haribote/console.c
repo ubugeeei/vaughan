@@ -189,7 +189,7 @@ void cons_run_cmd(char *cmdline, struct CONSOLE *cons, int *fat, unsigned int me
     } else if (strcmp(cmdline, "ls") == 0) {
         cmd_ls(cons);
     } else if (strncmp(cmdline, "cat ", 4) == 0) {
-        cmd_cat(cons, fat, cmdline);
+        // TODO: cat command
     } else if (strcmp(cmdline, "exit") == 0) {
         cmd_exit(cons, fat);
     } else if (strncmp(cmdline, "start ", 6) == 0) {
@@ -247,27 +247,6 @@ void cmd_ls(struct CONSOLE *cons) {
                 cons_putstr0(cons, s);
             }
         }
-    }
-    cons_newline(cons);
-    return;
-}
-
-void cmd_cat(struct CONSOLE *cons, int *fat, char *cmdline) {
-    struct MEMMAN *memman = (struct MEMMAN *)MEMMAN_ADDR;
-    struct FILEINFO *finfo = file_search(
-        cmdline + 4, (struct FILEINFO *)(ADR_DISK_IMG + 0x002600), 224);
-    char *p;
-    int i;
-
-    if (finfo != 0) {
-        p = (char *)memman_alloc_4k(memman, finfo->size);
-        // clang-format off
-        file_load_file(finfo->cluster_num, finfo->size, p, fat, (char *)(ADR_DISK_IMG + 0x003e00));
-        // clang-format on
-        cons_putstr1(cons, p, finfo->size);
-        memman_free_4k(memman, (int)p, finfo->size);
-    } else {
-        cons_putstr0(cons, "File not found.\n");
     }
     cons_newline(cons);
     return;
