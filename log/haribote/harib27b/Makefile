@@ -25,7 +25,8 @@ APPS =\
 	notrec/notrec.hrb \
 	bball/bball.hrb \
 	calc/calc.hrb \
-	invador/invador.hrb
+	invador/invador.hrb \
+	tview/tview.hrb
 
 MAKE = make -r
 DEL = rm -f
@@ -77,6 +78,7 @@ full :
 	$(MAKE) -C bball
 	$(MAKE) -C invador
 	$(MAKE) -C calc
+	$(MAKE) -C tview
 	$(MAKE) haribote.img
 
 run_full :
@@ -127,6 +129,7 @@ clean_full :
 	$(MAKE) -C bball clean
 	$(MAKE) -C invador clean
 	$(MAKE) -C calc clean
+	$(MAKE) -C tview clean
 
 src_only_full :
 	$(MAKE) -C lib src_only
@@ -159,6 +162,7 @@ src_only_full :
 	$(MAKE) -C bball src_only
 	$(MAKE) -C invador src_only
 	$(MAKE) -C calc src_only
+	$(MAKE) -C tview src_only
 	-$(DEL) haribote.img
 
 refresh :
