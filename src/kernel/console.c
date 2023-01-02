@@ -555,7 +555,7 @@ int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int 
             i = io_in8(0x61);
             io_out8(0x61, (i | 0x03) & 0x0f);
         }
-    } else if (edx == 21) {  // File open
+    } else if (edx == 21) {  // File create_window
         for (i = 0; i < 8; i++) {
             if (task->fhandle[i].buf == 0) {
                 break;

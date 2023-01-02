@@ -7,7 +7,7 @@ void HariMain(void) {
     int win, i, x, y;
     init_malloc();
     buf = malloc(150 * 100);
-    win = open(buf, 150, 100, -1, "stars");
+    win = create_window(buf, 150, 100, -1, "stars");
     box_fill_window(win, 6, 26, 143, 93, 0);
     for (i = 0; i < 50; i++) {
         x = (rand() % 137) + 6;

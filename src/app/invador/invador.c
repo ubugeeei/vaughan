@@ -47,7 +47,7 @@ void HariMain(void) {
     char win_buf[336 * 261], invstr[32 * 6], s[12], key_flag[4], *p;
     static char inv_str0[32] = " abcd abcd abcd abcd abcd ";
 
-    win = open(win_buf, 336, 261, -1, "invader");
+    win = create_window(win_buf, 336, 261, -1, "invader");
     box_fill_window(win, 6, 27, 329, 254, 0);
     timer = alloc_timer();
     init_timer(timer, 128);

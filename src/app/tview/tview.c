@@ -64,14 +64,14 @@ void HariMain(void) {
     }
 
     // Prepare window
-    win = open(win_buf, w * 8 + 16, h * 16 + 37, -1, "tview");
+    win = create_window(win_buf, w * 8 + 16, h * 16 + 37, -1, "tview");
     box_fill_window(win, 6, 27, w * 8 + 9, h * 16 + 30, 7);
 
     // Read file
     *r = 0;
     i = fopen(q);
     if (i == 0) {
-        puts("file open error.\n");
+        puts("file create_window error.\n");
         api_end();
     }
     j = fsize(i, 0);

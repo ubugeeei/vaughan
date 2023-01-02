@@ -14,13 +14,13 @@ int main() {
 
     // Read error
     if ((infp = fopen("hankaku.txt", "r")) == NULL) {
-        printf("input file open error\n");
+        printf("input file create_window error\n");
         return 0;
     }
 
     // Write error
     if ((outfp = fopen("hankaku.c", "w")) == NULL) {
-        printf("output file open error\n");
+        printf("output file create_window error\n");
         return 0;
     }
 

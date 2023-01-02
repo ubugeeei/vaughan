@@ -3,7 +3,7 @@ void  putchar(int c);
 void  puts(char *s);
 void  puts_with_len(char *s, int l);
 void  api_end(void);
-int   open(char *buf, int xsiz, int ysiz, int col_inv, char *title);
+int   create_window(char *buf, int xsiz, int ysiz, int col_inv, char *title);
 void  putstr_window(int win, int x, int y, int col, int len, char *str);
 void  box_fill_window(int win, int x0, int y0, int x1, int y1, int col);
 void  init_malloc(void);

@@ -5,7 +5,7 @@ void HariMain(void) {
 	int win, x, y, r, g, b;
 	init_malloc();
 	buf = malloc(144 * 164);
-	win = open(buf, 144, 164, -1, "color");
+	win = create_window(buf, 144, 164, -1, "color");
 	for (y = 0; y < 128; y++) {
 		for (x = 0; x < 128; x++) {
 			r = x * 2;

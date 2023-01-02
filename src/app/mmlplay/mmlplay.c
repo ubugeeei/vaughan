@@ -25,14 +25,14 @@ void HariMain(void) {
 	i = strlen(p);
 	if (i > 12) {
 file_error:
-		end("file open error.\n");
+		end("file create_window error.\n");
 	}
 	if (i == 0) {
 		end(0);
 	}
 
 	// Prepare window
-	win = open(win_buf, 256, 112, -1, "mmlplay");
+	win = create_window(win_buf, 256, 112, -1, "mmlplay");
 	putstr_window(win, 128, 32, 0, i, p);
 	box_fill_window(win, 8, 60, 247,  76, 7);
 	box_fill_window(win, 6, 86, 249, 105, 7);

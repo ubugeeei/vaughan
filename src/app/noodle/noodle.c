@@ -6,7 +6,7 @@ void HariMain(void) {
     int win, timer, sec = 0, min = 0, hou = 0;
     init_malloc();
     buf = malloc(150 * 50);
-    win = open(buf, 150, 50, -1, "noodle");
+    win = create_window(buf, 150, 50, -1, "noodle");
     timer = alloc_timer();
     init_timer(timer, 128);
     for (;;) {

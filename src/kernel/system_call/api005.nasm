@@ -1,10 +1,10 @@
 [BITS 32]
 
-		GLOBAL	open
+		GLOBAL	create_window
 
 [SECTION .text]
 
-open:	; int open(char *buf, int xsiz, int ysiz, int col_inv, char *title);
+create_window:	; int create_window(char *buf, int xsiz, int ysiz, int col_inv, char *title);
 		PUSH	EDI
 		PUSH	ESI
 		PUSH	EBX

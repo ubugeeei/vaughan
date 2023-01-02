@@ -59,7 +59,7 @@ void HariMain(void) {
 	if (xsize < 136) {
 		xsize = 136;
 	}
-	win = open(win_buf, xsize, info[3] + 37, -1, "gview");
+	win = create_window(win_buf, xsize, info[3] + 37, -1, "gview");
 
 	// Convert to image data
 	if (info[0] == 1) {

@@ -5,7 +5,7 @@ void HariMain(void) {
     int win, i, x, y;
     init_malloc();
     buf = malloc(160 * 100);
-    win = open(buf, 160, 100, -1, "walk");
+    win = create_window(buf, 160, 100, -1, "walk");
     box_fill_window(win, 4, 24, 155, 95, 0);
     x = 76;
     y = 56;

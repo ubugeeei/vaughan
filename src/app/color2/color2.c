@@ -7,7 +7,7 @@ void HariMain(void) {
     int win, x, y;
     init_malloc();
     buf = malloc(144 * 164);
-    win = open(buf, 144, 164, -1, "color2");
+    win = create_window(buf, 144, 164, -1, "color2");
     for (y = 0; y < 128; y++) {
         for (x = 0; x < 128; x++) {
             buf[(x + 8) + (y + 28) * 144] = rgb2pal(x * 2, y * 2, 0, x, y);
