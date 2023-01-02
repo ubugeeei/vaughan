@@ -23,7 +23,8 @@ APPS =\
 	chklang/chklang.hrb \
 	iroha/iroha.hrb \
 	notrec/notrec.hrb \
-	bball/bball.hrb
+	bball/bball.hrb \
+	invador/invador.hrb
 
 MAKE = make -r
 DEL = rm -f
@@ -73,6 +74,7 @@ full :
 	$(MAKE) -C chklang
 	$(MAKE) -C notrec
 	$(MAKE) -C bball
+	$(MAKE) -C invador
 	$(MAKE) haribote.img
 
 run_full :
@@ -121,6 +123,7 @@ clean_full :
 	$(MAKE) -C chklang clean
 	$(MAKE) -C notrec clean
 	$(MAKE) -C bball clean
+	$(MAKE) -C invador clean
 
 src_only_full :
 	$(MAKE) -C lib src_only
@@ -151,6 +154,7 @@ src_only_full :
 	$(MAKE) -C chklang src_only
 	$(MAKE) -C notrec src_only
 	$(MAKE) -C bball src_only
+	$(MAKE) -C invador src_only
 	-$(DEL) haribote.img
 
 refresh :

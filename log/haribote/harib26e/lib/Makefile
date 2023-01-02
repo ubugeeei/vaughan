@@ -13,7 +13,7 @@ default :
 libstdio.a : sprintf.o
 	$(AR) rcs $@ $^
 
-libstring.a : strcmp.o strncmp.o memcmp.o
+libstring.a : strcmp.o strncmp.o strlen.o memcmp.o
 	$(AR) rcs $@ $^
 
 # C -> Object
