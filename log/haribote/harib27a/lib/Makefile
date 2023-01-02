@@ -9,11 +9,15 @@ AR = i386-elf-ar
 default :
 	$(MAKE) libstdio.a
 	$(MAKE) libstring.a
+	$(MAKE) libstdlib.a
 
 libstdio.a : sprintf.o
 	$(AR) rcs $@ $^
 
 libstring.a : strcmp.o strncmp.o strlen.o memcmp.o
+	$(AR) rcs $@ $^
+
+libstdlib.a : strtoul0.o strtol.o
 	$(AR) rcs $@ $^
 
 # C -> Object
