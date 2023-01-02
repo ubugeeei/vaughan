@@ -19,7 +19,8 @@ console.o \
 file.o \
 tek.o \
 $(LIBPATH)libstdio.a \
-$(LIBPATH)libstring.a
+$(LIBPATH)libstring.a \
+$(LIBPATH)libstdlib.a
 
 MAKE = make -r
 DEL = rm -f

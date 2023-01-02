@@ -32,6 +32,7 @@ LOAD file.o
 LOAD tek.o
 LOAD ../lib/libstdio.a
 LOAD ../lib/libstring.a
+LOAD ../lib/libstdlib.a
 
 .head           0x0000000000000000       0x24
                 0x0000000000000000        0x4 LONG 0x10000
