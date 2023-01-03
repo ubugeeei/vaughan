@@ -9,9 +9,9 @@ void inthandler2c(int *esp)
 
 {
     int data;
-    io_out8(PIC1_OCW2, 0x64);
-    io_out8(PIC0_OCW2, 0x62);
-    data = io_in8(PORT_KEYDAT);
+    asm_io_out8(PIC1_OCW2, 0x64);
+    asm_io_out8(PIC0_OCW2, 0x62);
+    data = asm_io_in8(PORT_KEYDAT);
     queue_put(mousequeue, data + mousedata0);
     return;
 }
@@ -24,9 +24,9 @@ void enable_mouse(struct QUEUE *queue, int data0, struct MOUSE_DEC *mdec) {
     mousedata0 = data0;
 
     wait_KBC_sendready();
-    io_out8(PORT_KEYCMD, KEYCMD_SENDTO_MOUSE);
+    asm_io_out8(PORT_KEYCMD, KEYCMD_SENDTO_MOUSE);
     wait_KBC_sendready();
-    io_out8(PORT_KEYDAT, MOUSECMD_ENABLE);
+    asm_io_out8(PORT_KEYDAT, MOUSECMD_ENABLE);
 
     mdec->phase = 0;
     return;

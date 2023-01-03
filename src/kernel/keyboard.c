@@ -5,8 +5,8 @@ int keydata0;
 
 void inthandler21(int *esp) {
     int data;
-    io_out8(PIC0_OCW2, 0x61);
-    data = io_in8(PORT_KEYDAT);
+    asm_io_out8(PIC0_OCW2, 0x61);
+    data = asm_io_in8(PORT_KEYDAT);
     queue_put(keyqueue, data + keydata0);
     return;
 }
@@ -18,7 +18,7 @@ void inthandler21(int *esp) {
 
 void wait_KBC_sendready(void) {
     for (;;) {
-        if ((io_in8(PORT_KEYSTA) & KEYSTA_SEND_NOTREADY) == 0) {
+        if ((asm_io_in8(PORT_KEYSTA) & KEYSTA_SEND_NOTREADY) == 0) {
             break;
         }
     }
@@ -30,8 +30,8 @@ void init_keyboard(struct QUEUE *queue, int data0) {
     keydata0 = data0;
 
     wait_KBC_sendready();
-    io_out8(PORT_KEYCMD, KEYCMD_WRITE_MODE);
+    asm_io_out8(PORT_KEYCMD, KEYCMD_WRITE_MODE);
     wait_KBC_sendready();
-    io_out8(PORT_KEYDAT, KBC_MODE);
+    asm_io_out8(PORT_KEYDAT, KBC_MODE);
     return;
 }

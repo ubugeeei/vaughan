@@ -41,16 +41,16 @@ void init_palette(void) {
 
 void set_palette(int start, int end, unsigned char *rgb) {
     int i, eflags;
-    eflags = io_load_eflags();
-    io_cli();
-    io_out8(0x03c8, start);
+    eflags = asm_io_load_eflags();
+    asm_io_cli();
+    asm_io_out8(0x03c8, start);
     for (i = start; i <= end; i++) {
-        io_out8(0x03c9, rgb[0] / 4);
-        io_out8(0x03c9, rgb[1] / 4);
-        io_out8(0x03c9, rgb[2] / 4);
+        asm_io_out8(0x03c9, rgb[0] / 4);
+        asm_io_out8(0x03c9, rgb[1] / 4);
+        asm_io_out8(0x03c9, rgb[2] / 4);
         rgb += 3;
     }
-    io_store_eflags(eflags);
+    asm_io_store_eflags(eflags);
     return;
 }
 

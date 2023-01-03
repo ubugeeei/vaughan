@@ -39,13 +39,13 @@ void console_task(struct SHEET *sheet, unsigned int memtotal) {
     cons_putchar(&cons, '>', 1);
 
     for (;;) {
-        io_cli();
+        asm_io_cli();
         if (queue_status(&task->queue) == 0) {
             task_sleep(task);
-            io_sti();
+            asm_io_sti();
         } else {
             i = queue_get(&task->queue);
-            io_sti();
+            asm_io_sti();
             if (i <= 1 && cons.sht != 0) {
                 if (i != 0) {
                     timer_init(cons.timer, &task->queue, 0);
@@ -273,13 +273,13 @@ void cmd_exit(struct CONSOLE *cons, int *fat) {
     struct QUEUE *queue = (struct QUEUE *)*((int *)0x0fec);
     timer_cancel(cons->timer);
     memman_free_4k(memman, (int)fat, 4 * 2880);
-    io_cli();
+    asm_io_cli();
     if (cons->sht != 0) {
         queue_put(queue, cons->sht - shtctl->sheets0 + 768);  // 768~1023
     } else {
         queue_put(queue, task - taskctl->tasks0 + 1024);  // 1024~2023
     }
-    io_sti();
+    asm_io_sti();
     for (;;) {
         task_sleep(task);
     }
@@ -376,7 +376,7 @@ int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline) {
                 q[esp + i] = p[data_hrb + i];
             }
             // clang-format off
-            start_app(0x1b, 0 * 8 + 4, esp, 1 * 8 + 4, &(task->tss.esp0));
+            asm_start_app(0x1b, 0 * 8 + 4, esp, 1 * 8 + 4, &(task->tss.esp0));
             // clang-format on
             shtctl = (struct SHTCTL *)*((int *)0x0fe4);
             for (i = 0; i < MAX_SHEETS; i++) {
@@ -499,18 +499,18 @@ int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int 
         sheet_free((struct SHEET *)ebx);
     } else if (edx == 15) {
         for (;;) {
-            io_cli();
+            asm_io_cli();
             if (queue_status(&task->queue) == 0) {
                 if (eax != 0) {
                     task_sleep(task);
                 } else {
-                    io_sti();
+                    asm_io_sti();
                     reg[7] = -1;
                     return 0;
                 }
             }
             i = queue_get(&task->queue);
-            io_sti();
+            asm_io_sti();
             if (i <= 1) {
                 timer_init(cons->timer, &task->queue, 1);
                 timer_settime(cons->timer, 50);
@@ -523,11 +523,11 @@ int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int 
             }
             if (i == 4) {  // Close only console
                 timer_cancel(cons->timer);
-                io_cli();
+                asm_io_cli();
                 queue_put(sys_queue,
                             cons->sht - shtctl->sheets0 + 2024);  // 2024~2279
                 cons->sht = 0;
-                io_sti();
+                asm_io_sti();
             }
             if (256 <= i && i <= 511) {
                 reg[7] = i - 256;
@@ -545,15 +545,15 @@ int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int 
         timer_free((struct TIMER *)ebx);
     } else if (edx == 20) {
         if (eax == 0) {
-            i = io_in8(0x61);
-            io_out8(0x61, i & 0x0d);
+            i = asm_io_in8(0x61);
+            asm_io_out8(0x61, i & 0x0d);
         } else {
             i = 1193180000 / eax;
-            io_out8(0x43, 0xb6);
-            io_out8(0x42, i & 0xff);
-            io_out8(0x42, i >> 8);
-            i = io_in8(0x61);
-            io_out8(0x61, (i | 0x03) & 0x0f);
+            asm_io_out8(0x43, 0xb6);
+            asm_io_out8(0x42, i & 0xff);
+            asm_io_out8(0x42, i >> 8);
+            i = asm_io_in8(0x61);
+            asm_io_out8(0x61, (i | 0x03) & 0x0f);
         }
     } else if (edx == 21) {  // File create_window
         for (i = 0; i < 8; i++) {

@@ -57,7 +57,7 @@ void task_switchsub(void) {
 
 void task_idle(void) {
     for (;;) {
-        io_hlt();
+        asm_io_hlt();
     }
 }
 
@@ -87,7 +87,7 @@ struct TASK *task_init(struct MEMMAN *memman) {
     task->level = 0;
     task_add(task);
     task_switchsub();
-    load_tr(task->sel);
+    asm_load_tr(task->sel);
     task_timer = timer_alloc();
     timer_settime(task_timer, task->priority);
 
@@ -160,7 +160,7 @@ void task_sleep(struct TASK *task) {
         if (task == now_task) {
             task_switchsub();
             now_task = task_now();
-            farjmp(0, now_task->sel);
+            asm_far_jmp(0, now_task->sel);
         }
     }
     return;
@@ -180,7 +180,7 @@ void task_switch(void) {
     new_task = tl->tasks[tl->now];
     timer_settime(task_timer, new_task->priority);
     if (new_task != now_task) {
-        farjmp(0, new_task->sel);
+        asm_far_jmp(0, new_task->sel);
     }
     return;
 }

@@ -57,14 +57,14 @@ void Boot(void) {
 
     init_gdtidt();
     init_pic();
-    io_sti();
+    asm_io_sti();
     queue_init(&queue, 128, queue_buf, 0);
     *((int *)0x0fec) = (int)&queue;
     init_pit();
     init_keyboard(&queue, 256);
     enable_mouse(&queue, 512, &mdec);
-    io_out8(PIC0_IMR, 0xf8);
-    io_out8(PIC1_IMR, 0xef);
+    asm_io_out8(PIC0_IMR, 0xf8);
+    asm_io_out8(PIC1_IMR, 0xef);
     queue_init(&keycmd, 32, keycmd_buf, 0);
 
     /*
@@ -163,31 +163,31 @@ void Boot(void) {
         if (queue_status(&keycmd) > 0 && keycmd_wait < 0) {
             keycmd_wait = queue_get(&keycmd);
             wait_KBC_sendready();
-            io_out8(PORT_KEYDAT, keycmd_wait);
+            asm_io_out8(PORT_KEYDAT, keycmd_wait);
         }
 
-        io_cli();
+        asm_io_cli();
 
         if (queue_status(&queue) == 0) {
             if (new_mx >= 0) {
                 // draw if there is no event
-                io_sti();
+                asm_io_sti();
                 sheet_slide(sht_mouse, new_mx, new_my);
                 new_mx = -1;
             } else if (new_wx != 0x7fffffff) {
                 // draw if there is no event
-                io_sti();
+                asm_io_sti();
                 sheet_slide(sht, new_wx, new_wy);
                 new_wx = 0x7fffffff;
             } else {
                 // sleep if there is no event
                 task_sleep(task_a);
-                io_sti();
+                asm_io_sti();
             }
         } else {
             // handle event
             i = queue_get(&queue);
-            io_sti();
+            asm_io_sti();
             if (key_win != 0 && key_win->flags == 0) {  // Window close_window
                 if (shtctl->top == 1) {
                     key_win = 0;
@@ -290,10 +290,10 @@ void Boot(void) {
                     task = key_win->task;
                     if (task != 0 && task->tss.ss0 != 0) {
                         cons_putstr0(task->cons, "\nBreak(key) :\n");
-                        io_cli();
+                        asm_io_cli();
                         task->tss.eax = (int)&(task->tss.esp0);
                         task->tss.eip = (int)asm_end_app;
-                        io_sti();
+                        asm_io_sti();
                         task_run(task, -1, 0);
                     }
                 }
@@ -324,7 +324,7 @@ void Boot(void) {
                 // if dont receive data
                 if (i == 256 + 0xfe) {
                     wait_KBC_sendready();
-                    io_out8(PORT_KEYDAT, keycmd_wait);
+                    asm_io_out8(PORT_KEYDAT, keycmd_wait);
                 }
             } else if (512 <= i && i <= 767) {
                 /*
@@ -389,11 +389,11 @@ void Boot(void) {
                                                 task = sht->task;
                                                 // clang-format off
 												cons_putstr0(task->cons, "\nBye :\n");
-												io_cli();
+												asm_io_cli();
 												task->tss.eax = (int) &(task->tss.esp0);
 												task->tss.eip = (int) asm_end_app;
                                                 // clang-format on
-                                                io_sti();
+                                                asm_io_sti();
                                                 task_run(task, -1, 0);
                                             } else {
                                                 // clang-format off
@@ -402,9 +402,9 @@ void Boot(void) {
 												key_window_off(key_win);
 												key_win = shtctl->sheets[shtctl->top - 1];
 												key_window_on(key_win);
-                                                io_cli();
+                                                asm_io_cli();
                                                 queue_put(&task->queue, 4);
-                                                io_sti();
+                                                asm_io_sti();
                                                 // clang-format on
                                             }
                                         }

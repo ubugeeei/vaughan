@@ -1,41 +1,41 @@
 [BITS 32]
 
-GLOBAL	io_hlt, io_cli, io_sti, io_stihlt
-GLOBAL	io_in8,  io_in16,  io_in32
-GLOBAL	io_out8, io_out16, io_out32
-GLOBAL	io_load_eflags, io_store_eflags
-GLOBAL	load_gdtr, load_idtr
-GLOBAL	load_cr0, store_cr0
-GLOBAL  load_tr
+GLOBAL	asm_io_hlt, asm_io_cli, asm_io_sti, asm_io_stihlt
+GLOBAL	asm_io_in8,  io_in16,  io_in32
+GLOBAL	asm_io_out8, io_out16, io_out32
+GLOBAL	asm_io_load_eflags, asm_io_store_eflags
+GLOBAL	asm_load_gdtr, asm_load_idtr
+GLOBAL	asm_load_cr0, asm_store_cr0
+GLOBAL  asm_load_tr
 GLOBAL	asm_inthandler20, asm_inthandler21, asm_inthandler27, asm_inthandler2c, asm_inthandler0c, asm_inthandler0d
-GLOBAL	memtest_sub
-GLOBAL  farjmp, farcall
-GLOBAL	asm_hrb_api
-GLOBAL	start_app, asm_end_app
+GLOBAL	asm_memtest_sub
+GLOBAL  asm_far_jmp, asm_far_call
+GLOBAL	asm_os_api
+GLOBAL	asm_start_app, asm_end_app
 
 EXTERN	inthandler0c, inthandler0d, inthandler20, inthandler21, inthandler27, inthandler2c
 EXTERN	hrb_api
 
 [SECTION .text]
 
-io_hlt:
+asm_io_hlt:
 	HLT
 	RET
 
-io_cli:
+asm_io_cli:
 	CLI
 	RET
 
-io_sti:
+asm_io_sti:
 	STI
 	RET
 
-io_stihlt:
+asm_io_stihlt:
 	STI
 	HLT
 	RET
 
-io_in8:
+asm_io_in8:
 	MOV		EDX,[ESP+4]
 	MOV		EAX,0
 	IN		AL,DX
@@ -52,7 +52,7 @@ io_in32:
 	IN		EAX,DX
 	RET
 
-io_out8:
+asm_io_out8:
 	MOV		EDX,[ESP+4]
 	MOV		AL,[ESP+8]
 	OUT		DX,AL
@@ -70,39 +70,39 @@ io_out32:
 	OUT		DX,EAX
 	RET
 
-io_load_eflags:
+asm_io_load_eflags:
 	PUSHFD
 	POP		EAX
 		RET
 
-io_store_eflags:
+asm_io_store_eflags:
 	MOV		EAX,[ESP+4]
 		PUSH	EAX
 		POPFD
 		RET
 
-load_gdtr:
+asm_load_gdtr:
 	MOV	AX,[ESP+4]
 	MOV	[ESP+6],AX
 	LGDT	[ESP+6]
 	RET
 
-load_idtr:
+asm_load_idtr:
 	MOV	AX,[ESP+4]
 	MOV	[ESP+6],AX
 	LIDT	[ESP+6]
 	RET
 
-load_cr0:		; int load_cr0(void);
+asm_load_cr0:		; int asm_load_cr0(void);
 	MOV		EAX,CR0
 	RET
 
-store_cr0:		; void store_cr0(int cr0);
+asm_store_cr0:		; void asm_store_cr0(int cr0);
 	MOV		EAX,[ESP+4]
 	MOV		CR0,EAX
 	RET
 
-load_tr:		; void load_tr(int tr);
+asm_load_tr:		; void asm_load_tr(int tr);
 	LTR		[ESP+4]
 	RET
 
@@ -210,14 +210,14 @@ asm_inthandler0d:
 		ADD		ESP,4
 		IRETD
 
-farjmp: ; void farjmp(int eip, int cs);
+asm_far_jmp: ; void asm_far_jmp(int eip, int cs);
 		JMP FAR [ESP+4]
 		RET
-farcall:
+asm_far_call:
 		CALL	FAR [ESP+4]
 		RET
 
-memtest_sub:	; unsigned int memtest_sub(unsigned int start, unsigned int end)
+asm_memtest_sub:	; unsigned int asm_memtest_sub(unsigned int start, unsigned int end)
 	PUSH	EDI
 	PUSH	ESI
 	PUSH	EBX
@@ -250,7 +250,7 @@ mts_fin:
 	POP	EDI
 	RET
 
-asm_hrb_api:
+asm_os_api:
 		STI
 		PUSH	DS
 		PUSH	ES
@@ -274,7 +274,7 @@ asm_end_app:
 		POPAD
 		RET
 
-start_app:
+asm_start_app:
 		PUSHAD
 		MOV		EAX,[ESP+36]
 		MOV		ECX,[ESP+40]

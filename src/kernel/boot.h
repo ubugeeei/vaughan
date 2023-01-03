@@ -22,30 +22,30 @@ struct BOOT_INFO {
  * asm func
  *
  */
-void io_hlt(void);
-void io_cli(void);
-void io_sti(void);
-void io_stihlt(void);
-int io_in8(int port);
-void io_out8(int port, int data);
-int io_load_eflags(void);
-void io_store_eflags(int eflags);
-void load_gdtr(int limit, int addr);
-void load_idtr(int limit, int addr);
-int load_cr0(void);
-void store_cr0(int cr0);
-void load_tr(int tr);
+void asm_io_hlt(void);
+void asm_io_cli(void);
+void asm_io_sti(void);
+void asm_io_stihlt(void);
+int asm_io_in8(int port);
+void asm_io_out8(int port, int data);
+int asm_io_load_eflags(void);
+void asm_io_store_eflags(int eflags);
+void asm_load_gdtr(int limit, int addr);
+void asm_load_idtr(int limit, int addr);
+int asm_load_cr0(void);
+void asm_store_cr0(int cr0);
+void asm_load_tr(int tr);
 void asm_inthandler0c(void);
 void asm_inthandler0d(void);
 void asm_inthandler20(void);
 void asm_inthandler21(void);
 void asm_inthandler27(void);
 void asm_inthandler2c(void);
-unsigned int memtest_sub(unsigned int start, unsigned int end);
-void farjmp(int eip, int cs);
-void farcall(int eip, int cs);
-void asm_hrb_api(void);
-void start_app(int eip, int cs, int esp, int ds, int *tss_esp0);
+unsigned int asm_memtest_sub(unsigned int start, unsigned int end);
+void asm_far_jmp(int eip, int cs);
+void asm_far_call(int eip, int cs);
+void asm_os_api(void);
+void asm_start_app(int eip, int cs, int esp, int ds, int *tss_esp0);
 void asm_end_app(void);
 
 /*

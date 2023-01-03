@@ -14,14 +14,14 @@ void init_gdtidt(void) {
 
     set_segmdesc(gdt + 1, 0xffffffff, 0x00000000, AR_DATA32_RW);
     set_segmdesc(gdt + 2, LIMIT_BOTPAK, ADR_BOTPAK, AR_CODE32_ER);
-    load_gdtr(LIMIT_GDT, ADR_GDT);
+    asm_load_gdtr(LIMIT_GDT, ADR_GDT);
 
     // Init IDT
     for (i = 0; i <= LIMIT_IDT / 8; i++) {
         set_gatedesc(idt + i, 0, 0, 0);
     }
 
-    load_idtr(LIMIT_IDT, ADR_IDT);
+    asm_load_idtr(LIMIT_IDT, ADR_IDT);
 
     set_gatedesc(idt + 0x0c, (int)asm_inthandler0c, 2 * 8, AR_INTGATE32);
     set_gatedesc(idt + 0x0d, (int)asm_inthandler0d, 2 * 8, AR_INTGATE32);
@@ -30,7 +30,7 @@ void init_gdtidt(void) {
     set_gatedesc(idt + 0x27, (int)asm_inthandler27, 2 * 8, AR_INTGATE32);
     set_gatedesc(idt + 0x2c, (int)asm_inthandler2c, 2 * 8, AR_INTGATE32);
     // system call
-    set_gatedesc(idt + 0x40, (int)asm_hrb_api, 2 * 8, AR_INTGATE32 + 0x60);
+    set_gatedesc(idt + 0x40, (int)asm_os_api, 2 * 8, AR_INTGATE32 + 0x60);
 
     return;
 }

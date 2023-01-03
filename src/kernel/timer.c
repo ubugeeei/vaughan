@@ -11,9 +11,9 @@ struct TIMERCTL timerctl;
 void init_pit(void) {
     int i;
     struct TIMER *t;
-    io_out8(PIT_CTRL, 0x34);
-    io_out8(PIT_CNT0, 0x9c);
-    io_out8(PIT_CNT0, 0x2e);
+    asm_io_out8(PIT_CTRL, 0x34);
+    asm_io_out8(PIT_CNT0, 0x9c);
+    asm_io_out8(PIT_CNT0, 0x2e);
     timerctl.count = 0;
     for (i = 0; i < MAX_TIMER; i++) {
         timerctl.timers0[i].flags = 0;
@@ -55,14 +55,14 @@ void timer_settime(struct TIMER *timer, unsigned int timeout) {
     struct TIMER *t, *s;
     timer->timeout = timeout + timerctl.count;
     timer->flags = TIMER_FLAGS_USING;
-    e = io_load_eflags();
-    io_cli();
+    e = asm_io_load_eflags();
+    asm_io_cli();
     t = timerctl.t0;
     if (timer->timeout <= t->timeout) {
         timerctl.t0 = timer;
         timer->next = t;
         timerctl.next = timer->timeout;
-        io_store_eflags(e);
+        asm_io_store_eflags(e);
         return;
     }
 
@@ -72,7 +72,7 @@ void timer_settime(struct TIMER *timer, unsigned int timeout) {
         if (timer->timeout <= t->timeout) {
             s->next = timer;
             timer->next = t;
-            io_store_eflags(e);
+            asm_io_store_eflags(e);
             return;
         }
     }
@@ -81,7 +81,7 @@ void timer_settime(struct TIMER *timer, unsigned int timeout) {
 void inthandler20(int *esp) {
     struct TIMER *timer;
     char ts = 0;
-    io_out8(PIC0_OCW2, 0x60);
+    asm_io_out8(PIC0_OCW2, 0x60);
     timerctl.count++;
     if (timerctl.next > timerctl.count) {
         return;
@@ -110,8 +110,8 @@ void inthandler20(int *esp) {
 int timer_cancel(struct TIMER *timer) {
     int e;
     struct TIMER *t;
-    e = io_load_eflags();
-    io_cli();
+    e = asm_io_load_eflags();
+    asm_io_cli();
     if (timer->flags == TIMER_FLAGS_USING) {
         if (timer == timerctl.t0) {
             t = timer->next;
@@ -128,18 +128,18 @@ int timer_cancel(struct TIMER *timer) {
             t->next = timer->next;
         }
         timer->flags = TIMER_FLAGS_ALLOC;
-        io_store_eflags(e);
+        asm_io_store_eflags(e);
         return 1;
     }
-    io_store_eflags(e);
+    asm_io_store_eflags(e);
     return 0;
 }
 
 void timer_cancel_all(struct QUEUE *queue) {
     int e, i;
     struct TIMER *t;
-    e = io_load_eflags();
-    io_cli();
+    e = asm_io_load_eflags();
+    asm_io_cli();
     for (i = 0; i < MAX_TIMER; i++) {
         t = &timerctl.timers0[i];
         if (t->flags != 0 && t->flags2 != 0 && t->queue == queue) {
@@ -147,6 +147,6 @@ void timer_cancel_all(struct QUEUE *queue) {
             timer_free(t);
         }
     }
-    io_store_eflags(e);
+    asm_io_store_eflags(e);
     return;
 }
