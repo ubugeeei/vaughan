@@ -2,7 +2,7 @@
 #include "../include/string.h"
 
 /* asmhead.nas */
-struct BOOTINFO {
+struct BOOT_INFO {
     char cyls;
     char leds;
     char vmode;
@@ -10,7 +10,7 @@ struct BOOTINFO {
     short scrnx, scrny;
     char *vram;
 };
-#define ADR_BOOTINFO 0x00000ff0
+#define ADR_BOOT_INFO 0x00000ff0
 #define ADR_DISK_IMG 0x00100000
 
 /* naskfunc.nas */

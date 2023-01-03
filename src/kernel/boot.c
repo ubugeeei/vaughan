@@ -9,7 +9,7 @@ void close_console(struct SHEET *sht);
 void close_console_task(struct TASK *task);
 
 void Boot(void) {
-    struct BOOTINFO *binfo = (struct BOOTINFO *)ADR_BOOTINFO;
+    struct BOOT_INFO *binfo = (struct BOOT_INFO *)ADR_BOOT_INFO;
     struct SHTCTL *shtctl;
     char s[40];
     struct QUEUE queue, keycmd;
