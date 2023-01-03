@@ -18,44 +18,20 @@ ifndef STACK
 endif
 
 default :
-	$(MAKE) $(APP).hrb
+	mkdir -p $(OUT_DIR)/app/$(APP)/obj
+	$(MAKE) $(OUT_DIR)/app/$(APP)/$(APP).hrb
 
-$(APP).hrb : $(APP).o $(LIB_PATH)libstdio.a $(LIB_PATH)libstring.a $(LIB_PATH)libstdlib.a $(API_LIB_PATH)libapi.a ../app.ld
+$(OUT_DIR)/app/$(APP)/$(APP).hrb : $(OUT_DIR)/app/$(APP)/obj/$(APP).o $(LIB_PATH)libstdio.a $(LIB_PATH)libstring.a $(LIB_PATH)libstdlib.a $(API_LIB_PATH)libapi.a ../app.ld
+	mkdir -p $(OUT_DIR)/app/$(APP)/obj
 	$(CC_WITH_OPTION) $(CAPPLD) -Wl,'--defsym=__stack=$(STACK)' -g -o $@ $< $(LIB_PATH)libstdio.a $(LIB_PATH)libstring.a $(LIB_PATH)libstdlib.a $(API_LIB_PATH)libapi.a
 
-# Image
-$(OUT_DIR)/haribote.img : $(KERNEL_PATH)ipl10.bin $(KERNEL_PATH)haribote.sys $(APP).hrb
-	mformat -f 1440 -C -B $(KERNEL_PATH)ipl10.bin -i $(OUT_DIR)/haribote.img ::
-	mcopy -i $(OUT_DIR)/haribote.img $(KERNEL_PATH)haribote.sys $(APP).hrb ../nihongo/nihongo.fnt ::
-
 # Rule
-%.o : %.c
-	$(CC) $(CFLAGS) -g -c $*.c -o $*.o
+$(OUT_DIR)/app/$(APP)/obj/%.o : %.c
+	$(CC) $(CFLAGS) -g -c $*.c -o $(OUT_DIR)/app/$(APP)/obj/$*.o
 
 # -g:generate debug, -f:format, -o:outfile, -l:listfile, elf:ELF32 (i386)
-%.o : %.nasm
-	nasm -g -f elf $*.nasm -o $*.o
-
-# Commands
-run :
-	$(MAKE) $(OUT_DIR)/haribote.img
-	qemu-system-i386 -drive file=$(OUT_DIR)/haribote.img,format=raw,if=floppy -boot a
-
-full :
-	$(MAKE) -C $(API_LIB_PATH)
-	$(MAKE) $(APP).hrb
-
-run_full :
-	$(MAKE) -C $(API_LIB_PATH)
-	$(MAKE) -C ../haribote
-	$(MAKE) run
-
-clean :
-	-$(DEL) *.o
-	-$(DEL) *.lst
-	-$(DEL) *.map
-	-$(DEL) $(OUT_DIR)/haribote.img
+$(OUT_DIR)/app/$(APP)/obj/%.o : %.nasm
+	nasm -g -f elf $*.nasm -o $(OUT_DIR)/app/$(APP)/obj/$*.o
 
 src_only :
-	$(MAKE) clean
-	-$(DEL) $(APP).hrb
+	-$(DEL) $(OUT_DIR)/app/$(APP)

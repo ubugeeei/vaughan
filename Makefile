@@ -1,35 +1,35 @@
 OUT_DIR = target
 
 APPS = \
-	src/app/a/a.hrb \
-	src/app/hello3/hello3.hrb \
-	src/app/hello4/hello4.hrb \
-	src/app/hello5/hello5.hrb \
-	src/app/win/win.hrb \
-	src/app/win2/win2.hrb \
-	src/app/win3/win3.hrb \
-	src/app/star1/star1.hrb \
-	src/app/stars/stars.hrb \
-	src/app/star2/star2.hrb \
-	src/app/lines/lines.hrb \
-	src/app/walk/walk.hrb \
-	src/app/noodle/noodle.hrb \
-	src/app/beepdown/beepdown.hrb \
-	src/app/color/color.hrb \
-	src/app/color2/color2.hrb \
-	src/app/sosu/sosu.hrb \
-	src/app/sosu2/sosu2.hrb \
-	src/app/sosu3/sosu3.hrb \
-	src/app/cat/cat.hrb \
-	src/app/iroha/iroha.hrb \
-	src/app/chklang/chklang.hrb \
-	src/app/notrec/notrec.hrb \
-	src/app/bball/bball.hrb \
-	src/app/invador/invador.hrb \
-	src/app/calc/calc.hrb \
-	src/app/tview/tview.hrb \
-	src/app/mmlplay/mmlplay.hrb \
-	src/app/gview/gview.hrb
+	$(OUT_DIR)/app/a/a.hrb \
+	$(OUT_DIR)/app/hello3/hello3.hrb \
+	$(OUT_DIR)/app/hello4/hello4.hrb \
+	$(OUT_DIR)/app/hello5/hello5.hrb \
+	$(OUT_DIR)/app/win/win.hrb \
+	$(OUT_DIR)/app/win2/win2.hrb \
+	$(OUT_DIR)/app/win3/win3.hrb \
+	$(OUT_DIR)/app/star1/star1.hrb \
+	$(OUT_DIR)/app/stars/stars.hrb \
+	$(OUT_DIR)/app/star2/star2.hrb \
+	$(OUT_DIR)/app/lines/lines.hrb \
+	$(OUT_DIR)/app/walk/walk.hrb \
+	$(OUT_DIR)/app/noodle/noodle.hrb \
+	$(OUT_DIR)/app/beepdown/beepdown.hrb \
+	$(OUT_DIR)/app/color/color.hrb \
+	$(OUT_DIR)/app/color2/color2.hrb \
+	$(OUT_DIR)/app/sosu/sosu.hrb \
+	$(OUT_DIR)/app/sosu2/sosu2.hrb \
+	$(OUT_DIR)/app/sosu3/sosu3.hrb \
+	$(OUT_DIR)/app/cat/cat.hrb \
+	$(OUT_DIR)/app/iroha/iroha.hrb \
+	$(OUT_DIR)/app/chklang/chklang.hrb \
+	$(OUT_DIR)/app/notrec/notrec.hrb \
+	$(OUT_DIR)/app/bball/bball.hrb \
+	$(OUT_DIR)/app/invador/invador.hrb \
+	$(OUT_DIR)/app/calc/calc.hrb \
+	$(OUT_DIR)/app/tview/tview.hrb \
+	$(OUT_DIR)/app/mmlplay/mmlplay.hrb \
+	$(OUT_DIR)/app/gview/gview.hrb
 
 MAKE = make -r
 DEL = rm -rf
