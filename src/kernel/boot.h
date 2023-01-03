@@ -1,7 +1,11 @@
 #include "../include/stdio.h"
 #include "../include/string.h"
 
-/* asmhead.nas */
+/*
+ *
+ * asm head
+ *
+ */
 struct BOOT_INFO {
     char cyls;
     char leds;
@@ -13,7 +17,11 @@ struct BOOT_INFO {
 #define ADR_BOOT_INFO 0x00000ff0
 #define ADR_DISK_IMG 0x00100000
 
-/* naskfunc.nas */
+/*
+ *
+ * asm func
+ *
+ */
 void io_hlt(void);
 void io_cli(void);
 void io_sti(void);
@@ -40,7 +48,11 @@ void asm_hrb_api(void);
 void start_app(int eip, int cs, int esp, int ds, int *tss_esp0);
 void asm_end_app(void);
 
-/* queue.c */
+/*
+ *
+ * queue
+ *
+ */
 struct QUEUE {
     int *buf;
     int p, q, size, free, flags;
@@ -51,7 +63,11 @@ int queue_put(struct QUEUE *queue, int data);
 int queue_get(struct QUEUE *queue);
 int queue_status(struct QUEUE *queue);
 
-/* graphic.c */
+/*
+ *
+ * graphic.c
+ *
+ */
 void init_palette(void);
 void set_palette(int start, int end, unsigned char *rgb);
 // clang-format off
@@ -81,7 +97,11 @@ void putblock8_8(char *vram, int vxsize, int pxsize, int pysize, int px0, int py
 #define COL8_008484 14
 #define COL8_848484 15
 
-/* dsctbl.c */
+/*
+ *
+ * dsctbl
+ *
+ */
 struct SEGMENT_DESCRIPTOR {
     short limit_low, base_low;
     char base_mid, access_right;
@@ -109,7 +129,11 @@ void set_gatedesc(struct GATE_DESCRIPTOR *gd, int offset, int selector, int ar);
 #define AR_TSS32 0x0089
 #define AR_INTGATE32 0x008e
 
-/* int.c */
+/*
+ *
+ * int
+ *
+ */
 void init_pic(void);
 void inthandler27(int *esp);
 #define PIC0_ICW1 0x0020
@@ -125,14 +149,22 @@ void inthandler27(int *esp);
 #define PIC1_ICW3 0x00a1
 #define PIC1_ICW4 0x00a1
 
-/* keyboard.c */
+/*
+ *
+ * keyboard
+ *
+ */
 void inthandler21(int *esp);
 void wait_KBC_sendready(void);
 void init_keyboard(struct QUEUE *queue, int data0);
 #define PORT_KEYDAT 0x0060
 #define PORT_KEYCMD 0x0064
 
-/* mouse.c */
+/*
+ *
+ * mouse
+ *
+ */
 struct MOUSE_DEC {
     unsigned char buf[3], phase;
     int x, y, btn;
@@ -141,7 +173,11 @@ void inthandler2c(int *esp);
 void enable_mouse(struct QUEUE *queue, int data0, struct MOUSE_DEC *mdec);
 int mouse_decode(struct MOUSE_DEC *mdec, unsigned char dat);
 
-/* memory.c */
+/*
+ *
+ * memory
+ *
+ */
 #define MEMMAN_FREES 4090
 #define MEMMAN_ADDR 0x003c0000
 struct FREEINFO {
@@ -159,31 +195,11 @@ int memman_free(struct MEMMAN *man, unsigned int addr, unsigned int size);
 unsigned int memman_alloc_4k(struct MEMMAN *man, unsigned int size);
 int memman_free_4k(struct MEMMAN *man, unsigned int addr, unsigned int size);
 
-/* sheet.c */
-#define MAX_SHEETS 256
-struct SHEET {
-    unsigned char *buf;
-    int bxsize, bysize, vx0, vy0, col_inv, height, flags;
-    struct SHTCTL *ctl;
-    struct TASK *task;
-};
-struct SHTCTL {
-    unsigned char *vram, *map;
-    int xsize, ysize, top;
-    struct SHEET *sheets[MAX_SHEETS];
-    struct SHEET sheets0[MAX_SHEETS];
-};
-// clang-format off
-struct SHTCTL *shtctl_init(struct MEMMAN *memman, unsigned char *vram, int xsize, int ysize);
-struct SHEET *sheet_alloc(struct SHTCTL *ctl);
-void sheet_setbuf(struct SHEET *sht, unsigned char *buf, int xsize, int ysize, int col_inv);
-// clang-format on
-void sheet_updown(struct SHEET *sht, int height);
-void sheet_refresh(struct SHEET *sht, int bx0, int by0, int bx1, int by1);
-void sheet_slide(struct SHEET *sht, int vx0, int vy0);
-void sheet_free(struct SHEET *sht);
-
-/* timer.c */
+/*
+ *
+ * timer
+ *
+ */
 #define MAX_TIMER 500
 struct TIMER {
     struct TIMER *next;
@@ -207,7 +223,11 @@ void inthandler20(int *esp);
 int timer_cancel(struct TIMER *timer);
 void timer_cancel_all(struct QUEUE *queue);
 
-/* mtask.c */
+/*
+ *
+ * mtask
+ *
+ */
 #define MAX_TASKS 1000
 #define TASK_GDT0 3
 #define MAX_TASKS_LV 100
@@ -251,7 +271,39 @@ void task_run(struct TASK *task, int level, int priority);
 void task_switch(void);
 void task_sleep(struct TASK *task);
 
-/** window */
+/*
+ *
+ * sheet
+ *
+ */
+#define MAX_SHEETS 256
+struct SHEET {
+    unsigned char *buf;
+    int bxsize, bysize, vx0, vy0, col_inv, height, flags;
+    struct SHTCTL *ctl;
+    struct TASK *task;
+};
+struct SHTCTL {
+    unsigned char *vram, *map;
+    int xsize, ysize, top;
+    struct SHEET *sheets[MAX_SHEETS];
+    struct SHEET sheets0[MAX_SHEETS];
+};
+// clang-format off
+struct SHTCTL *shtctl_init(struct MEMMAN *memman, unsigned char *vram, int xsize, int ysize);
+struct SHEET *sheet_alloc(struct SHTCTL *ctl);
+void sheet_setbuf(struct SHEET *sht, unsigned char *buf, int xsize, int ysize, int col_inv);
+// clang-format on
+void sheet_updown(struct SHEET *sht, int height);
+void sheet_refresh(struct SHEET *sht, int bx0, int by0, int bx1, int by1);
+void sheet_slide(struct SHEET *sht, int vx0, int vy0);
+void sheet_free(struct SHEET *sht);
+
+/*
+ *
+ * window
+ *
+ */
 // clang-format off
 void make_window8(unsigned char *buf, int xsize, int ysize, char *title, char act);
 void putfonts8_asc_sht(struct SHEET *sht, int x, int y, int c, int b, char *s, int l);
@@ -260,7 +312,11 @@ void make_textbox8(struct SHEET *sht, int x0, int y0, int sx, int sy, int c);
 void make_wtitle8(unsigned char *buf, int xsize, char *title, char act);
 void change_wtitle8(struct SHEET *sht, char act);
 
-/** console */
+/*
+ *
+ * console
+ *
+ */
 struct CONSOLE {
     struct SHEET *sht;
     int cur_x, cur_y, cur_c;
@@ -297,7 +353,19 @@ int *inthandler0d(int *esp);
 void hrb_draw_line_window(struct SHEET *sht, int x0, int y0, int x1, int y1, int col);
 // clang-format on
 
-/** file */
+/*
+ *
+ * boot
+ *
+ */
+struct TASK *open_console_task(struct SHEET *sht, unsigned int memtotal);
+struct SHEET *open_console(struct SHTCTL *shtctl, unsigned int memtotal);
+
+/*
+ *
+ * file
+ *
+ */
 struct FILEINFO {
     unsigned char name[8], ext[3], type;
     char reserve[10];
@@ -309,10 +377,10 @@ void file_load_file(int cluster_num, int size, char *buf, int *fat, char *img);
 struct FILEINFO *file_search(char *name, struct FILEINFO *finfo, int max);
 char *file_load_file2(int cluster_num, int *psize, int *fat);
 
-/* tek.c */
+/*
+ *
+ * tek
+ *
+ */
 int tek_getsize(unsigned char *p);
 int tek_decomp(unsigned char *p, char *q, int size);
-
-/* boot */
-struct TASK *open_console_task(struct SHEET *sht, unsigned int memtotal);
-struct SHEET *open_console(struct SHTCTL *shtctl, unsigned int memtotal);
