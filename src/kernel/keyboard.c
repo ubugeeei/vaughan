@@ -1,13 +1,13 @@
 #include "boot.h"
 
-struct Queue32 *keyqueue;
+struct QUEUE *keyqueue;
 int keydata0;
 
 void inthandler21(int *esp) {
     int data;
     io_out8(PIC0_OCW2, 0x61);
     data = io_in8(PORT_KEYDAT);
-    queue32_put(keyqueue, data + keydata0);
+    queue_put(keyqueue, data + keydata0);
     return;
 }
 
@@ -25,7 +25,7 @@ void wait_KBC_sendready(void) {
     return;
 }
 
-void init_keyboard(struct Queue32 *queue, int data0) {
+void init_keyboard(struct QUEUE *queue, int data0) {
     keyqueue = queue;
     keydata0 = data0;
 

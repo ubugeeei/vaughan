@@ -12,7 +12,7 @@ void Boot(void) {
     struct BOOTINFO *binfo = (struct BOOTINFO *)ADR_BOOTINFO;
     struct SHTCTL *shtctl;
     char s[40];
-    struct Queue32 queue, keycmd;
+    struct QUEUE queue, keycmd;
     int queue_buf[128], keycmd_buf[32], *cons_queue[2];
     int mx, my, i, new_mx = -1, new_my = 0, new_wx = 0x7fffffff, new_wy = 0;
     unsigned int memtotal;
@@ -58,14 +58,14 @@ void Boot(void) {
     init_gdtidt();
     init_pic();
     io_sti();
-    queue32_init(&queue, 128, queue_buf, 0);
+    queue_init(&queue, 128, queue_buf, 0);
     *((int *)0x0fec) = (int)&queue;
     init_pit();
     init_keyboard(&queue, 256);
     enable_mouse(&queue, 512, &mdec);
     io_out8(PIC0_IMR, 0xf8);
     io_out8(PIC1_IMR, 0xef);
-    queue32_init(&keycmd, 32, keycmd_buf, 0);
+    queue_init(&keycmd, 32, keycmd_buf, 0);
 
     /*
      *
@@ -125,8 +125,8 @@ void Boot(void) {
     sheet_updown(sht_mouse, 2);
     key_window_on(key_win);
 
-    queue32_put(&keycmd, KEYCMD_LED);
-    queue32_put(&keycmd, key_leds);
+    queue_put(&keycmd, KEYCMD_LED);
+    queue_put(&keycmd, key_leds);
 
     /*
      *
@@ -160,15 +160,15 @@ void Boot(void) {
      *
      */
     for (;;) {
-        if (queue32_status(&keycmd) > 0 && keycmd_wait < 0) {
-            keycmd_wait = queue32_get(&keycmd);
+        if (queue_status(&keycmd) > 0 && keycmd_wait < 0) {
+            keycmd_wait = queue_get(&keycmd);
             wait_KBC_sendready();
             io_out8(PORT_KEYDAT, keycmd_wait);
         }
 
         io_cli();
 
-        if (queue32_status(&queue) == 0) {
+        if (queue_status(&queue) == 0) {
             if (new_mx >= 0) {
                 // draw if there is no event
                 io_sti();
@@ -186,7 +186,7 @@ void Boot(void) {
             }
         } else {
             // handle event
-            i = queue32_get(&queue);
+            i = queue_get(&queue);
             io_sti();
             if (key_win != 0 && key_win->flags == 0) {  // Window close_window
                 if (shtctl->top == 1) {
@@ -223,17 +223,17 @@ void Boot(void) {
 
                 // normal characters
                 if (s[0] != 0 && key_win != 0) {
-                    queue32_put(&key_win->task->queue, s[0] + 256);
+                    queue_put(&key_win->task->queue, s[0] + 256);
                 }
 
                 // BackSpace
                 if (i == 256 + 0x0e && key_win != 0) {  // Backspace
-                    queue32_put(&key_win->task->queue, 8 + 256);
+                    queue_put(&key_win->task->queue, 8 + 256);
                 }
 
                 // Enter
                 if (i == 256 + 0x1c && key_win != 0) {  // Enter
-                    queue32_put(&key_win->task->queue, 10 + 256);
+                    queue_put(&key_win->task->queue, 10 + 256);
                 }
 
                 // Tab
@@ -267,22 +267,22 @@ void Boot(void) {
                 // CapsLock
                 if (i == 256 + 0x3a) {
                     key_leds ^= 4;
-                    queue32_put(&keycmd, KEYCMD_LED);
-                    queue32_put(&keycmd, key_leds);
+                    queue_put(&keycmd, KEYCMD_LED);
+                    queue_put(&keycmd, key_leds);
                 }
 
                 // NumLock
                 if (i == 256 + 0x45) {
                     key_leds ^= 2;
-                    queue32_put(&keycmd, KEYCMD_LED);
-                    queue32_put(&keycmd, key_leds);
+                    queue_put(&keycmd, KEYCMD_LED);
+                    queue_put(&keycmd, key_leds);
                 }
 
                 // ScrollLock
                 if (i == 256 + 0x46) {
                     key_leds ^= 1;
-                    queue32_put(&keycmd, KEYCMD_LED);
-                    queue32_put(&keycmd, key_leds);
+                    queue_put(&keycmd, KEYCMD_LED);
+                    queue_put(&keycmd, key_leds);
                 }
 
                 // Shift + F1
@@ -403,7 +403,7 @@ void Boot(void) {
 												key_win = shtctl->sheets[shtctl->top - 1];
 												key_window_on(key_win);
                                                 io_cli();
-                                                queue32_put(&task->queue, 4);
+                                                queue_put(&task->queue, 4);
                                                 io_sti();
                                                 // clang-format on
                                             }
@@ -444,7 +444,7 @@ void Boot(void) {
 void key_window_off(struct SHEET *key_win) {
     change_wtitle8(key_win, 0);
     if ((key_win->flags & 0x20) != 0) {
-        queue32_put(&key_win->task->queue, 3);
+        queue_put(&key_win->task->queue, 3);
     }
     return;
 }
@@ -452,7 +452,7 @@ void key_window_off(struct SHEET *key_win) {
 void key_window_on(struct SHEET *key_win) {
     change_wtitle8(key_win, 1);
     if ((key_win->flags & 0x20) != 0) {
-        queue32_put(&key_win->task->queue, 2);
+        queue_put(&key_win->task->queue, 2);
     }
     return;
 }
@@ -473,7 +473,7 @@ struct TASK *open_console_task(struct SHEET *sht, unsigned int memtotal) {
     *((int *)(task->tss.esp + 4)) = (int)sht;
     *((int *)(task->tss.esp + 8)) = memtotal;
     task_run(task, 2, 2);
-    queue32_init(&task->queue, 128, cons_queue, task);
+    queue_init(&task->queue, 128, cons_queue, task);
     return task;
 }
 
@@ -500,7 +500,7 @@ struct SHEET *open_console(struct SHTCTL *shtctl, unsigned int memtotal) {
     task_run(task, 2, 2);
     sht->task = task;
     sht->flags |= 0x20;  // cursor
-    queue32_init(&task->queue, 128, cons_queue, task);
+    queue_init(&task->queue, 128, cons_queue, task);
     return sht;
 }
 

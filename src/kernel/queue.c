@@ -2,7 +2,7 @@
 
 #define FLAGS_OVERRUN 0x0001
 
-void queue32_init(struct Queue32 *queue, int size, int *buf, struct TASK *task) {
+void queue_init(struct QUEUE *queue, int size, int *buf, struct TASK *task) {
     queue->size = size;
     queue->buf = buf;
     queue->free = size;
@@ -13,7 +13,7 @@ void queue32_init(struct Queue32 *queue, int size, int *buf, struct TASK *task) 
     return;
 }
 
-int queue32_put(struct Queue32 *queue, int data) {
+int queue_put(struct QUEUE *queue, int data) {
     if (queue->free == 0) {
         queue->flags |= FLAGS_OVERRUN;
         return -1;
@@ -32,7 +32,7 @@ int queue32_put(struct Queue32 *queue, int data) {
     return 0;
 }
 
-int queue32_get(struct Queue32 *queue) {
+int queue_get(struct QUEUE *queue) {
     int data;
     if (queue->free == queue->size) {
         return -1;
@@ -46,4 +46,4 @@ int queue32_get(struct Queue32 *queue) {
     return data;
 }
 
-int queue32_status(struct Queue32 *queue) { return queue->size - queue->free; }
+int queue_status(struct QUEUE *queue) { return queue->size - queue->free; }

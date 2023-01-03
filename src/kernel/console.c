@@ -40,11 +40,11 @@ void console_task(struct SHEET *sheet, unsigned int memtotal) {
 
     for (;;) {
         io_cli();
-        if (queue32_status(&task->queue) == 0) {
+        if (queue_status(&task->queue) == 0) {
             task_sleep(task);
             io_sti();
         } else {
-            i = queue32_get(&task->queue);
+            i = queue_get(&task->queue);
             io_sti();
             if (i <= 1 && cons.sht != 0) {
                 if (i != 0) {
@@ -270,14 +270,14 @@ void cmd_exit(struct CONSOLE *cons, int *fat) {
     struct MEMMAN *memman = (struct MEMMAN *)MEMMAN_ADDR;
     struct TASK *task = task_now();
     struct SHTCTL *shtctl = (struct SHTCTL *)*((int *)0x0fe4);
-    struct Queue32 *queue = (struct Queue32 *)*((int *)0x0fec);
+    struct QUEUE *queue = (struct QUEUE *)*((int *)0x0fec);
     timer_cancel(cons->timer);
     memman_free_4k(memman, (int)fat, 4 * 2880);
     io_cli();
     if (cons->sht != 0) {
-        queue32_put(queue, cons->sht - shtctl->sheets0 + 768);  // 768~1023
+        queue_put(queue, cons->sht - shtctl->sheets0 + 768);  // 768~1023
     } else {
-        queue32_put(queue, task - taskctl->tasks0 + 1024);  // 1024~2023
+        queue_put(queue, task - taskctl->tasks0 + 1024);  // 1024~2023
     }
     io_sti();
     for (;;) {
@@ -288,26 +288,26 @@ void cmd_exit(struct CONSOLE *cons, int *fat) {
 void cmd_start(struct CONSOLE *cons, char *cmdline, int memtotal) {
     struct SHTCTL *shtctl = (struct SHTCTL *)*((int *)0x0fe4);
     struct SHEET *sht = open_console(shtctl, memtotal);
-    struct Queue32 *queue = &sht->task->queue;
+    struct QUEUE *queue = &sht->task->queue;
     int i;
     sheet_slide(sht, 32, 4);
     sheet_updown(sht, shtctl->top);
     for (i = 6; cmdline[i] != 0; i++) {
-        queue32_put(queue, cmdline[i] + 256);
+        queue_put(queue, cmdline[i] + 256);
     }
-    queue32_put(queue, 10 + 256);
+    queue_put(queue, 10 + 256);
     cons_newline(cons);
     return;
 }
 
 void cmd_ncst(struct CONSOLE *cons, char *cmdline, int memtotal) {
     struct TASK *task = open_console_task(0, memtotal);
-    struct Queue32 *queue = &task->queue;
+    struct QUEUE *queue = &task->queue;
     int i;
     for (i = 5; cmdline[i] != 0; i++) {
-        queue32_put(queue, cmdline[i] + 256);
+        queue_put(queue, cmdline[i] + 256);
     }
-    queue32_put(queue, 10 + 256);
+    queue_put(queue, 10 + 256);
     cons_newline(cons);
     return;
 }
@@ -415,7 +415,7 @@ int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int 
     struct CONSOLE *cons = task->cons;
     struct SHTCTL *shtctl = (struct SHTCTL *)*((int *)0x0fe4);
     struct SHEET *sht;
-    struct Queue32 *sys_queue = (struct Queue32 *)*((int *)0x0fec);
+    struct QUEUE *sys_queue = (struct QUEUE *)*((int *)0x0fec);
     // clang-format off
     int *reg = &eax + 1;  // Next address after edx
             // reg[0] : EDI,   reg[1] : ESI,   reg[2] : EBP,   reg[3] : ESP
@@ -500,7 +500,7 @@ int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int 
     } else if (edx == 15) {
         for (;;) {
             io_cli();
-            if (queue32_status(&task->queue) == 0) {
+            if (queue_status(&task->queue) == 0) {
                 if (eax != 0) {
                     task_sleep(task);
                 } else {
@@ -509,7 +509,7 @@ int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int 
                     return 0;
                 }
             }
-            i = queue32_get(&task->queue);
+            i = queue_get(&task->queue);
             io_sti();
             if (i <= 1) {
                 timer_init(cons->timer, &task->queue, 1);
@@ -524,7 +524,7 @@ int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int 
             if (i == 4) {  // Close only console
                 timer_cancel(cons->timer);
                 io_cli();
-                queue32_put(sys_queue,
+                queue_put(sys_queue,
                             cons->sht - shtctl->sheets0 + 2024);  // 2024~2279
                 cons->sht = 0;
                 io_sti();

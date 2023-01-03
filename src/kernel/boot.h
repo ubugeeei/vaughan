@@ -41,15 +41,15 @@ void start_app(int eip, int cs, int esp, int ds, int *tss_esp0);
 void asm_end_app(void);
 
 /* queue.c */
-struct Queue32 {
+struct QUEUE {
     int *buf;
     int p, q, size, free, flags;
     struct TASK *task;
 };
-void queue32_init(struct Queue32 *queue, int size, int *buf, struct TASK *task);
-int queue32_put(struct Queue32 *queue, int data);
-int queue32_get(struct Queue32 *queue);
-int queue32_status(struct Queue32 *queue);
+void queue_init(struct QUEUE *queue, int size, int *buf, struct TASK *task);
+int queue_put(struct QUEUE *queue, int data);
+int queue_get(struct QUEUE *queue);
+int queue_status(struct QUEUE *queue);
 
 /* graphic.c */
 void init_palette(void);
@@ -128,7 +128,7 @@ void inthandler27(int *esp);
 /* keyboard.c */
 void inthandler21(int *esp);
 void wait_KBC_sendready(void);
-void init_keyboard(struct Queue32 *queue, int data0);
+void init_keyboard(struct QUEUE *queue, int data0);
 #define PORT_KEYDAT 0x0060
 #define PORT_KEYCMD 0x0064
 
@@ -138,7 +138,7 @@ struct MOUSE_DEC {
     int x, y, btn;
 };
 void inthandler2c(int *esp);
-void enable_mouse(struct Queue32 *queue, int data0, struct MOUSE_DEC *mdec);
+void enable_mouse(struct QUEUE *queue, int data0, struct MOUSE_DEC *mdec);
 int mouse_decode(struct MOUSE_DEC *mdec, unsigned char dat);
 
 /* memory.c */
@@ -189,7 +189,7 @@ struct TIMER {
     struct TIMER *next;
     unsigned int timeout;
     char flags, flags2;
-    struct Queue32 *queue;
+    struct QUEUE *queue;
     int data;
 };
 struct TIMERCTL {
@@ -201,11 +201,11 @@ extern struct TIMERCTL timerctl;
 void init_pit(void);
 struct TIMER *timer_alloc(void);
 void timer_free(struct TIMER *timer);
-void timer_init(struct TIMER *timer, struct Queue32 *queue, int data);
+void timer_init(struct TIMER *timer, struct QUEUE *queue, int data);
 void timer_settime(struct TIMER *timer, unsigned int timeout);
 void inthandler20(int *esp);
 int timer_cancel(struct TIMER *timer);
-void timer_cancel_all(struct Queue32 *queue);
+void timer_cancel_all(struct QUEUE *queue);
 
 /* mtask.c */
 #define MAX_TASKS 1000
@@ -221,7 +221,7 @@ struct TSS32 {
 struct TASK {
     int sel, flags;
     int level, priority;
-    struct Queue32 queue;
+    struct QUEUE queue;
     struct TSS32 tss;
     struct SEGMENT_DESCRIPTOR ldt[2];
     struct CONSOLE *cons;

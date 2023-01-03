@@ -44,7 +44,7 @@ void timer_free(struct TIMER *timer) {
     return;
 }
 
-void timer_init(struct TIMER *timer, struct Queue32 *queue, int data) {
+void timer_init(struct TIMER *timer, struct QUEUE *queue, int data) {
     timer->queue = queue;
     timer->data = data;
     return;
@@ -93,7 +93,7 @@ void inthandler20(int *esp) {
         }
         timer->flags = TIMER_FLAGS_ALLOC;
         if (timer != task_timer) {
-            queue32_put(timer->queue, timer->data);
+            queue_put(timer->queue, timer->data);
         } else {
             ts = 1;
         }
@@ -135,7 +135,7 @@ int timer_cancel(struct TIMER *timer) {
     return 0;
 }
 
-void timer_cancel_all(struct Queue32 *queue) {
+void timer_cancel_all(struct QUEUE *queue) {
     int e, i;
     struct TIMER *t;
     e = io_load_eflags();

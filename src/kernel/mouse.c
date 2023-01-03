@@ -2,7 +2,7 @@
 
 #include "boot.h"
 
-struct Queue32 *mousequeue;
+struct QUEUE *mousequeue;
 int mousedata0;
 
 void inthandler2c(int *esp)
@@ -12,14 +12,14 @@ void inthandler2c(int *esp)
     io_out8(PIC1_OCW2, 0x64);
     io_out8(PIC0_OCW2, 0x62);
     data = io_in8(PORT_KEYDAT);
-    queue32_put(mousequeue, data + mousedata0);
+    queue_put(mousequeue, data + mousedata0);
     return;
 }
 
 #define KEYCMD_SENDTO_MOUSE 0xd4
 #define MOUSECMD_ENABLE 0xf4
 
-void enable_mouse(struct Queue32 *queue, int data0, struct MOUSE_DEC *mdec) {
+void enable_mouse(struct QUEUE *queue, int data0, struct MOUSE_DEC *mdec) {
     mousequeue = queue;
     mousedata0 = data0;
 
