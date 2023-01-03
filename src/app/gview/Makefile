@@ -2,9 +2,10 @@ APP = gview
 STACK = 0x445C00
 # 4480k(4480000) = 0x445C00
 
+OUT_DIR = ../../../target/
 LIBPATH = ../../lib/
-APILIBPATH   = ../../kernel/system_call/
-HARIBOTEPATH = ../../kernel/
+APILIBPATH   = $(OUT_DIR)/kernel/system_call/
+KERNEL_PATH = $(OUT_DIR)/kernel/
 
 MAKE = make -r
 DEL = rm -f
@@ -23,9 +24,9 @@ $(APP).hrb : $(APP).o bmp.o jpeg.o $(APILIBPATH)libapi.a ../app.ld
 	$(CC_WITH_OPTION) $(CAPPLD) -Wl,'--defsym=__stack=$(STACK)' -g -o $@ $< bmp.o jpeg.o $(APILIBPATH)libapi.a
 
 # Image
-$(OUT_DIR)/haribote.img : $(HARIBOTEPATH)ipl10.bin $(HARIBOTEPATH)haribote.sys $(APP).hrb
-	mformat -f 1440 -C -B $(HARIBOTEPATH)ipl10.bin -i $(OUT_DIR)/haribote.img ::
-	mcopy -i $(OUT_DIR)/haribote.img $(HARIBOTEPATH)haribote.sys $(APP).hrb ../nihongo/nihongo.fnt ::
+$(OUT_DIR)/haribote.img : $(KERNEL_PATH)ipl10.bin $(KERNEL_PATH)haribote.sys $(APP).hrb
+	mformat -f 1440 -C -B $(KERNEL_PATH)ipl10.bin -i $(OUT_DIR)/haribote.img ::
+	mcopy -i $(OUT_DIR)/haribote.img $(KERNEL_PATH)haribote.sys $(APP).hrb ../nihongo/nihongo.fnt ::
 
 # Rule
 %.o : %.c

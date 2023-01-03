@@ -40,11 +40,11 @@ default :
 
 # mtool: https://www.gnu.org/software/mtools/manual/html_node/mformat.html
 # -f: size, -C: hidden_sectors, -B: boot_sector, -i: 
-$(OUT_DIR)/haribote.img : src/kernel/ipl10.bin src/kernel/haribote.sys $(APPS)
-	mformat -f 1440 -C -B src/kernel/ipl10.bin -i $(OUT_DIR)/haribote.img ::
+$(OUT_DIR)/haribote.img : $(OUT_DIR)/kernel/ipl10.bin $(OUT_DIR)/kernel/haribote.sys $(APPS)
+	mformat -f 1440 -C -B $(OUT_DIR)/kernel/ipl10.bin -i $(OUT_DIR)/haribote.img ::
 	mcopy -i \
 		$(OUT_DIR)/haribote.img \
-		src/kernel/haribote.sys \
+		$(OUT_DIR)/kernel/haribote.sys \
 		src/kernel/ipl10.nasm \
 		$(APPS) \
 		src/app/mmldata/kirakira.mml \
