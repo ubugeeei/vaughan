@@ -2,31 +2,48 @@
 
 void Boot(void) {
     struct BootInfo *binfo = (struct BootInfo *)ADR_BOOT_INFO;
-    struct SheetCtl *shtctl;
-    char s[40];
+
+    /* event queue */
     struct Queue queue, keycmd;
     int queue_buf[128], keycmd_buf[32], *cons_queue[2];
-    int mx, my, i, new_mx = -1, new_my = 0, new_wx = 0x7fffffff, new_wy = 0;
-    struct MouseDec mdec;
-    unsigned int memtotal;
-    struct MemoryManagement *memman = (struct MemoryManagement *)MEMMAN_ADDR;
-    unsigned char *buf_back, buf_mouse[256], *buf_cons[2];
-    struct Sheet *sht_back, *sht_mouse, *sht_cons[2];
-    struct Task *task_a, *task_cons[2], *task;
-
     // clang-format off
+    char input_str_buff[40];
     int key_to = 0, key_shift = 0, key_leds = (binfo->leds >> 4) & 7, keycmd_wait = -1;
     // clang-format on
-    struct Console *cons;
-    int j, x, y, mmx = -1, mmy = -1, mmx2 = 0;
-    struct Sheet *sht = 0, *key_win, *sht2;
+    struct MouseDec mdec;
+    unsigned char *buf_back, buf_mouse[256], *buf_cons[2];
 
-    // jp font
+    /* memory management */
+    unsigned int memtotal;
+    struct MemoryManagement *memman = (struct MemoryManagement *)MEMMAN_ADDR;
+    memtotal = test_memory(0x00400000, 0xbfffffff);
+    memman_init(memman);
+    memman_free(memman, 0x00001000, 0x0009e000);
+    memman_free(memman, 0x00400000, memtotal - 0x00400000);
+
+    /* sheets */
+    struct SheetCtl *shtctl;
+    struct Sheet *sht_back, *sht_mouse, *sht_cons[2], *sht = 0, *key_win, *sht2;
+    int mx, my, i, new_mx = -1, new_my = 0, new_wx = 0x7fffffff, new_wy = 0;
+    int j, x, y, mmx = -1, mmy = -1, mmx2 = 0;
+
+    /* tasks */
+    struct Task *task_a, *task_cons[2], *task;
+
+    /* console */
+    struct Console *cons;
+
+    /* jp font */
     int *fat;
     unsigned char *jp_fnt;
     struct FileInfo *finfo;
     extern char hankaku[4096];
 
+    /*
+     *
+     * init
+     *
+     */
     init_gdt_idt();
     init_pic();
     asm_io_sti();
@@ -38,75 +55,17 @@ void Boot(void) {
     asm_io_out8(PIC0_IMR, 0xf8);
     asm_io_out8(PIC1_IMR, 0xef);
     queue_init(&keycmd, 32, keycmd_buf, 0);
-
-    /*
-     *
-     * memory_management
-     *
-     */
-    memtotal = test_memory(0x00400000, 0xbfffffff);
-    memman_init(memman);
-    memman_free(memman, 0x00001000, 0x0009e000);
-    // clang-format off
-    memman_free(memman, 0x00400000,memtotal - 0x00400000);
-    // clang-format on
-
     init_palette();
     shtctl = shtctl_init(memman, binfo->vram, binfo->scrnx, binfo->scrny);
+
+    /** init task */
     task_a = task_init(memman);
     queue.task = task_a;
     task_run(task_a, 1, 2);
-    *((int *)0x0fe4) = (int)shtctl;
     task_a->lang_mode = 0;
+    *((int *)0x0fe4) = (int)shtctl;
 
-    /*
-     *
-     * sheets
-     *
-     */
-
-    /*
-     * sht_back
-     */
-    sht_back = sheet_alloc(shtctl);
-    buf_back =
-        (unsigned char *)memman_alloc_4k(memman, binfo->scrnx * binfo->scrny);
-    sheet_setbuf(sht_back, buf_back, binfo->scrnx, binfo->scrny, -1);
-    init_screen8(buf_back, binfo->scrnx, binfo->scrny);
-
-    /*
-     * sht_cons
-     */
-    key_win = open_console(shtctl, memtotal);
-
-    /*
-     * sht_mouse
-     */
-    sht_mouse = sheet_alloc(shtctl);
-    sheet_setbuf(sht_mouse, buf_mouse, 16, 16, 99);
-    init_mouse_cursor8(buf_mouse, 99);
-    mx = (binfo->scrnx - 16) / 2;
-    my = (binfo->scrny - 28 - 16) / 2;
-
-    /*
-     * sheet layouts
-     */
-    sheet_slide(sht_back, 0, 0);
-    sheet_slide(key_win, 32, 4);
-    sheet_slide(sht_mouse, mx, my);
-    sheet_updown(sht_back, 0);
-    sheet_updown(key_win, 1);
-    sheet_updown(sht_mouse, 2);
-    key_window_on(key_win);
-
-    queue_put(&keycmd, KEYCMD_LED);
-    queue_put(&keycmd, key_leds);
-
-    /*
-     *
-     * read jp.fnt
-     *
-     */
+    /* load font */
     jp_fnt = (unsigned char *)memman_alloc_4k(memman, 16 * 256 + 32 * 94 * 47);
     fat = (int *)memman_alloc_4k(memman, 4 * 2880);
     file_read_fat(fat, (unsigned char *)(ADR_DISK_IMG + 0x000200));
@@ -127,6 +86,42 @@ void Boot(void) {
     }
     *((int *)0x0fe8) = (int)jp_fnt;
     memman_free_4k(memman, (int)fat, 4 * 2880);
+
+    /*
+     *
+     * paint
+     *
+     */
+    /* sht_back */
+    sht_back = sheet_alloc(shtctl);
+    buf_back =
+        (unsigned char *)memman_alloc_4k(memman, binfo->scrnx * binfo->scrny);
+    sheet_setbuf(sht_back, buf_back, binfo->scrnx, binfo->scrny, -1);
+    init_screen8(buf_back, binfo->scrnx, binfo->scrny);
+    /* sht_cons */
+    key_win = open_console(shtctl, memtotal);
+    /* sht_mouse */
+    sht_mouse = sheet_alloc(shtctl);
+    sheet_setbuf(sht_mouse, buf_mouse, 16, 16, 99);
+    init_mouse_cursor8(buf_mouse, 99);
+    mx = (binfo->scrnx - 16) / 2;
+    my = (binfo->scrny - 28 - 16) / 2;
+    /* sheet layouts */
+    sheet_slide(sht_back, 0, 0);
+    sheet_slide(key_win, 32, 4);
+    sheet_slide(sht_mouse, mx, my);
+    sheet_updown(sht_back, 0);
+    sheet_updown(key_win, 1);
+    sheet_updown(sht_mouse, 2);
+    key_window_on(key_win);
+
+    /*
+     *
+     * queue put
+     *
+     */
+    queue_put(&keycmd, KEYCMD_LED);
+    queue_put(&keycmd, key_leds);
 
     /*
      *
@@ -179,25 +174,25 @@ void Boot(void) {
                  */
                 if (i < 0x80 + 256) {
                     if (key_shift == 0) {
-                        s[0] = KEY_TABLE[i - 256];
+                        input_str_buff[0] = KEY_TABLE[i - 256];
                     } else {
-                        s[0] = SHIFTED_KEY_TABLE[i - 256];
+                        input_str_buff[0] = SHIFTED_KEY_TABLE[i - 256];
                     }
                 } else {
-                    s[0] = 0;
+                    input_str_buff[0] = 0;
                 }
 
                 // convert to lowercase
-                if ('A' <= s[0] && s[0] <= 'Z') {
+                if ('A' <= input_str_buff[0] && input_str_buff[0] <= 'Z') {
                     if (((key_leds & 4) == 0 && key_shift == 0) ||
                         ((key_leds & 4) != 0 && key_shift != 0)) {
-                        s[0] += 0x20;
+                        input_str_buff[0] += 0x20;
                     }
                 }
 
                 // normal characters
-                if (s[0] != 0 && key_win != 0) {
-                    queue_put(&key_win->task->queue, s[0] + 256);
+                if (input_str_buff[0] != 0 && key_win != 0) {
+                    queue_put(&key_win->task->queue, input_str_buff[0] + 256);
                 }
 
                 // BackSpace
