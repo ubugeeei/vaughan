@@ -189,20 +189,20 @@ void init_mouse_cursor8(char *mouse, char bc) {
     // clang-format off
     static char cursor[16][16] = {
         "**************..",
-				"*OOOOOOOOOOO*...",
-				"*OOOOOOOOOO*....",
+		"*OOOOOOOOOOO*...",
+		"*OOOOOOOOOO*....",
         "*OOOOOOOOO*.....",
-				"*OOOOOOOO*......",
-				"*OOOOOOO*.......",
+		"*OOOOOOOO*......",
+		"*OOOOOOO*.......",
         "*OOOOOOO*.......",
-				"*OOOOOOOO*......",
-				"*OOOO**OOO*.....",
+		"*OOOOOOOO*......",
+		"*OOOO**OOO*.....",
         "*OOO*..*OOO*....",
-				"*OO*....*OOO*...",
-				"*O*......*OOO*..",
+		"*OO*....*OOO*...",
+		"*O*......*OOO*..",
         "**........*OOO*.",
-				"*..........*OOO*",
-				"............*OO*",
+		"*..........*OOO*",
+		"............*OO*",
         ".............***"
 		};
     // clang-format on
