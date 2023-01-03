@@ -29,7 +29,8 @@ APPS = \
 	$(OUT_DIR)/app/calc/calc.hrb \
 	$(OUT_DIR)/app/tview/tview.hrb \
 	$(OUT_DIR)/app/mmlplay/mmlplay.hrb \
-	$(OUT_DIR)/app/gview/gview.hrb
+	$(OUT_DIR)/app/gview/gview.hrb \
+	$(OUT_DIR)/app/echo/echo.hrb
 
 MAKE = make -r
 DEL = rm -rf
@@ -97,6 +98,7 @@ full :
 	$(MAKE) -C src/app/tview
 	$(MAKE) -C src/app/mmlplay
 	$(MAKE) -C src/app/gview
+	$(MAKE) -C src/app/echo
 	$(MAKE) $(OUT_DIR)/haribote.img
 
 run_full :
@@ -150,6 +152,7 @@ clean_full :
 	$(MAKE) -C src/app/tview clean
 	$(MAKE) -C src/app/mmlplay clean
 	$(MAKE) -C src/app/gview clean
+	$(MAKE) -C src/app/echo clean
 	$(DEL) target/
 
 src_only_full :
@@ -185,6 +188,7 @@ src_only_full :
 	$(MAKE) -C src/app/tview src_only
 	$(MAKE) -C src/app/mmlplay src_only
 	$(MAKE) -C src/app/gview src_only
+	$(MAKE) -C src/app/echo src_only
 	-$(DEL) $(OUT_DIR)/*
 
 refresh :
