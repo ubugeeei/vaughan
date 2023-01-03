@@ -66,9 +66,9 @@ void make_wtitle8(unsigned char *buf, int xsize, char *title, char act) {
 }
 
 // clang-format off
-void putfonts8_asc_sht(struct SHEET *sht, int x, int y, int c, int b, char *s, int l) {
+void putfonts8_asc_sht(struct Sheet *sht, int x, int y, int c, int b, char *s, int l) {
     // clang-format on
-    struct TASK *task = task_now();
+    struct Task *task = task_now();
     boxfill8(sht->buf, sht->bxsize, b, x, y, x + l * 8 - 1, y + 15);
     if (task->lang_mode != 0 && task->lang_byte1 != 0) {
         putfonts8_asc(sht->buf, sht->bxsize, x, y, c, s);
@@ -80,7 +80,7 @@ void putfonts8_asc_sht(struct SHEET *sht, int x, int y, int c, int b, char *s, i
     return;
 }
 
-void make_textbox8(struct SHEET *sht, int x0, int y0, int sx, int sy, int c) {
+void make_textbox8(struct Sheet *sht, int x0, int y0, int sx, int sy, int c) {
     int x1 = x0 + sx, y1 = y0 + sy;
     // clang-format off
     boxfill8(sht->buf, sht->bxsize, COL8_848484, x0 - 2, y0 - 3, x1 + 1, y0 - 3);
@@ -96,7 +96,7 @@ void make_textbox8(struct SHEET *sht, int x0, int y0, int sx, int sy, int c) {
     return;
 }
 
-void change_wtitle8(struct SHEET *sht, char act) {
+void change_wtitle8(struct Sheet *sht, char act) {
     int x, y, xsize = sht->bxsize;
     char c, tc_new, tbc_new, tc_old, tbc_old, *buf = sht->buf;
     if (act != 0) {

@@ -253,10 +253,10 @@ static int tek_lzrestore_tek5(int srcsiz, UCHAR *src, int outsiz, UCHAR *outbuf)
     }
     wrksiz = 0x180 * sizeof(UINT32) +
              (0x840 + (0x300 << (lc + lp))) * sizeof(tek_TPRB);
-    work = (int *)memory_management_alloc_4k((struct MEMORY_MANAGEMENT *)MEMMAN_ADDR, wrksiz);
+    work = (int *)memory_management_alloc_4k((struct MemoryManagement *)MEMMAN_ADDR, wrksiz);
     if (work == NULL) return -1;
     flags = tek_decmain5(work, src, outsiz, outbuf, lc, pb, lp, flags);
-    memory_management_free_4k((struct MEMORY_MANAGEMENT *)MEMMAN_ADDR, (int)work, wrksiz);
+    memory_management_free_4k((struct MemoryManagement *)MEMMAN_ADDR, (int)work, wrksiz);
     return flags;
 }
 

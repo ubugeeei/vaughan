@@ -6,7 +6,7 @@
  * asm head
  *
  */
-struct BOOT_INFO {
+struct BootInfo {
   char cyls;
   char leds;
   char vmode;
@@ -53,15 +53,15 @@ void asm_end_app(void);
  * queue
  *
  */
-struct QUEUE {
+struct Queue {
   int *buf;
   int p, q, size, free, flags;
-  struct TASK *task;
+  struct Task *task;
 };
-void queue_init(struct QUEUE *queue, int size, int *buf, struct TASK *task);
-int queue_put(struct QUEUE *queue, int data);
-int queue_get(struct QUEUE *queue);
-int queue_status(struct QUEUE *queue);
+void queue_init(struct Queue *queue, int size, int *buf, struct Task *task);
+int queue_put(struct Queue *queue, int data);
+int queue_get(struct Queue *queue);
+int queue_status(struct Queue *queue);
 
 /*
  *
@@ -102,7 +102,7 @@ void putblock8_8(char *vram, int vxsize, int pxsize, int pysize, int px0, int py
  * dsctbl
  *
  */
-struct SEGMENT_DESCRIPTOR {
+struct SegmentDescriptor {
   short limit_low, base_low;
   char base_mid, access_right;
   char limit_high, base_high;
@@ -114,7 +114,7 @@ struct GATE_DESCRIPTOR {
 };
 void init_gdt_idt(void);
 // clang-format off
-void set_segment_descriptor(struct SEGMENT_DESCRIPTOR *sd, unsigned int limit, int base, int ar);
+void set_segment_descriptor(struct SegmentDescriptor *sd, unsigned int limit, int base, int ar);
 void set_gate_descriptor(struct GATE_DESCRIPTOR *gd, int offset, int selector,int ar);
 // clang-format on
 #define ADR_IDT 0x0026f800
@@ -126,7 +126,7 @@ void set_gate_descriptor(struct GATE_DESCRIPTOR *gd, int offset, int selector,in
 #define AR_DATA32_RW 0x4092
 #define AR_CODE32_ER 0x409a
 #define AR_LDT 0x0082
-#define AR_TSS32 0x0089
+#define AR_TaskStatusSegment 0x0089
 #define AR_INTGATE32 0x008e
 
 /*
@@ -156,7 +156,7 @@ void inthandler27(int *esp);
  */
 void inthandler21(int *esp);
 void wait_KBC_sendready(void);
-void init_keyboard(struct QUEUE *queue, int data0);
+void init_keyboard(struct Queue *queue, int data0);
 #define PORT_KEYDAT 0x0060
 #define PORT_KEYCMD 0x0064
 
@@ -170,7 +170,7 @@ struct MOUSE_DEC {
   int x, y, btn;
 };
 void inthandler2c(int *esp);
-void enable_mouse(struct QUEUE *queue, int data0, struct MOUSE_DEC *mdec);
+void enable_mouse(struct Queue *queue, int data0, struct MOUSE_DEC *mdec);
 int mouse_decode(struct MOUSE_DEC *mdec, unsigned char dat);
 
 /*
@@ -183,18 +183,18 @@ int mouse_decode(struct MOUSE_DEC *mdec, unsigned char dat);
 struct FREE_MEMORY_INFO {
   unsigned int addr, size;
 };
-struct MEMORY_MANAGEMENT {
+struct MemoryManagement {
   int frees, maxfrees, lostsize, losts;
   struct FREE_MEMORY_INFO free[MEMMAN_FREES];
 };
 // clang-format off
 unsigned int test_memory(unsigned int start, unsigned int end);
-void memory_management_init(struct MEMORY_MANAGEMENT *man);
-unsigned int memory_management_total(struct MEMORY_MANAGEMENT *man);
-unsigned int memory_management_alloc(struct MEMORY_MANAGEMENT *man, unsigned int size);
-int memory_management_free(struct MEMORY_MANAGEMENT *man, unsigned int addr, unsigned int size);
-unsigned int memory_management_alloc_4k(struct MEMORY_MANAGEMENT *man, unsigned int size);
-int memory_management_free_4k(struct MEMORY_MANAGEMENT *man, unsigned int addr, unsigned int size);
+void memory_management_init(struct MemoryManagement *man);
+unsigned int memory_management_total(struct MemoryManagement *man);
+unsigned int memory_management_alloc(struct MemoryManagement *man, unsigned int size);
+int memory_management_free(struct MemoryManagement *man, unsigned int addr, unsigned int size);
+unsigned int memory_management_alloc_4k(struct MemoryManagement *man, unsigned int size);
+int memory_management_free_4k(struct MemoryManagement *man, unsigned int addr, unsigned int size);
 // clang-format on
 
 /*
@@ -203,26 +203,26 @@ int memory_management_free_4k(struct MEMORY_MANAGEMENT *man, unsigned int addr, 
  *
  */
 #define MAX_TIMER 500
-struct TIMER {
-  struct TIMER *next;
+struct Timer {
+  struct Timer *next;
   unsigned int timeout;
   char flags, flags2;
-  struct QUEUE *queue;
+  struct Queue *queue;
   int data;
 };
-struct TIMER_CTL {
+struct TimerCtl {
   unsigned int count, next, using;
-  struct TIMER *t0;
-  struct TIMER timers0[MAX_TIMER];
+  struct Timer *t0;
+  struct Timer timers0[MAX_TIMER];
 };
-extern struct TIMER_CTL timer_ctl;
+extern struct TimerCtl timer_ctl;
 void init_pit(void);
-struct TIMER *timer_alloc(void);
-void timer_free(struct TIMER *timer);
-void timer_init(struct TIMER *timer, struct QUEUE *queue, int data);
-void timer_settime(struct TIMER *timer, unsigned int timeout);
-int timer_cancel(struct TIMER *timer);
-void timer_cancel_all(struct QUEUE *queue);
+struct Timer *timer_alloc(void);
+void timer_free(struct Timer *timer);
+void timer_init(struct Timer *timer, struct Queue *queue, int data);
+void timer_settime(struct Timer *timer, unsigned int timeout);
+int timer_cancel(struct Timer *timer);
+void timer_cancel_all(struct Queue *queue);
 void inthandler20(int *esp);
 
 /*
@@ -234,44 +234,44 @@ void inthandler20(int *esp);
 #define TASK_GDT0 3
 #define MAX_TASKS_LV 100
 #define MAX_TASK_LEVELS 10
-struct TSS32 {
+struct TaskStatusSegment {
   int backlink, esp0, ss0, esp1, ss1, esp2, ss2, cr3;
   int eip, eflags, eax, ecx, edx, ebx, esp, ebp, esi, edi;
   int es, cs, ss, ds, fs, gs;
   int ldtr, iomap;
 };
-struct TASK {
+struct Task {
   int sel, flags;
   int level, priority;
-  struct QUEUE queue;
-  struct TSS32 tss;
-  struct SEGMENT_DESCRIPTOR ldt[2];
-  struct CONSOLE *cons;
+  struct Queue queue;
+  struct TaskStatusSegment tss;
+  struct SegmentDescriptor ldt[2];
+  struct Console *cons;
   int ds_base, cons_stack;
-  struct FILEHANDLE *fhandle;
+  struct FileHandle *fhandle;
   int *fat;
   char *cmdline;
   char lang_mode, lang_byte1;
 };
-struct TASK_LEVEL {
+struct TaskLevel {
   int running;
   int now;
-  struct TASK *tasks[MAX_TASKS_LV];
+  struct Task *tasks[MAX_TASKS_LV];
 };
-struct TASK_CTL {
+struct TaskCtl {
   int now_lv;
   char lv_change;
-  struct TASK_LEVEL level[MAX_TASK_LEVELS];
-  struct TASK tasks0[MAX_TASKS];
+  struct TaskLevel level[MAX_TASK_LEVELS];
+  struct Task tasks0[MAX_TASKS];
 };
-extern struct TASK_CTL *task_ctl;
-extern struct TIMER *task_timer;
-struct TASK *task_now(void);
-struct TASK *task_init(struct MEMORY_MANAGEMENT *memory_management);
-struct TASK *task_alloc(void);
-void task_run(struct TASK *task, int level, int priority);
+extern struct TaskCtl *task_ctl;
+extern struct Timer *task_timer;
+struct Task *task_now(void);
+struct Task *task_init(struct MemoryManagement *memory_management);
+struct Task *task_alloc(void);
+void task_run(struct Task *task, int level, int priority);
 void task_switch(void);
-void task_sleep(struct TASK *task);
+void task_sleep(struct Task *task);
 
 /*
  *
@@ -279,27 +279,27 @@ void task_sleep(struct TASK *task);
  *
  */
 #define MAX_SHEETS 256
-struct SHEET {
+struct Sheet {
   unsigned char *buf;
   int bxsize, bysize, vx0, vy0, col_inv, height, flags;
-  struct SHTCTL *ctl;
-  struct TASK *task;
+  struct SheetCtl *ctl;
+  struct Task *task;
 };
-struct SHTCTL {
+struct SheetCtl {
   unsigned char *vram, *map;
   int xsize, ysize, top;
-  struct SHEET *sheets[MAX_SHEETS];
-  struct SHEET sheets0[MAX_SHEETS];
+  struct Sheet *sheets[MAX_SHEETS];
+  struct Sheet sheets0[MAX_SHEETS];
 };
 // clang-format off
-struct SHTCTL *shtctl_init(struct MEMORY_MANAGEMENT *memory_management, unsigned char *vram, int xsize, int ysize);
-struct SHEET *sheet_alloc(struct SHTCTL *ctl);
-void sheet_setbuf(struct SHEET *sht, unsigned char *buf, int xsize, int ysize, int col_inv);
+struct SheetCtl *shtctl_init(struct MemoryManagement *memory_management, unsigned char *vram, int xsize, int ysize);
+struct Sheet *sheet_alloc(struct SheetCtl *ctl);
+void sheet_setbuf(struct Sheet *sht, unsigned char *buf, int xsize, int ysize, int col_inv);
 // clang-format on
-void sheet_updown(struct SHEET *sht, int height);
-void sheet_refresh(struct SHEET *sht, int bx0, int by0, int bx1, int by1);
-void sheet_slide(struct SHEET *sht, int vx0, int vy0);
-void sheet_free(struct SHEET *sht);
+void sheet_updown(struct Sheet *sht, int height);
+void sheet_refresh(struct Sheet *sht, int bx0, int by0, int bx1, int by1);
+void sheet_slide(struct Sheet *sht, int vx0, int vy0);
+void sheet_free(struct Sheet *sht);
 
 /*
  *
@@ -308,51 +308,51 @@ void sheet_free(struct SHEET *sht);
  */
 // clang-format off
 void make_window8(unsigned char *buf, int xsize, int ysize, char *title, char act);
-void putfonts8_asc_sht(struct SHEET *sht, int x, int y, int c, int b, char *s, int l);
+void putfonts8_asc_sht(struct Sheet *sht, int x, int y, int c, int b, char *s, int l);
 // clang-format on
-void make_textbox8(struct SHEET *sht, int x0, int y0, int sx, int sy, int c);
+void make_textbox8(struct Sheet *sht, int x0, int y0, int sx, int sy, int c);
 void make_wtitle8(unsigned char *buf, int xsize, char *title, char act);
-void change_wtitle8(struct SHEET *sht, char act);
+void change_wtitle8(struct Sheet *sht, char act);
 
 /*
  *
  * console
  *
  */
-struct CONSOLE {
-  struct SHEET *sht;
+struct Console {
+  struct Sheet *sht;
   int cur_x, cur_y, cur_c;
-  struct TIMER *timer;
+  struct Timer *timer;
 };
-struct FILEHANDLE {
+struct FileHandle {
   char *buf;
   int size;
   int pos;
 };
-void console_task(struct SHEET *sheet, unsigned int memtotal);
-void cons_putchar(struct CONSOLE *cons, int chr, char move);
-void cons_putstr0(struct CONSOLE *cons, char *s);
-void cons_putstr1(struct CONSOLE *cons, char *s, int l);
-void cons_newline(struct CONSOLE *cons);
+void console_task(struct Sheet *sheet, unsigned int memtotal);
+void cons_putchar(struct Console *cons, int chr, char move);
+void cons_putstr0(struct Console *cons, char *s);
+void cons_putstr1(struct Console *cons, char *s, int l);
+void cons_newline(struct Console *cons);
 // clang-format off
-void cons_run_cmd(char *cmdline, struct CONSOLE *cons, int *fat, unsigned int memtotal);
+void cons_run_cmd(char *cmdline, struct Console *cons, int *fat, unsigned int memtotal);
 // clang-format on
-void cmd_free(struct CONSOLE *cons, unsigned int memtotal);
-void cmd_clear(struct CONSOLE *cons);
-void cmd_ls(struct CONSOLE *cons);
-void cmd_cat(struct CONSOLE *cons, int *fat, char *cmdline);
-void cmd_exit(struct CONSOLE *cons, int *fat);
-void cmd_start(struct CONSOLE *cons, char *cmdline, int memtotal);
-void cmd_ncst(struct CONSOLE *cons, char *cmdline, int memtotal);
-void cmd_lang(struct CONSOLE *cons, char *cmdline);
-int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline);
+void cmd_free(struct Console *cons, unsigned int memtotal);
+void cmd_clear(struct Console *cons);
+void cmd_ls(struct Console *cons);
+void cmd_cat(struct Console *cons, int *fat, char *cmdline);
+void cmd_exit(struct Console *cons, int *fat);
+void cmd_start(struct Console *cons, char *cmdline, int memtotal);
+void cmd_ncst(struct Console *cons, char *cmdline, int memtotal);
+void cmd_lang(struct Console *cons, char *cmdline);
+int cmd_app(struct Console *cons, int *fat, char *cmdline);
 // clang-format off
 int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int eax);
 // clang-format on
 int *inthandler0c(int *esp);
 int *inthandler0d(int *esp);
 // clang-format off
-void hrb_draw_line_window(struct SHEET *sht, int x0, int y0, int x1, int y1, int col);
+void hrb_draw_line_window(struct Sheet *sht, int x0, int y0, int x1, int y1, int col);
 // clang-format on
 
 /*
@@ -360,15 +360,15 @@ void hrb_draw_line_window(struct SHEET *sht, int x0, int y0, int x1, int y1, int
  * boot
  *
  */
-struct TASK *open_console_task(struct SHEET *sht, unsigned int memtotal);
-struct SHEET *open_console(struct SHTCTL *shtctl, unsigned int memtotal);
+struct Task *open_console_task(struct Sheet *sht, unsigned int memtotal);
+struct Sheet *open_console(struct SheetCtl *shtctl, unsigned int memtotal);
 
 /*
  *
  * file
  *
  */
-struct FILEINFO {
+struct FileInfo {
   unsigned char name[8], ext[3], type;
   char reserve[10];
   unsigned short time, date, cluster_num;
@@ -376,7 +376,7 @@ struct FILEINFO {
 };
 void file_read_fat(int *fat, unsigned char *img);
 void file_load_file(int cluster_num, int size, char *buf, int *fat, char *img);
-struct FILEINFO *file_search(char *name, struct FILEINFO *finfo, int max);
+struct FileInfo *file_search(char *name, struct FileInfo *finfo, int max);
 char *file_load_file2(int cluster_num, int *psize, int *fat);
 
 /*

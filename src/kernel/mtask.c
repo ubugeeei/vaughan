@@ -1,24 +1,24 @@
 #include "boot.h"
 
-struct TASK_CTL *task_ctl;
-struct TIMER *task_timer;
+struct TaskCtl *task_ctl;
+struct Timer *task_timer;
 
-struct TASK *task_now(void) {
-    struct TASK_LEVEL *tl = &task_ctl->level[task_ctl->now_lv];
+struct Task *task_now(void) {
+    struct TaskLevel *tl = &task_ctl->level[task_ctl->now_lv];
     return tl->tasks[tl->now];
 }
 
-void task_add(struct TASK *task) {
-    struct TASK_LEVEL *tl = &task_ctl->level[task->level];
+void task_add(struct Task *task) {
+    struct TaskLevel *tl = &task_ctl->level[task->level];
     tl->tasks[tl->running] = task;
     tl->running++;
     task->flags = 2;
     return;
 }
 
-void task_remove(struct TASK *task) {
+void task_remove(struct Task *task) {
     int i;
-    struct TASK_LEVEL *tl = &task_ctl->level[task->level];
+    struct TaskLevel *tl = &task_ctl->level[task->level];
 
     for (i = 0; i < tl->running; i++) {
         if (tl->tasks[i] == task) {
@@ -61,18 +61,18 @@ void task_idle(void) {
     }
 }
 
-struct TASK *task_init(struct MEMORY_MANAGEMENT *memory_management) {
+struct Task *task_init(struct MemoryManagement *memory_management) {
     int i;
-    struct TASK *task, *idle;
-    struct SEGMENT_DESCRIPTOR *gdt = (struct SEGMENT_DESCRIPTOR *)ADR_GDT;
+    struct Task *task, *idle;
+    struct SegmentDescriptor *gdt = (struct SegmentDescriptor *)ADR_GDT;
 
-    task_ctl = (struct TASK_CTL *)memory_management_alloc_4k(memory_management, sizeof(struct TASK_CTL));
+    task_ctl = (struct TaskCtl *)memory_management_alloc_4k(memory_management, sizeof(struct TaskCtl));
     for (i = 0; i < MAX_TASKS; i++) {
         task_ctl->tasks0[i].flags = 0;
         task_ctl->tasks0[i].sel = (TASK_GDT0 + i) * 8;
         task_ctl->tasks0[i].tss.ldtr = (TASK_GDT0 + MAX_TASKS + i) * 8;
         // clang-format off
-        set_segment_descriptor(gdt + TASK_GDT0 + i, 103, (int)&task_ctl->tasks0[i].tss, AR_TSS32);
+        set_segment_descriptor(gdt + TASK_GDT0 + i, 103, (int)&task_ctl->tasks0[i].tss, AR_TaskStatusSegment);
         set_segment_descriptor(gdt + TASK_GDT0 + MAX_TASKS + i, 15, (int) task_ctl->tasks0[i].ldt, AR_LDT);
         // clang-format on
     }
@@ -105,9 +105,9 @@ struct TASK *task_init(struct MEMORY_MANAGEMENT *memory_management) {
     return task;
 }
 
-struct TASK *task_alloc(void) {
+struct Task *task_alloc(void) {
     int i;
-    struct TASK *task;
+    struct Task *task;
     for (i = 0; i < MAX_TASKS; i++) {
         if (task_ctl->tasks0[i].flags == 0) {
             task = &task_ctl->tasks0[i];
@@ -132,7 +132,7 @@ struct TASK *task_alloc(void) {
     return 0;
 }
 
-void task_run(struct TASK *task, int level, int priority) {
+void task_run(struct Task *task, int level, int priority) {
     if (level < 0) {
         level = task->level;
     }
@@ -152,8 +152,8 @@ void task_run(struct TASK *task, int level, int priority) {
     return;
 }
 
-void task_sleep(struct TASK *task) {
-    struct TASK *now_task;
+void task_sleep(struct Task *task) {
+    struct Task *now_task;
     if (task->flags == 2) {
         now_task = task_now();
         task_remove(task);
@@ -167,8 +167,8 @@ void task_sleep(struct TASK *task) {
 }
 
 void task_switch(void) {
-    struct TASK_LEVEL *tl = &task_ctl->level[task_ctl->now_lv];
-    struct TASK *new_task, *now_task = tl->tasks[tl->now];
+    struct TaskLevel *tl = &task_ctl->level[task_ctl->now_lv];
+    struct Task *new_task, *now_task = tl->tasks[tl->now];
     tl->now++;
     if (tl->now == tl->running) {
         tl->now = 0;

@@ -124,7 +124,7 @@ void putfont8(char *vram, int xsize, int x, int y, char c, char *font) {
 void putfonts8_asc(char *vram, int xsize, int x, int y, char c, unsigned char *s) {
     // clang-format on
     extern char hankaku[4096];
-    struct TASK *task = task_now();
+    struct Task *task = task_now();
     char *jp_font = (char *)*((int *)0x0fe8), *font;
     int k, t;
 

@@ -1,6 +1,6 @@
 #include "boot.h"
 
-struct QUEUE *keyqueue;
+struct Queue *keyqueue;
 int keydata0;
 
 void inthandler21(int *esp) {
@@ -25,7 +25,7 @@ void wait_KBC_sendready(void) {
     return;
 }
 
-void init_keyboard(struct QUEUE *queue, int data0) {
+void init_keyboard(struct Queue *queue, int data0) {
     keyqueue = queue;
     keydata0 = data0;
 

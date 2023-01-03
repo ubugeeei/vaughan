@@ -1,11 +1,11 @@
 #include "boot.h"
 
-void console_task(struct SHEET *sheet, unsigned int memtotal) {
-    struct TASK *task = task_now();
-    struct MEMORY_MANAGEMENT *memory_management = (struct MEMORY_MANAGEMENT *)MEMMAN_ADDR;
+void console_task(struct Sheet *sheet, unsigned int memtotal) {
+    struct Task *task = task_now();
+    struct MemoryManagement *memory_management = (struct MemoryManagement *)MEMMAN_ADDR;
     int i, *fat = (int *)memory_management_alloc_4k(memory_management, 4 * 2880);
-    struct CONSOLE cons;
-    struct FILEHANDLE fhandle[8];
+    struct Console cons;
+    struct FileHandle fhandle[8];
     char cmdline[30];
     unsigned char *jp_font = (char *)*((int *)0x0fe8);
 
@@ -111,7 +111,7 @@ void console_task(struct SHEET *sheet, unsigned int memtotal) {
     }
 }
 
-void cons_putchar(struct CONSOLE *cons, int chr, char move) {
+void cons_putchar(struct Console *cons, int chr, char move) {
     char s[2];
     s[0] = chr;
     s[1] = 0;
@@ -149,14 +149,14 @@ void cons_putchar(struct CONSOLE *cons, int chr, char move) {
     return;
 }
 
-void cons_putstr0(struct CONSOLE *cons, char *s) {
+void cons_putstr0(struct Console *cons, char *s) {
     for (; *s != 0; s++) {
         cons_putchar(cons, *s, 1);
     }
     return;
 }
 
-void cons_putstr1(struct CONSOLE *cons, char *s, int l) {
+void cons_putstr1(struct Console *cons, char *s, int l) {
     int i;
     for (i = 0; i < l; i++) {
         cons_putchar(cons, s[i], 1);
@@ -164,10 +164,10 @@ void cons_putstr1(struct CONSOLE *cons, char *s, int l) {
     return;
 }
 
-void cons_newline(struct CONSOLE *cons) {
+void cons_newline(struct Console *cons) {
     int x, y;
-    struct SHEET *sheet = cons->sht;
-    struct TASK *task = task_now();
+    struct Sheet *sheet = cons->sht;
+    struct Task *task = task_now();
     if (cons->cur_y < 28 + 112) {
         cons->cur_y += 16;
     } else {
@@ -194,7 +194,7 @@ void cons_newline(struct CONSOLE *cons) {
 }
 
 // clang-format off
-void cons_run_cmd(char *cmdline, struct CONSOLE *cons, int *fat, unsigned int memtotal) {
+void cons_run_cmd(char *cmdline, struct Console *cons, int *fat, unsigned int memtotal) {
     // clang-format on
     if (strcmp(cmdline, "free") == 0) {
         cmd_free(cons, memtotal);
@@ -218,8 +218,8 @@ void cons_run_cmd(char *cmdline, struct CONSOLE *cons, int *fat, unsigned int me
     return;
 }
 
-void cmd_free(struct CONSOLE *cons, unsigned int memtotal) {
-    struct MEMORY_MANAGEMENT *memory_management = (struct MEMORY_MANAGEMENT *)MEMMAN_ADDR;
+void cmd_free(struct Console *cons, unsigned int memtotal) {
+    struct MemoryManagement *memory_management = (struct MemoryManagement *)MEMMAN_ADDR;
     char s[60];
     // clang-format off
     sprintf(s, "total   %dMB\nfree %dKB\n\n", memtotal / (1024 * 1024), memory_management_total(memory_management) / 1024);
@@ -228,9 +228,9 @@ void cmd_free(struct CONSOLE *cons, unsigned int memtotal) {
     return;
 }
 
-void cmd_clear(struct CONSOLE *cons) {
+void cmd_clear(struct Console *cons) {
     int x, y;
-    struct SHEET *sheet = cons->sht;
+    struct Sheet *sheet = cons->sht;
     for (y = 28; y < 28 + 128; y++) {
         for (x = 8; x < 8 + 240; x++) {
             sheet->buf[x + y * sheet->bxsize] = COL8_000000;
@@ -241,8 +241,8 @@ void cmd_clear(struct CONSOLE *cons) {
     return;
 }
 
-void cmd_ls(struct CONSOLE *cons) {
-    struct FILEINFO *finfo = (struct FILEINFO *)(ADR_DISK_IMG + 0x002600);
+void cmd_ls(struct Console *cons) {
+    struct FileInfo *finfo = (struct FileInfo *)(ADR_DISK_IMG + 0x002600);
     int i, j;
     char s[30];
     for (i = 0; i < 224; i++) {
@@ -266,11 +266,11 @@ void cmd_ls(struct CONSOLE *cons) {
     return;
 }
 
-void cmd_exit(struct CONSOLE *cons, int *fat) {
-    struct MEMORY_MANAGEMENT *memory_management = (struct MEMORY_MANAGEMENT *)MEMMAN_ADDR;
-    struct TASK *task = task_now();
-    struct SHTCTL *shtctl = (struct SHTCTL *)*((int *)0x0fe4);
-    struct QUEUE *queue = (struct QUEUE *)*((int *)0x0fec);
+void cmd_exit(struct Console *cons, int *fat) {
+    struct MemoryManagement *memory_management = (struct MemoryManagement *)MEMMAN_ADDR;
+    struct Task *task = task_now();
+    struct SheetCtl *shtctl = (struct SheetCtl *)*((int *)0x0fe4);
+    struct Queue *queue = (struct Queue *)*((int *)0x0fec);
     timer_cancel(cons->timer);
     memory_management_free_4k(memory_management, (int)fat, 4 * 2880);
     asm_io_cli();
@@ -285,10 +285,10 @@ void cmd_exit(struct CONSOLE *cons, int *fat) {
     }
 }
 
-void cmd_start(struct CONSOLE *cons, char *cmdline, int memtotal) {
-    struct SHTCTL *shtctl = (struct SHTCTL *)*((int *)0x0fe4);
-    struct SHEET *sht = open_console(shtctl, memtotal);
-    struct QUEUE *queue = &sht->task->queue;
+void cmd_start(struct Console *cons, char *cmdline, int memtotal) {
+    struct SheetCtl *shtctl = (struct SheetCtl *)*((int *)0x0fe4);
+    struct Sheet *sht = open_console(shtctl, memtotal);
+    struct Queue *queue = &sht->task->queue;
     int i;
     sheet_slide(sht, 32, 4);
     sheet_updown(sht, shtctl->top);
@@ -300,9 +300,9 @@ void cmd_start(struct CONSOLE *cons, char *cmdline, int memtotal) {
     return;
 }
 
-void cmd_ncst(struct CONSOLE *cons, char *cmdline, int memtotal) {
-    struct TASK *task = open_console_task(0, memtotal);
-    struct QUEUE *queue = &task->queue;
+void cmd_ncst(struct Console *cons, char *cmdline, int memtotal) {
+    struct Task *task = open_console_task(0, memtotal);
+    struct Queue *queue = &task->queue;
     int i;
     for (i = 5; cmdline[i] != 0; i++) {
         queue_put(queue, cmdline[i] + 256);
@@ -312,8 +312,8 @@ void cmd_ncst(struct CONSOLE *cons, char *cmdline, int memtotal) {
     return;
 }
 
-void cmd_lang(struct CONSOLE *cons, char *cmdline) {
-    struct TASK *task = task_now();
+void cmd_lang(struct Console *cons, char *cmdline) {
+    struct Task *task = task_now();
     unsigned char mode = cmdline[5] - '0';
     if (mode <= 2) {
         task->lang_mode = mode;
@@ -324,15 +324,15 @@ void cmd_lang(struct CONSOLE *cons, char *cmdline) {
     return;
 }
 
-int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline) {
-    struct MEMORY_MANAGEMENT *memory_management = (struct MEMORY_MANAGEMENT *)MEMMAN_ADDR;
-    struct FILEINFO *finfo;
-    struct SEGMENT_DESCRIPTOR *gdt = (struct SEGMENT_DESCRIPTOR *)ADR_GDT;
+int cmd_app(struct Console *cons, int *fat, char *cmdline) {
+    struct MemoryManagement *memory_management = (struct MemoryManagement *)MEMMAN_ADDR;
+    struct FileInfo *finfo;
+    struct SegmentDescriptor *gdt = (struct SegmentDescriptor *)ADR_GDT;
     char name[18], *p, *q;
-    struct TASK *task = task_now();
+    struct Task *task = task_now();
     int i, segment_size, data_size, esp, data_hrb;
-    struct SHTCTL *shtctl;
-    struct SHEET *sht;
+    struct SheetCtl *shtctl;
+    struct Sheet *sht;
 
     for (i = 0; i < 13; i++) {
         if (cmdline[i] <= ' ') {
@@ -343,7 +343,7 @@ int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline) {
     name[i] = 0;
 
     finfo =
-        file_search(name, (struct FILEINFO *)(ADR_DISK_IMG + 0x002600), 224);
+        file_search(name, (struct FileInfo *)(ADR_DISK_IMG + 0x002600), 224);
 
     if (finfo == 0 && name[i - 1] != '.') {
         name[i] = '.';
@@ -352,7 +352,7 @@ int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline) {
         name[i + 3] = 'B';
         name[i + 4] = 0;
         // clang-format off
-        finfo = file_search(name, (struct FILEINFO *)(ADR_DISK_IMG + 0x002600), 224);
+        finfo = file_search(name, (struct FileInfo *)(ADR_DISK_IMG + 0x002600), 224);
         // clang-format on
     }
 
@@ -378,7 +378,7 @@ int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline) {
             // clang-format off
             asm_start_app(0x1b, 0 * 8 + 4, esp, 1 * 8 + 4, &(task->tss.esp0));
             // clang-format on
-            shtctl = (struct SHTCTL *)*((int *)0x0fe4);
+            shtctl = (struct SheetCtl *)*((int *)0x0fe4);
             for (i = 0; i < MAX_SHEETS; i++) {
                 sht = &(shtctl->sheets0[i]);
                 if ((sht->flags & 0x11) == 0x11 && sht->task == task) {
@@ -410,21 +410,21 @@ int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline) {
 // clang-format off
 int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int eax) {
     // clang-format on
-    struct TASK *task = task_now();
+    struct Task *task = task_now();
     int ds_base = task->ds_base;
-    struct CONSOLE *cons = task->cons;
-    struct SHTCTL *shtctl = (struct SHTCTL *)*((int *)0x0fe4);
-    struct SHEET *sht;
-    struct QUEUE *sys_queue = (struct QUEUE *)*((int *)0x0fec);
+    struct Console *cons = task->cons;
+    struct SheetCtl *shtctl = (struct SheetCtl *)*((int *)0x0fe4);
+    struct Sheet *sht;
+    struct Queue *sys_queue = (struct Queue *)*((int *)0x0fec);
     // clang-format off
     int *reg = &eax + 1;  // Next address after edx
             // reg[0] : EDI,   reg[1] : ESI,   reg[2] : EBP,   reg[3] : ESP
             // reg[4] : EBX,   reg[5] : EDX,   reg[6] : ECX,   reg[7] : EAX
     // clang-format on
     int i;
-    struct FILEINFO *finfo;
-    struct FILEHANDLE *fh;
-    struct MEMORY_MANAGEMENT *memory_management = (struct MEMORY_MANAGEMENT *)MEMMAN_ADDR;
+    struct FileInfo *finfo;
+    struct FileHandle *fh;
+    struct MemoryManagement *memory_management = (struct MemoryManagement *)MEMMAN_ADDR;
 
     if (edx == 1) {
         cons_putchar(cons, eax & 0xff, 1);
@@ -446,7 +446,7 @@ int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int 
         sheet_updown(sht, shtctl->top);
         reg[7] = (int)sht;
     } else if (edx == 6) {
-        sht = (struct SHEET *)(ebx & 0xfffffffe);
+        sht = (struct Sheet *)(ebx & 0xfffffffe);
         // clang-format off
         putfonts8_asc(sht->buf, sht->bxsize, esi, edi, eax, (char *)ebp + ds_base);
         // clang-format on
@@ -454,33 +454,33 @@ int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int 
             sheet_refresh(sht, esi, edi, esi + ecx * 8, edi + 16);
         }
     } else if (edx == 7) {
-        sht = (struct SHEET *)(ebx & 0xfffffffe);
+        sht = (struct Sheet *)(ebx & 0xfffffffe);
         boxfill8(sht->buf, sht->bxsize, ebp, eax, ecx, esi, edi);
         if ((ebx & 1) == 0) {
             sheet_refresh(sht, eax, ecx, esi + 1, edi + 1);
         }
     } else if (edx == 8) {
-        memory_management_init((struct MEMORY_MANAGEMENT *)(ebx + ds_base));
+        memory_management_init((struct MemoryManagement *)(ebx + ds_base));
         ecx &= 0xfffffff0;
-        memory_management_free((struct MEMORY_MANAGEMENT *)(ebx + ds_base), eax, ecx);
+        memory_management_free((struct MemoryManagement *)(ebx + ds_base), eax, ecx);
     } else if (edx == 9) {
         ecx = (ecx + 0x0f) & 0xfffffff0;
-        memory_management_free((struct MEMORY_MANAGEMENT *)(ebx + ds_base), eax, ecx);
-        reg[7] = memory_management_alloc((struct MEMORY_MANAGEMENT *)(ebx + ds_base), ecx);
+        memory_management_free((struct MemoryManagement *)(ebx + ds_base), eax, ecx);
+        reg[7] = memory_management_alloc((struct MemoryManagement *)(ebx + ds_base), ecx);
     } else if (edx == 10) {
         ecx = (ecx + 0x0f) & 0xfffffff0;
-        memory_management_free((struct MEMORY_MANAGEMENT *)(ebx + ds_base), eax, ecx);
+        memory_management_free((struct MemoryManagement *)(ebx + ds_base), eax, ecx);
     } else if (edx == 11) {
-        sht = (struct SHEET *)(ebx & 0xfffffffe);
+        sht = (struct Sheet *)(ebx & 0xfffffffe);
         sht->buf[sht->bxsize * edi + esi] = eax;
         if ((ebx & 1) == 0) {
             sheet_refresh(sht, esi, edi, esi + 1, edi + 1);
         }
     } else if (edx == 12) {
-        sht = (struct SHEET *)ebx;
+        sht = (struct Sheet *)ebx;
         sheet_refresh(sht, eax, ecx, esi, edi);
     } else if (edx == 13) {
-        sht = (struct SHEET *)(ebx & 0xfffffffe);
+        sht = (struct Sheet *)(ebx & 0xfffffffe);
         hrb_draw_line_window(sht, eax, ecx, esi, edi, ebp);
         if ((ebx & 1) == 0) {
             if (eax > esi) {
@@ -496,7 +496,7 @@ int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int 
             sheet_refresh(sht, eax, ecx, esi + 1, edi + 1);
         }
     } else if (edx == 14) {
-        sheet_free((struct SHEET *)ebx);
+        sheet_free((struct Sheet *)ebx);
     } else if (edx == 15) {
         for (;;) {
             asm_io_cli();
@@ -536,13 +536,13 @@ int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int 
         }
     } else if (edx == 16) {
         reg[7] = (int)timer_alloc();
-        ((struct TIMER *)reg[7])->flags2 = 1;
+        ((struct Timer *)reg[7])->flags2 = 1;
     } else if (edx == 17) {
-        timer_init((struct TIMER *)ebx, &task->queue, eax + 256);
+        timer_init((struct Timer *)ebx, &task->queue, eax + 256);
     } else if (edx == 18) {
-        timer_settime((struct TIMER *)ebx, eax);
+        timer_settime((struct Timer *)ebx, eax);
     } else if (edx == 19) {
-        timer_free((struct TIMER *)ebx);
+        timer_free((struct Timer *)ebx);
     } else if (edx == 20) {
         if (eax == 0) {
             i = asm_io_in8(0x61);
@@ -565,7 +565,7 @@ int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int 
         reg[7] = 0;
         if (i < 8) {
             // clang-format off
-            finfo = file_search((char *)ebx + ds_base, (struct FILEINFO *)(ADR_DISK_IMG + 0x002600), 224);
+            finfo = file_search((char *)ebx + ds_base, (struct FileInfo *)(ADR_DISK_IMG + 0x002600), 224);
             // clang-format on
             if (finfo != 0) {
                 reg[7] = (int)fh;
@@ -578,11 +578,11 @@ int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int 
             }
         }
     } else if (edx == 22) {  // File close_window
-        fh = (struct FILEHANDLE *)eax;
+        fh = (struct FileHandle *)eax;
         memory_management_free_4k(memory_management, (int)fh->buf, fh->size);
         fh->buf = 0;
     } else if (edx == 23) {  // File seek
-        fh = (struct FILEHANDLE *)eax;
+        fh = (struct FileHandle *)eax;
         if (ecx == 0) {
             fh->pos = ebx;
         } else if (ecx == 1) {
@@ -598,7 +598,7 @@ int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int 
             fh->pos = fh->size;
         }
     } else if (edx == 24) {  // Get file size
-        fh = (struct FILEHANDLE *)eax;
+        fh = (struct FileHandle *)eax;
         if (ecx == 0) {
             reg[7] = fh->size;
         } else if (ecx == 1) {
@@ -607,7 +607,7 @@ int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int 
             reg[7] = fh->pos - fh->size;
         }
     } else if (edx == 25) {  // File read
-        fh = (struct FILEHANDLE *)eax;
+        fh = (struct FileHandle *)eax;
         for (i = 0; i < ecx; i++) {
             if (fh->pos == fh->size) {
                 break;
@@ -639,8 +639,8 @@ int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int 
 }
 
 int *inthandler0c(int *esp) {
-    struct TASK *task = task_now();
-    struct CONSOLE *cons = task->cons;
+    struct Task *task = task_now();
+    struct Console *cons = task->cons;
     char s[30];
     cons_putstr0(cons, "\nINT 0C :\n Stack Exception.\n");
     sprintf(s, "EIP = %X\n", esp[11]);
@@ -649,8 +649,8 @@ int *inthandler0c(int *esp) {
 }
 
 int *inthandler0d(int *esp) {
-    struct TASK *task = task_now();
-    struct CONSOLE *cons = task->cons;
+    struct Task *task = task_now();
+    struct Console *cons = task->cons;
     char s[30];
     cons_putstr0(cons, "\nINT 0D :\n General Protected Exception.\n");
     sprintf(s, "EIP = %X\n", esp[11]);
@@ -659,7 +659,7 @@ int *inthandler0d(int *esp) {
 }
 
 // clang-format off
-void hrb_draw_line_window(struct SHEET *sht, int x0, int y0, int x1, int y1, int col) {
+void hrb_draw_line_window(struct Sheet *sht, int x0, int y0, int x1, int y1, int col) {
     // clang-format on
     int i, x, y, len, dx, dy;
 

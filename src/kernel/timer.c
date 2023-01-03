@@ -3,14 +3,14 @@
 #define PIT_CTRL 0x0043
 #define PIT_CNT0 0x0040
 
-struct TIMER_CTL timer_ctl;
+struct TimerCtl timer_ctl;
 
 #define TIMER_FLAGS_ALLOC 1
 #define TIMER_FLAGS_USING 2
 
 void init_pit(void) {
     int i;
-    struct TIMER *t;
+    struct Timer *t;
     asm_io_out8(PIT_CTRL, 0x34);
     asm_io_out8(PIT_CNT0, 0x9c);
     asm_io_out8(PIT_CNT0, 0x2e);
@@ -28,7 +28,7 @@ void init_pit(void) {
     return;
 }
 
-struct TIMER *timer_alloc(void) {
+struct Timer *timer_alloc(void) {
     int i;
     for (i = 0; i < MAX_TIMER; i++) {
         if (timer_ctl.timers0[i].flags == 0) {
@@ -39,20 +39,20 @@ struct TIMER *timer_alloc(void) {
     return 0;
 }
 
-void timer_free(struct TIMER *timer) {
+void timer_free(struct Timer *timer) {
     timer->flags = 0;
     return;
 }
 
-void timer_init(struct TIMER *timer, struct QUEUE *queue, int data) {
+void timer_init(struct Timer *timer, struct Queue *queue, int data) {
     timer->queue = queue;
     timer->data = data;
     return;
 }
 
-void timer_settime(struct TIMER *timer, unsigned int timeout) {
+void timer_settime(struct Timer *timer, unsigned int timeout) {
     int e;
-    struct TIMER *t, *s;
+    struct Timer *t, *s;
     timer->timeout = timeout + timer_ctl.count;
     timer->flags = TIMER_FLAGS_USING;
     e = asm_io_load_eflags();
@@ -79,7 +79,7 @@ void timer_settime(struct TIMER *timer, unsigned int timeout) {
 }
 
 void inthandler20(int *esp) {
-    struct TIMER *timer;
+    struct Timer *timer;
     char ts = 0;
     asm_io_out8(PIC0_OCW2, 0x60);
     timer_ctl.count++;
@@ -107,9 +107,9 @@ void inthandler20(int *esp) {
     return;
 }
 
-int timer_cancel(struct TIMER *timer) {
+int timer_cancel(struct Timer *timer) {
     int e;
-    struct TIMER *t;
+    struct Timer *t;
     e = asm_io_load_eflags();
     asm_io_cli();
     if (timer->flags == TIMER_FLAGS_USING) {
@@ -135,9 +135,9 @@ int timer_cancel(struct TIMER *timer) {
     return 0;
 }
 
-void timer_cancel_all(struct QUEUE *queue) {
+void timer_cancel_all(struct Queue *queue) {
     int e, i;
-    struct TIMER *t;
+    struct Timer *t;
     e = asm_io_load_eflags();
     asm_io_cli();
     for (i = 0; i < MAX_TIMER; i++) {

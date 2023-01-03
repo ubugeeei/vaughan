@@ -3,11 +3,11 @@
 #define SHEET_USE 1
 
 // clang-format off
-struct SHTCTL *shtctl_init(struct MEMORY_MANAGEMENT *memory_management, unsigned char *vram, int xsize, int ysize) {
+struct SheetCtl *shtctl_init(struct MemoryManagement *memory_management, unsigned char *vram, int xsize, int ysize) {
     // clang-format on
-    struct SHTCTL *ctl;
+    struct SheetCtl *ctl;
     int i;
-    ctl = (struct SHTCTL *)memory_management_alloc_4k(memory_management, sizeof(struct SHTCTL));
+    ctl = (struct SheetCtl *)memory_management_alloc_4k(memory_management, sizeof(struct SheetCtl));
 
     if (ctl == 0) {
         goto err;
@@ -15,7 +15,7 @@ struct SHTCTL *shtctl_init(struct MEMORY_MANAGEMENT *memory_management, unsigned
 
     ctl->map = (unsigned char *)memory_management_alloc_4k(memory_management, xsize * ysize);
     if (ctl->map == 0) {
-        memory_management_free_4k(memory_management, (int)ctl, sizeof(struct SHTCTL));
+        memory_management_free_4k(memory_management, (int)ctl, sizeof(struct SheetCtl));
         goto err;
     }
     ctl->vram = vram;
@@ -31,8 +31,8 @@ err:
     return ctl;
 }
 
-struct SHEET *sheet_alloc(struct SHTCTL *ctl) {
-    struct SHEET *sht;
+struct Sheet *sheet_alloc(struct SheetCtl *ctl) {
+    struct Sheet *sht;
     int i;
     for (i = 0; i < MAX_SHEETS; i++) {
         if (ctl->sheets0[i].flags == 0) {
@@ -47,7 +47,7 @@ struct SHEET *sheet_alloc(struct SHTCTL *ctl) {
 }
 
 // clang-format off
-void sheet_setbuf(struct SHEET *sht, unsigned char *buf, int xsize, int ysize, int col_inv) {
+void sheet_setbuf(struct Sheet *sht, unsigned char *buf, int xsize, int ysize, int col_inv) {
     // clang-format on
     sht->buf = buf;
     sht->bxsize = xsize;
@@ -57,11 +57,11 @@ void sheet_setbuf(struct SHEET *sht, unsigned char *buf, int xsize, int ysize, i
 }
 
 // clang-format off
-void sheet_refreshmap(struct SHTCTL *ctl, int vx0, int vy0, int vx1, int vy1, int h0) {
+void sheet_refreshmap(struct SheetCtl *ctl, int vx0, int vy0, int vx1, int vy1, int h0) {
     // clang-format on
     int h, bx, by, vx, vy, bx0, by0, bx1, by1, sid4, *p;
     unsigned char *buf, sid, *map = ctl->map;
-    struct SHEET *sht;
+    struct Sheet *sht;
     if (vx0 < 0) {
         vx0 = 0;
     }
@@ -131,11 +131,11 @@ void sheet_refreshmap(struct SHTCTL *ctl, int vx0, int vy0, int vx1, int vy1, in
 }
 
 // clang-format off
-void sheet_refreshsub(struct SHTCTL *ctl, int vx0, int vy0, int vx1, int vy1, int h0, int h1) {
+void sheet_refreshsub(struct SheetCtl *ctl, int vx0, int vy0, int vx1, int vy1, int h0, int h1) {
     // clang-format on
     int h, bx, by, vx, vy, bx0, by0, bx1, by1, bx2, sid4, i, i1, *p, *q, *r;
     unsigned char *buf, *vram = ctl->vram, *map = ctl->map, sid;
-    struct SHEET *sht;
+    struct Sheet *sht;
 
     if (vx0 < 0) {
         vx0 = 0;
@@ -231,8 +231,8 @@ void sheet_refreshsub(struct SHTCTL *ctl, int vx0, int vy0, int vx1, int vy1, in
     }
     return;
 }
-void sheet_updown(struct SHEET *sht, int height) {
-    struct SHTCTL *ctl = sht->ctl;
+void sheet_updown(struct Sheet *sht, int height) {
+    struct SheetCtl *ctl = sht->ctl;
     int h, old = sht->height;
 
     if (height > ctl->top + 1) {
@@ -290,7 +290,7 @@ void sheet_updown(struct SHEET *sht, int height) {
     return;
 }
 
-void sheet_refresh(struct SHEET *sht, int bx0, int by0, int bx1, int by1) {
+void sheet_refresh(struct Sheet *sht, int bx0, int by0, int bx1, int by1) {
     if (sht->height >= 0) {
         // clang-format off
         sheet_refreshsub(
@@ -307,8 +307,8 @@ void sheet_refresh(struct SHEET *sht, int bx0, int by0, int bx1, int by1) {
     return;
 }
 
-void sheet_slide(struct SHEET *sht, int vx0, int vy0) {
-    struct SHTCTL *ctl = sht->ctl;
+void sheet_slide(struct Sheet *sht, int vx0, int vy0) {
+    struct SheetCtl *ctl = sht->ctl;
     int old_vx0 = sht->vx0, old_vy0 = sht->vy0;
     sht->vx0 = vx0;
     sht->vy0 = vy0;
@@ -323,7 +323,7 @@ void sheet_slide(struct SHEET *sht, int vx0, int vy0) {
     return;
 }
 
-void sheet_free(struct SHEET *sht) {
+void sheet_free(struct Sheet *sht) {
     if (sht->height >= 0) {
         sheet_updown(sht, -1);
     }

@@ -29,7 +29,7 @@ void file_load_file(int cluster_num, int size, char *buf, int *fat, char *img) {
     return;
 }
 
-struct FILEINFO *file_search(char *name, struct FILEINFO *finfo, int max) {
+struct FileInfo *file_search(char *name, struct FileInfo *finfo, int max) {
     int i, j;
     char s[12];
     for (j = 0; j < 11; j++) {
@@ -70,7 +70,7 @@ struct FILEINFO *file_search(char *name, struct FILEINFO *finfo, int max) {
 
 char *file_load_file2(int cluster_num, int *psize, int *fat) {
     int size = *psize, size2;
-    struct MEMORY_MANAGEMENT *memory_management = (struct MEMORY_MANAGEMENT *)MEMMAN_ADDR;
+    struct MemoryManagement *memory_management = (struct MemoryManagement *)MEMMAN_ADDR;
     char *buf, *buf2;
     buf = (char *)memory_management_alloc_4k(memory_management, size);
     // clang-format off

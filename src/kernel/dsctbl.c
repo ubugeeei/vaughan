@@ -3,7 +3,7 @@
 #include "boot.h"
 
 void init_gdt_idt(void) {
-    struct SEGMENT_DESCRIPTOR *gdt = (struct SEGMENT_DESCRIPTOR *)ADR_GDT;
+    struct SegmentDescriptor *gdt = (struct SegmentDescriptor *)ADR_GDT;
     struct GATE_DESCRIPTOR *idt = (struct GATE_DESCRIPTOR *)ADR_IDT;
     int i;
 
@@ -35,7 +35,7 @@ void init_gdt_idt(void) {
     return;
 }
 
-void set_segment_descriptor(struct SEGMENT_DESCRIPTOR *sd, unsigned int limit, int base,
+void set_segment_descriptor(struct SegmentDescriptor *sd, unsigned int limit, int base,
                   int ar) {
     if (limit > 0xfffff) {
         ar |= 0x8000; /* G_bit = 1 */

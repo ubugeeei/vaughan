@@ -2,7 +2,7 @@
 
 #include "boot.h"
 
-struct QUEUE *mousequeue;
+struct Queue *mousequeue;
 int mousedata0;
 
 void inthandler2c(int *esp)
@@ -19,7 +19,7 @@ void inthandler2c(int *esp)
 #define KEYCMD_SENDTO_MOUSE 0xd4
 #define MOUSECMD_ENABLE 0xf4
 
-void enable_mouse(struct QUEUE *queue, int data0, struct MOUSE_DEC *mdec) {
+void enable_mouse(struct Queue *queue, int data0, struct MOUSE_DEC *mdec) {
     mousequeue = queue;
     mousedata0 = data0;
 

@@ -33,7 +33,7 @@ unsigned int test_memory(unsigned int start, unsigned int end) {
     return i;
 }
 
-void memory_management_init(struct MEMORY_MANAGEMENT *man) {
+void memory_management_init(struct MemoryManagement *man) {
     man->frees = 0;
     man->maxfrees = 0;
     man->lostsize = 0;
@@ -41,7 +41,7 @@ void memory_management_init(struct MEMORY_MANAGEMENT *man) {
     return;
 }
 
-unsigned int memory_management_total(struct MEMORY_MANAGEMENT *man) {
+unsigned int memory_management_total(struct MemoryManagement *man) {
     unsigned int i, t = 0;
     for (i = 0; i < man->frees; i++) {
         t += man->free[i].size;
@@ -49,7 +49,7 @@ unsigned int memory_management_total(struct MEMORY_MANAGEMENT *man) {
     return t;
 }
 
-unsigned int memory_management_alloc(struct MEMORY_MANAGEMENT *man, unsigned int size) {
+unsigned int memory_management_alloc(struct MemoryManagement *man, unsigned int size) {
     unsigned int i, a;
     for (i = 0; i < man->frees; i++) {
         if (man->free[i].size >= size) {
@@ -68,7 +68,7 @@ unsigned int memory_management_alloc(struct MEMORY_MANAGEMENT *man, unsigned int
     return 0;
 }
 
-int memory_management_free(struct MEMORY_MANAGEMENT *man, unsigned int addr, unsigned int size) {
+int memory_management_free(struct MemoryManagement *man, unsigned int addr, unsigned int size) {
     int i, j;
     for (i = 0; i < man->frees; i++) {
         if (man->free[i].addr > addr) {
@@ -119,14 +119,14 @@ int memory_management_free(struct MEMORY_MANAGEMENT *man, unsigned int addr, uns
     return -1;
 }
 
-unsigned int memory_management_alloc_4k(struct MEMORY_MANAGEMENT *man, unsigned int size) {
+unsigned int memory_management_alloc_4k(struct MemoryManagement *man, unsigned int size) {
     unsigned int a;
     size = (size + 0xfff) & 0xfffff000;
     a = memory_management_alloc(man, size);
     return a;
 }
 
-int memory_management_free_4k(struct MEMORY_MANAGEMENT *man, unsigned int addr, unsigned int size) {
+int memory_management_free_4k(struct MemoryManagement *man, unsigned int addr, unsigned int size) {
     int i;
     size = (size + 0xfff) & 0xfffff000;
     i = memory_management_free(man, addr, size);
