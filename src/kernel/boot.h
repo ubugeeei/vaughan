@@ -112,11 +112,11 @@ struct GATE_DESCRIPTOR {
     char dw_count, access_right;
     short offset_high;
 };
-void init_gdtidt(void);
+void init_gdt_idt(void);
 // clang-format off
-void set_segmdesc(struct SEGMENT_DESCRIPTOR *sd, unsigned int limit, int base, int ar);
+void set_segment_descriptor(struct SEGMENT_DESCRIPTOR *sd, unsigned int limit, int base, int ar);
+void set_gate_descriptor(struct GATE_DESCRIPTOR *gd, int offset, int selector,int ar);
 // clang-format on
-void set_gatedesc(struct GATE_DESCRIPTOR *gd, int offset, int selector, int ar);
 #define ADR_IDT 0x0026f800
 #define LIMIT_IDT 0x000007ff
 #define ADR_GDT 0x00270000

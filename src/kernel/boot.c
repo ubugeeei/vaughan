@@ -55,7 +55,7 @@ void Boot(void) {
     struct FILEINFO *finfo;
     extern char hankaku[4096];
 
-    init_gdtidt();
+    init_gdt_idt();
     init_pic();
     asm_io_sti();
     queue_init(&queue, 128, queue_buf, 0);

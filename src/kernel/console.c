@@ -369,8 +369,8 @@ int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline) {
             q = (char *)memman_alloc_4k(memman, segment_size);
             task->ds_base = (int)q;
             // clang-format off
-            set_segmdesc(task->ldt + 0, finfo->size - 1, (int) p, AR_CODE32_ER + 0x60);
-			set_segmdesc(task->ldt + 1, segment_size - 1, (int) q, AR_DATA32_RW + 0x60);
+            set_segment_descriptor(task->ldt + 0, finfo->size - 1, (int) p, AR_CODE32_ER + 0x60);
+			set_segment_descriptor(task->ldt + 1, segment_size - 1, (int) q, AR_DATA32_RW + 0x60);
             // clang-format on
             for (i = 0; i < data_size; i++) {
                 q[esp + i] = p[data_hrb + i];
