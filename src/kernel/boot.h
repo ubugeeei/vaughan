@@ -7,12 +7,12 @@
  *
  */
 struct BOOT_INFO {
-    char cyls;
-    char leds;
-    char vmode;
-    char reserve;
-    short scrnx, scrny;
-    char *vram;
+  char cyls;
+  char leds;
+  char vmode;
+  char reserve;
+  short scrnx, scrny;
+  char *vram;
 };
 #define ADR_BOOT_INFO 0x00000ff0
 #define ADR_DISK_IMG 0x00100000
@@ -54,9 +54,9 @@ void asm_end_app(void);
  *
  */
 struct QUEUE {
-    int *buf;
-    int p, q, size, free, flags;
-    struct TASK *task;
+  int *buf;
+  int p, q, size, free, flags;
+  struct TASK *task;
 };
 void queue_init(struct QUEUE *queue, int size, int *buf, struct TASK *task);
 int queue_put(struct QUEUE *queue, int data);
@@ -103,14 +103,14 @@ void putblock8_8(char *vram, int vxsize, int pxsize, int pysize, int px0, int py
  *
  */
 struct SEGMENT_DESCRIPTOR {
-    short limit_low, base_low;
-    char base_mid, access_right;
-    char limit_high, base_high;
+  short limit_low, base_low;
+  char base_mid, access_right;
+  char limit_high, base_high;
 };
 struct GATE_DESCRIPTOR {
-    short offset_low, selector;
-    char dw_count, access_right;
-    short offset_high;
+  short offset_low, selector;
+  char dw_count, access_right;
+  short offset_high;
 };
 void init_gdt_idt(void);
 // clang-format off
@@ -166,8 +166,8 @@ void init_keyboard(struct QUEUE *queue, int data0);
  *
  */
 struct MOUSE_DEC {
-    unsigned char buf[3], phase;
-    int x, y, btn;
+  unsigned char buf[3], phase;
+  int x, y, btn;
 };
 void inthandler2c(int *esp);
 void enable_mouse(struct QUEUE *queue, int data0, struct MOUSE_DEC *mdec);
@@ -181,11 +181,11 @@ int mouse_decode(struct MOUSE_DEC *mdec, unsigned char dat);
 #define MEMMAN_FREES 4090
 #define MEMMAN_ADDR 0x003c0000
 struct FREE_MEMORY_INFO {
-    unsigned int addr, size;
+  unsigned int addr, size;
 };
 struct MEMORY_MANAGEMENT {
-    int frees, maxfrees, lostsize, losts;
-    struct FREE_MEMORY_INFO free[MEMMAN_FREES];
+  int frees, maxfrees, lostsize, losts;
+  struct FREE_MEMORY_INFO free[MEMMAN_FREES];
 };
 // clang-format off
 unsigned int test_memory(unsigned int start, unsigned int end);
@@ -204,26 +204,26 @@ int memory_management_free_4k(struct MEMORY_MANAGEMENT *man, unsigned int addr, 
  */
 #define MAX_TIMER 500
 struct TIMER {
-    struct TIMER *next;
-    unsigned int timeout;
-    char flags, flags2;
-    struct QUEUE *queue;
-    int data;
+  struct TIMER *next;
+  unsigned int timeout;
+  char flags, flags2;
+  struct QUEUE *queue;
+  int data;
 };
-struct TIMERCTL {
-    unsigned int count, next, using;
-    struct TIMER *t0;
-    struct TIMER timers0[MAX_TIMER];
+struct TIMER_CTL {
+  unsigned int count, next, using;
+  struct TIMER *t0;
+  struct TIMER timers0[MAX_TIMER];
 };
-extern struct TIMERCTL timerctl;
+extern struct TIMER_CTL timer_ctl;
 void init_pit(void);
 struct TIMER *timer_alloc(void);
 void timer_free(struct TIMER *timer);
 void timer_init(struct TIMER *timer, struct QUEUE *queue, int data);
 void timer_settime(struct TIMER *timer, unsigned int timeout);
-void inthandler20(int *esp);
 int timer_cancel(struct TIMER *timer);
 void timer_cancel_all(struct QUEUE *queue);
+void inthandler20(int *esp);
 
 /*
  *
@@ -235,34 +235,34 @@ void timer_cancel_all(struct QUEUE *queue);
 #define MAX_TASKS_LV 100
 #define MAX_TASK_LEVELS 10
 struct TSS32 {
-    int backlink, esp0, ss0, esp1, ss1, esp2, ss2, cr3;
-    int eip, eflags, eax, ecx, edx, ebx, esp, ebp, esi, edi;
-    int es, cs, ss, ds, fs, gs;
-    int ldtr, iomap;
+  int backlink, esp0, ss0, esp1, ss1, esp2, ss2, cr3;
+  int eip, eflags, eax, ecx, edx, ebx, esp, ebp, esi, edi;
+  int es, cs, ss, ds, fs, gs;
+  int ldtr, iomap;
 };
 struct TASK {
-    int sel, flags;
-    int level, priority;
-    struct QUEUE queue;
-    struct TSS32 tss;
-    struct SEGMENT_DESCRIPTOR ldt[2];
-    struct CONSOLE *cons;
-    int ds_base, cons_stack;
-    struct FILEHANDLE *fhandle;
-    int *fat;
-    char *cmdline;
-    char lang_mode, lang_byte1;
+  int sel, flags;
+  int level, priority;
+  struct QUEUE queue;
+  struct TSS32 tss;
+  struct SEGMENT_DESCRIPTOR ldt[2];
+  struct CONSOLE *cons;
+  int ds_base, cons_stack;
+  struct FILEHANDLE *fhandle;
+  int *fat;
+  char *cmdline;
+  char lang_mode, lang_byte1;
 };
 struct TASK_LEVEL {
-    int running;
-    int now;
-    struct TASK *tasks[MAX_TASKS_LV];
+  int running;
+  int now;
+  struct TASK *tasks[MAX_TASKS_LV];
 };
 struct TASKCTL {
-    int now_lv;
-    char lv_change;
-    struct TASK_LEVEL level[MAX_TASK_LEVELS];
-    struct TASK tasks0[MAX_TASKS];
+  int now_lv;
+  char lv_change;
+  struct TASK_LEVEL level[MAX_TASK_LEVELS];
+  struct TASK tasks0[MAX_TASKS];
 };
 extern struct TASKCTL *taskctl;
 extern struct TIMER *task_timer;
@@ -280,16 +280,16 @@ void task_sleep(struct TASK *task);
  */
 #define MAX_SHEETS 256
 struct SHEET {
-    unsigned char *buf;
-    int bxsize, bysize, vx0, vy0, col_inv, height, flags;
-    struct SHTCTL *ctl;
-    struct TASK *task;
+  unsigned char *buf;
+  int bxsize, bysize, vx0, vy0, col_inv, height, flags;
+  struct SHTCTL *ctl;
+  struct TASK *task;
 };
 struct SHTCTL {
-    unsigned char *vram, *map;
-    int xsize, ysize, top;
-    struct SHEET *sheets[MAX_SHEETS];
-    struct SHEET sheets0[MAX_SHEETS];
+  unsigned char *vram, *map;
+  int xsize, ysize, top;
+  struct SHEET *sheets[MAX_SHEETS];
+  struct SHEET sheets0[MAX_SHEETS];
 };
 // clang-format off
 struct SHTCTL *shtctl_init(struct MEMORY_MANAGEMENT *memory_management, unsigned char *vram, int xsize, int ysize);
@@ -320,14 +320,14 @@ void change_wtitle8(struct SHEET *sht, char act);
  *
  */
 struct CONSOLE {
-    struct SHEET *sht;
-    int cur_x, cur_y, cur_c;
-    struct TIMER *timer;
+  struct SHEET *sht;
+  int cur_x, cur_y, cur_c;
+  struct TIMER *timer;
 };
 struct FILEHANDLE {
-    char *buf;
-    int size;
-    int pos;
+  char *buf;
+  int size;
+  int pos;
 };
 void console_task(struct SHEET *sheet, unsigned int memtotal);
 void cons_putchar(struct CONSOLE *cons, int chr, char move);
@@ -369,10 +369,10 @@ struct SHEET *open_console(struct SHTCTL *shtctl, unsigned int memtotal);
  *
  */
 struct FILEINFO {
-    unsigned char name[8], ext[3], type;
-    char reserve[10];
-    unsigned short time, date, cluster_num;
-    unsigned int size;
+  unsigned char name[8], ext[3], type;
+  char reserve[10];
+  unsigned short time, date, cluster_num;
+  unsigned int size;
 };
 void file_read_fat(int *fat, unsigned char *img);
 void file_load_file(int cluster_num, int size, char *buf, int *fat, char *img);
