@@ -1,5 +1,5 @@
 OUT_DIR = ../../../target
-LIB_PATH = $(OUT_DIR)/lib/bin/
+LIB_PATH = $(OUT_DIR)/lib/
 API_LIB_PATH   = $(OUT_DIR)/kernel/system_call/
 KERNEL_PATH = $(OUT_DIR)/kernel/
 

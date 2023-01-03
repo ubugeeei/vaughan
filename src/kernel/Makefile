@@ -1,5 +1,4 @@
 OUT_DIR = ../../target
-LIBPATH = $(OUT_DIR)/lib/bin/
 
 OBJS_BOOTPACK = \
 	$(OUT_DIR)/kernel/obj/boot.o \
@@ -19,14 +18,14 @@ OBJS_BOOTPACK = \
 	$(OUT_DIR)/kernel/obj/console.o \
 	$(OUT_DIR)/kernel/obj/file.o \
 	$(OUT_DIR)/kernel/obj/tek.o \
-	$(OUT_DIR)/lib/bin/libstdio.a \
-	$(OUT_DIR)/lib/bin/libstring.a \
-	$(OUT_DIR)/lib/bin/libstdlib.a
+	$(OUT_DIR)/lib/libstdio.a \
+	$(OUT_DIR)/lib/libstring.a \
+	$(OUT_DIR)/lib/libstdlib.a
 
 PREMAKE = \
 	mkdir -p $(OUT_DIR)/kernel/obj &&\
 	mkdir -p $(OUT_DIR)/kernel/bin &&\
-	mkdir -p $(OUT_DIR)/lib/bin
+	mkdir -p $(OUT_DIR)/lib
 
 
 MAKE = make -r
