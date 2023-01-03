@@ -22,7 +22,7 @@ void HariMain(void) {
         sprintf(s, "= %d = 0x%x\n", i, i);
         puts(s);
     }
-    api_end();
+    exit();
 }
 
 char *skip_space(char *p) {

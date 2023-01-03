@@ -6,5 +6,5 @@ void HariMain(void) {
 	putchar('l');
 	putchar('l');
 	putchar('o');
-	api_end();
+	exit();
 }

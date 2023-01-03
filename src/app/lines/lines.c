@@ -17,5 +17,5 @@ void HariMain(void) {
         }  // 0x0a = Enter
     }
     close_window(win);
-    api_end();
+    exit();
 }

@@ -16,5 +16,5 @@ void HariMain(void) {
 	}
 	refresh_window(win, 8, 28, 136, 156);
   getkey(1); // Wait for any keyboard input
-  api_end();
+  exit();
 }

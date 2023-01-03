@@ -15,7 +15,7 @@ void HariMain(void) {
     }
     refresh_window(win, 8, 28, 136, 156);
     getkey(1);
-    api_end();
+    exit();
 }
 
 unsigned char rgb2pal(int r, int g, int b, int x, int y) {

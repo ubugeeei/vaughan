@@ -15,7 +15,7 @@ void HariMain(void) {
         draw_point_window(win + 1, x, y, 3);
     }
     refresh_window(win, 6, 26, 144, 94);
-    api_end();
+    exit();
 }
 
 /* https://stackoverflow.com/questions/4768180/rand-implementation/4768194 */

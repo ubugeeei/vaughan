@@ -247,7 +247,7 @@ void wait_timer(int timer, int time) {
 		i = getkey(1);
 		if (i == 'Q' || i == 'q') {
 			beep(0);
-			api_end();
+			exit();
 		}
 		if (i == 128) {
 			return;
@@ -260,5 +260,5 @@ void end(char *s) {
 		puts(s);
 	}
 	beep(0);
-	api_end();
+	exit();
 }

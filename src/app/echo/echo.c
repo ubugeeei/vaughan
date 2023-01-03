@@ -14,5 +14,5 @@ void HariMain(void) {
             putchar(cmdline_buf[i]);
         }
     }
-    api_end();
+    exit();
 }

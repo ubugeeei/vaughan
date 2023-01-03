@@ -7,5 +7,5 @@ void HariMain(void) {
 	for (;;) {
 		if (getkey(1) == 0x0a) { break; }
 	}
-	api_end();
+	exit();
 }

@@ -2,5 +2,5 @@
 
 void HariMain(void) {
     puts("Hello World!\n");
-    api_end();
+    exit();
 }

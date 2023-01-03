@@ -12,5 +12,5 @@ void HariMain(void) {
 			putchar(c);
 		}
 	}
-	api_end();
+	exit();
 }

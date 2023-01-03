@@ -10,5 +10,5 @@ void HariMain(void) {
 	for (;;) {
 		if (getkey(1) == 0x0a) { break; } // Enter to break
 	}
-	api_end();
+	exit();
 }

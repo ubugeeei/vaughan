@@ -47,7 +47,7 @@ void HariMain(void) {
             } else {
             err:
                 puts(" >tview file [-w30 -h10 -t4]\n");
-                api_end();
+                exit();
             }
         } else {  // Found file
             if (q != 0) {
@@ -72,7 +72,7 @@ void HariMain(void) {
     i = fopen(q);
     if (i == 0) {
         puts("file create_window error.\n");
-        api_end();
+        exit();
     }
     j = fsize(i, 0);
     if (j >= 240 * 1024 - 1) {
@@ -97,7 +97,7 @@ void HariMain(void) {
         text_view(win, w, h, xskip, p, t, lang);
         i = getkey(1);
         if (i == 'Q' || i == 'q') {
-            api_end();
+            exit();
         }
         if ('A' <= i && i <= 'F') {
             spd_x = 1 << (i - 'A'); /* 1, 2, 4, 8, 16, 32 */

@@ -46,7 +46,7 @@ void HariMain(void) {
 		if (info_JPEG(&env, info, file_size, filebuf) == 0) {
 			// JPEG
 			puts("file type unknown.\n");
-			api_end();
+			exit();
 		}
 	}
 
@@ -86,7 +86,7 @@ void HariMain(void) {
 	for (;;) {
 		i = getkey(1);
 		if (i == 'Q' || i == 'q') {
-			api_end();
+			exit();
 		}
 	}
 }
@@ -108,5 +108,5 @@ unsigned char rgb2pal(int r, int g, int b, int x, int y) {
 
 void error(char *s) {
 	puts(s);
-	api_end();
+	exit();
 }

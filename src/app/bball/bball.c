@@ -32,5 +32,5 @@ void HariMain(void) {
             break;
         }  // Enter to break
     }
-    api_end();
+    exit();
 }

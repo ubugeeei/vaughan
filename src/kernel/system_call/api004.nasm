@@ -1,9 +1,9 @@
 [BITS 32]
 
-		GLOBAL	api_end
+		GLOBAL	exit
 
 [SECTION .text]
 
-api_end:	; void api_end(void);
+exit:	; void exit(void);
 		MOV		EDX,4
 		INT		0x40

@@ -16,5 +16,5 @@ void HariMain(void) {
 	} else {
 		puts("File not found.\n");
 	}
-	api_end();
+	exit();
 }

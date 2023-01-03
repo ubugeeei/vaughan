@@ -20,5 +20,5 @@ void HariMain(void) {
         puts(s2);
     }
 
-    api_end();
+    exit();
 }

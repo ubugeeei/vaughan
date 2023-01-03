@@ -14,5 +14,5 @@ void HariMain(void) {
         }
     }
     beep(0);
-    api_end();
+    exit();
 }
