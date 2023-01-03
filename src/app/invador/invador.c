@@ -1,5 +1,4 @@
-#include "../syscall.h"
-#include "../../include/stdio.h"   // sprintf
+#include "../../include/stdio.h"
 #include "../../include/string.h"  // strlen
 
 void _putstr(int win, char *win_buf, int x, int y, int col, unsigned char *s);

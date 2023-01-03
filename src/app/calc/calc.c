@@ -1,5 +1,4 @@
-#include "../syscall.h"
-#include "../../include/stdio.h"  // sprintf
+#include "../../include/stdio.h"
 
 #define INVALID -0x7fffffff
 

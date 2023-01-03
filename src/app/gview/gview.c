@@ -1,4 +1,4 @@
-#include "../syscall.h"
+#include "../../include/stdio.h"
 
 struct DLL_STR_PIC_ENV {	// 64KB
 	int work[64 * 1024 / 4];

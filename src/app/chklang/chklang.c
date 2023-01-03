@@ -1,4 +1,4 @@
-#include "../syscall.h"
+#include "../../include/stdio.h"
 
 void HariMain(void) {
     int lang_mode = get_lang_mode();

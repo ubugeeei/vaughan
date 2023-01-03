@@ -1,4 +1,4 @@
-#include "../syscall.h"
+#include "../../include/stdio.h"
 
 int rand(void);  // 0~32767
 

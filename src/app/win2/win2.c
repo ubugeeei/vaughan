@@ -1,4 +1,4 @@
-#include "../syscall.h"
+#include "../../include/stdio.h"
 
 char buf[150 * 50];
 

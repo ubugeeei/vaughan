@@ -1,5 +1,4 @@
 #include "../../include/stdio.h"
-#include "../syscall.h"
 
 #define MAX 10000
 

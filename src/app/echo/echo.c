@@ -1,4 +1,4 @@
-#include "../syscall.h"
+#include "../../include/stdio.h"
 
 void HariMain(void) {
     char c, cmdline_buf[120];

@@ -1,4 +1,3 @@
-#include "../syscall.h"
 #include "../../include/stdio.h"
 
 int strtol(char *s, char **endp, int base);  // stdlib.h
