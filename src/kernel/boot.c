@@ -1,13 +1,5 @@
 #include "boot.h"
 
-#define KEYCMD_LED 0xed
-
-void key_window_off(struct Sheet *key_win);
-void key_window_on(struct Sheet *key_win);
-struct Sheet *open_console(struct SheetCtl *shtctl, unsigned int memtotal);
-void close_console(struct Sheet *sht);
-void close_console_task(struct Task *task);
-
 void Boot(void) {
     struct BootInfo *binfo = (struct BootInfo *)ADR_BOOT_INFO;
     struct SheetCtl *shtctl;
@@ -17,7 +9,8 @@ void Boot(void) {
     int mx, my, i, new_mx = -1, new_my = 0, new_wx = 0x7fffffff, new_wy = 0;
     unsigned int memtotal;
     struct MOUSE_DEC mdec;
-    struct MemoryManagement *memory_management = (struct MemoryManagement *)MEMMAN_ADDR;
+    struct MemoryManagement *memory_management =
+        (struct MemoryManagement *)MEMMAN_ADDR;
     unsigned char *buf_back, buf_mouse[256], *buf_cons[2];
     struct Sheet *sht_back, *sht_mouse, *sht_cons[2];
     struct Task *task_a, *task_cons[2], *task;
@@ -75,10 +68,12 @@ void Boot(void) {
     memtotal = test_memory(0x00400000, 0xbfffffff);
     memory_management_init(memory_management);
     memory_management_free(memory_management, 0x00001000, 0x0009e000);
-    memory_management_free(memory_management, 0x00400000, memtotal - 0x00400000);
+    memory_management_free(memory_management, 0x00400000,
+                           memtotal - 0x00400000);
 
     init_palette();
-    shtctl = shtctl_init(memory_management, binfo->vram, binfo->scrnx, binfo->scrny);
+    shtctl =
+        shtctl_init(memory_management, binfo->vram, binfo->scrnx, binfo->scrny);
     task_a = task_init(memory_management);
     queue.task = task_a;
     task_run(task_a, 1, 2);
@@ -95,8 +90,8 @@ void Boot(void) {
      * sht_back
      */
     sht_back = sheet_alloc(shtctl);
-    buf_back =
-        (unsigned char *)memory_management_alloc_4k(memory_management, binfo->scrnx * binfo->scrny);
+    buf_back = (unsigned char *)memory_management_alloc_4k(
+        memory_management, binfo->scrnx * binfo->scrny);
     sheet_setbuf(sht_back, buf_back, binfo->scrnx, binfo->scrny, -1);
     init_screen8(buf_back, binfo->scrnx, binfo->scrny);
 
@@ -133,7 +128,8 @@ void Boot(void) {
      * read jp.fnt
      *
      */
-    jp_fnt = (unsigned char *)memory_management_alloc_4k(memory_management, 16 * 256 + 32 * 94 * 47);
+    jp_fnt = (unsigned char *)memory_management_alloc_4k(
+        memory_management, 16 * 256 + 32 * 94 * 47);
     fat = (int *)memory_management_alloc_4k(memory_management, 4 * 2880);
     file_read_fat(fat, (unsigned char *)(ADR_DISK_IMG + 0x000200));
     // clang-format off
@@ -434,7 +430,8 @@ void Boot(void) {
             } else if (2024 <= i && i <= 2279) {
                 // Close only console
                 sht2 = shtctl->sheets0 + (i - 2024);
-                memory_management_free_4k(memory_management, (int)sht2->buf, 256 * 165);
+                memory_management_free_4k(memory_management, (int)sht2->buf,
+                                          256 * 165);
                 sheet_free(sht2);
             }
         }
@@ -458,9 +455,11 @@ void key_window_on(struct Sheet *key_win) {
 }
 
 struct Task *open_console_task(struct Sheet *sht, unsigned int memtotal) {
-    struct MemoryManagement *memory_management = (struct MemoryManagement *)MEMMAN_ADDR;
+    struct MemoryManagement *memory_management =
+        (struct MemoryManagement *)MEMMAN_ADDR;
     struct Task *task = task_alloc();
-    int *cons_queue = (int *)memory_management_alloc_4k(memory_management, 128 * 4);
+    int *cons_queue =
+        (int *)memory_management_alloc_4k(memory_management, 128 * 4);
     task->cons_stack = memory_management_alloc_4k(memory_management, 64 * 1024);
     task->tss.esp = task->cons_stack + 64 * 1024 - 12;
     task->tss.eip = (int)&console_task;
@@ -478,11 +477,14 @@ struct Task *open_console_task(struct Sheet *sht, unsigned int memtotal) {
 }
 
 struct Sheet *open_console(struct SheetCtl *shtctl, unsigned int memtotal) {
-    struct MemoryManagement *memory_management = (struct MemoryManagement *)MEMMAN_ADDR;
+    struct MemoryManagement *memory_management =
+        (struct MemoryManagement *)MEMMAN_ADDR;
     struct Sheet *sht = sheet_alloc(shtctl);
-    unsigned char *buf = (unsigned char *)memory_management_alloc_4k(memory_management, 256 * 165);
+    unsigned char *buf = (unsigned char *)memory_management_alloc_4k(
+        memory_management, 256 * 165);
     struct Task *task = task_alloc();
-    int *cons_queue = (int *)memory_management_alloc_4k(memory_management, 128 * 4);
+    int *cons_queue =
+        (int *)memory_management_alloc_4k(memory_management, 128 * 4);
     sheet_setbuf(sht, buf, 256, 165, -1);
     make_window8(buf, 256, 165, "console", 0);
     make_textbox8(sht, 8, 28, 240, 128, COL8_000000);
@@ -505,7 +507,8 @@ struct Sheet *open_console(struct SheetCtl *shtctl, unsigned int memtotal) {
 }
 
 void close_console_task(struct Task *task) {
-    struct MemoryManagement *memory_management = (struct MemoryManagement *)MEMMAN_ADDR;
+    struct MemoryManagement *memory_management =
+        (struct MemoryManagement *)MEMMAN_ADDR;
     task_sleep(task);
     memory_management_free_4k(memory_management, task->cons_stack, 64 * 1024);
     memory_management_free_4k(memory_management, (int)task->queue.buf, 128 * 4);
@@ -514,7 +517,8 @@ void close_console_task(struct Task *task) {
 }
 
 void close_console(struct Sheet *sht) {
-    struct MemoryManagement *memory_management = (struct MemoryManagement *)MEMMAN_ADDR;
+    struct MemoryManagement *memory_management =
+        (struct MemoryManagement *)MEMMAN_ADDR;
     struct Task *task = sht->task;
     memory_management_free_4k(memory_management, (int)sht->buf, 256 * 165);
     sheet_free(sht);
