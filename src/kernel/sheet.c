@@ -7,15 +7,15 @@ struct SheetCtl *shtctl_init(struct MemoryManagement *memory_management, unsigne
     // clang-format on
     struct SheetCtl *ctl;
     int i;
-    ctl = (struct SheetCtl *)memory_management_alloc_4k(memory_management, sizeof(struct SheetCtl));
+    ctl = (struct SheetCtl *)memman_alloc_4k(memory_management, sizeof(struct SheetCtl));
 
     if (ctl == 0) {
         goto err;
     }
 
-    ctl->map = (unsigned char *)memory_management_alloc_4k(memory_management, xsize * ysize);
+    ctl->map = (unsigned char *)memman_alloc_4k(memory_management, xsize * ysize);
     if (ctl->map == 0) {
-        memory_management_free_4k(memory_management, (int)ctl, sizeof(struct SheetCtl));
+        memman_free_4k(memory_management, (int)ctl, sizeof(struct SheetCtl));
         goto err;
     }
     ctl->vram = vram;

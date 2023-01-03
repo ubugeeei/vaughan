@@ -72,16 +72,16 @@ char *file_load_file2(int cluster_num, int *psize, int *fat) {
     int size = *psize, size2;
     struct MemoryManagement *memory_management = (struct MemoryManagement *)MEMMAN_ADDR;
     char *buf, *buf2;
-    buf = (char *)memory_management_alloc_4k(memory_management, size);
+    buf = (char *)memman_alloc_4k(memory_management, size);
     // clang-format off
     file_load_file(cluster_num, size, buf, fat, (char *)(ADR_DISK_IMG + 0x003e00));
     // clang-format on
     if (size >= 17) {
         size2 = tek_getsize(buf);
         if (size2 > 0) {
-            buf2 = (char *)memory_management_alloc_4k(memory_management, size2);
+            buf2 = (char *)memman_alloc_4k(memory_management, size2);
             tek_decomp(buf, buf2, size2);
-            memory_management_free_4k(memory_management, (int)buf, size);
+            memman_free_4k(memory_management, (int)buf, size);
             buf = buf2;
             *psize = size2;
         }

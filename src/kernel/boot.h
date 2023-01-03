@@ -165,13 +165,13 @@ void init_keyboard(struct Queue *queue, int data0);
  * mouse
  *
  */
-struct MOUSE_DEC {
+struct MouseDec {
     unsigned char buf[3], phase;
     int x, y, btn;
 };
 void inthandler2c(int *esp);
-void enable_mouse(struct Queue *queue, int data0, struct MOUSE_DEC *mdec);
-int mouse_decode(struct MOUSE_DEC *mdec, unsigned char dat);
+void enable_mouse(struct Queue *queue, int data0, struct MouseDec *mdec);
+int mouse_decode(struct MouseDec *mdec, unsigned char dat);
 
 /*
  *
@@ -189,12 +189,12 @@ struct MemoryManagement {
 };
 // clang-format off
 unsigned int test_memory(unsigned int start, unsigned int end);
-void memory_management_init(struct MemoryManagement *man);
-unsigned int memory_management_total(struct MemoryManagement *man);
-unsigned int memory_management_alloc(struct MemoryManagement *man, unsigned int size);
-int memory_management_free(struct MemoryManagement *man, unsigned int addr, unsigned int size);
-unsigned int memory_management_alloc_4k(struct MemoryManagement *man, unsigned int size);
-int memory_management_free_4k(struct MemoryManagement *man, unsigned int addr, unsigned int size);
+void memman_init(struct MemoryManagement *man);
+unsigned int memman_total(struct MemoryManagement *man);
+unsigned int memman_alloc(struct MemoryManagement *man, unsigned int size);
+int memman_free(struct MemoryManagement *man, unsigned int addr, unsigned int size);
+unsigned int memman_alloc_4k(struct MemoryManagement *man, unsigned int size);
+int memman_free_4k(struct MemoryManagement *man, unsigned int addr, unsigned int size);
 // clang-format on
 
 /*
@@ -391,3 +391,24 @@ void close_console(struct Sheet *sht);
 void close_console_task(struct Task *task);
 void key_window_off(struct Sheet *key_win);
 void key_window_on(struct Sheet *key_win);
+// keytable
+static char KEY_TABLE[0x80] = {
+    0,   0,   '1', '2', '3', '4',  '5', '6', '7', '8', '9',  '0', '-', '=', 0,
+    0,   'Q', 'W', 'E', 'R', 'T',  'Y', 'U', 'I', 'O', 'P',  '[', ']', 0,   0,
+    'A', 'S', 'D', 'F', 'G', 'H',  'J', 'K', 'L', ':', '\'', 0,   0,   0,   'Z',
+    'X', 'C', 'V', 'B', 'N', 'M',  ',', '.', '/', 0,   '*',  0,   ' ', 0,   0,
+    0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,    '7', '8', '9', '-',
+    '4', '5', '6', '+', '1', '2',  '3', '0', '.', 0,   0,    0,   0,   0,   0,
+    0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,    0,   0,   0,   0,
+    0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0x5c, 0,   0,   0,   0,
+    0,   0,   0,   0,   0,   0x5c, 0,   0};
+static char SHIFTED_KEY_TABLE[0x80] = {
+    0,   0,   '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '|',
+    0,   'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', 0,   0,
+    'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"', 0,   0,   '}', 'Z',
+    'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?', 0,   '*', 0,   ' ', 0,   0,
+    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   '7', '8', '9', '-',
+    '4', '5', '6', '+', '1', '2', '3', '0', '.', 0,   0,   0,   0,   0,   0,
+    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   '_', 0,   0,   0,   0,
+    0,   0,   0,   0,   0,   '|', 0,   0};

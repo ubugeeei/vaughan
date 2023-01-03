@@ -66,7 +66,7 @@ struct Task *task_init(struct MemoryManagement *memory_management) {
     struct Task *task, *idle;
     struct SegmentDescriptor *gdt = (struct SegmentDescriptor *)ADR_GDT;
 
-    task_ctl = (struct TaskCtl *)memory_management_alloc_4k(memory_management, sizeof(struct TaskCtl));
+    task_ctl = (struct TaskCtl *)memman_alloc_4k(memory_management, sizeof(struct TaskCtl));
     for (i = 0; i < MAX_TASKS; i++) {
         task_ctl->tasks0[i].flags = 0;
         task_ctl->tasks0[i].sel = (TASK_GDT0 + i) * 8;
@@ -92,7 +92,7 @@ struct Task *task_init(struct MemoryManagement *memory_management) {
     timer_settime(task_timer, task->priority);
 
     idle = task_alloc();
-    idle->tss.esp = memory_management_alloc_4k(memory_management, 64 * 1024) + 64 * 1024;
+    idle->tss.esp = memman_alloc_4k(memory_management, 64 * 1024) + 64 * 1024;
     idle->tss.eip = (int)&task_idle;
     idle->tss.es = 1 * 8;
     idle->tss.cs = 2 * 8;

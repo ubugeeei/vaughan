@@ -19,7 +19,7 @@ void inthandler2c(int *esp)
 #define KEYCMD_SENDTO_MOUSE 0xd4
 #define MOUSECMD_ENABLE 0xf4
 
-void enable_mouse(struct Queue *queue, int data0, struct MOUSE_DEC *mdec) {
+void enable_mouse(struct Queue *queue, int data0, struct MouseDec *mdec) {
     mousequeue = queue;
     mousedata0 = data0;
 
@@ -32,7 +32,7 @@ void enable_mouse(struct Queue *queue, int data0, struct MOUSE_DEC *mdec) {
     return;
 }
 
-int mouse_decode(struct MOUSE_DEC *mdec, unsigned char dat) {
+int mouse_decode(struct MouseDec *mdec, unsigned char dat) {
     if (mdec->phase == 0) {
         if (dat == 0xfa) {
             mdec->phase = 1;
