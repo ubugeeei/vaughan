@@ -8,7 +8,7 @@ GLOBAL	asm_load_gdtr, asm_load_idtr
 GLOBAL	asm_load_cr0, asm_store_cr0
 GLOBAL  asm_load_tr
 GLOBAL	asm_inthandler20, asm_inthandler21, asm_inthandler27, asm_inthandler2c, asm_inthandler0c, asm_inthandler0d
-GLOBAL	asm_memtest_sub
+GLOBAL	asm_test_memory_sub
 GLOBAL  asm_far_jmp, asm_far_call
 GLOBAL	asm_os_api
 GLOBAL	asm_start_app, asm_end_app
@@ -217,7 +217,7 @@ asm_far_call:
 		CALL	FAR [ESP+4]
 		RET
 
-asm_memtest_sub:	; unsigned int asm_memtest_sub(unsigned int start, unsigned int end)
+asm_test_memory_sub:	; unsigned int asm_test_memory_sub(unsigned int start, unsigned int end)
 	PUSH	EDI
 	PUSH	ESI
 	PUSH	EBX

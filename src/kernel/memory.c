@@ -2,7 +2,7 @@
 #define EFLAGS_AC_BIT 0x00040000
 #define CR0_CACHE_DISABLE 0x60000000
 
-unsigned int memtest(unsigned int start, unsigned int end) {
+unsigned int test_memory(unsigned int start, unsigned int end) {
     char flg486 = 0;
     unsigned int eflg, cr0, i;
 
@@ -22,7 +22,7 @@ unsigned int memtest(unsigned int start, unsigned int end) {
         asm_store_cr0(cr0);
     }
 
-    i = asm_memtest_sub(start, end);
+    i = asm_test_memory_sub(start, end);
 
     if (flg486 != 0) {
         cr0 = asm_load_cr0();
@@ -33,7 +33,7 @@ unsigned int memtest(unsigned int start, unsigned int end) {
     return i;
 }
 
-void memman_init(struct MEMMAN *man) {
+void memory_management_init(struct MEMORY_MANAGEMENT *man) {
     man->frees = 0;
     man->maxfrees = 0;
     man->lostsize = 0;
@@ -41,7 +41,7 @@ void memman_init(struct MEMMAN *man) {
     return;
 }
 
-unsigned int memman_total(struct MEMMAN *man) {
+unsigned int memory_management_total(struct MEMORY_MANAGEMENT *man) {
     unsigned int i, t = 0;
     for (i = 0; i < man->frees; i++) {
         t += man->free[i].size;
@@ -49,7 +49,7 @@ unsigned int memman_total(struct MEMMAN *man) {
     return t;
 }
 
-unsigned int memman_alloc(struct MEMMAN *man, unsigned int size) {
+unsigned int memory_management_alloc(struct MEMORY_MANAGEMENT *man, unsigned int size) {
     unsigned int i, a;
     for (i = 0; i < man->frees; i++) {
         if (man->free[i].size >= size) {
@@ -68,7 +68,7 @@ unsigned int memman_alloc(struct MEMMAN *man, unsigned int size) {
     return 0;
 }
 
-int memman_free(struct MEMMAN *man, unsigned int addr, unsigned int size) {
+int memory_management_free(struct MEMORY_MANAGEMENT *man, unsigned int addr, unsigned int size) {
     int i, j;
     for (i = 0; i < man->frees; i++) {
         if (man->free[i].addr > addr) {
@@ -119,16 +119,16 @@ int memman_free(struct MEMMAN *man, unsigned int addr, unsigned int size) {
     return -1;
 }
 
-unsigned int memman_alloc_4k(struct MEMMAN *man, unsigned int size) {
+unsigned int memory_management_alloc_4k(struct MEMORY_MANAGEMENT *man, unsigned int size) {
     unsigned int a;
     size = (size + 0xfff) & 0xfffff000;
-    a = memman_alloc(man, size);
+    a = memory_management_alloc(man, size);
     return a;
 }
 
-int memman_free_4k(struct MEMMAN *man, unsigned int addr, unsigned int size) {
+int memory_management_free_4k(struct MEMORY_MANAGEMENT *man, unsigned int addr, unsigned int size) {
     int i;
     size = (size + 0xfff) & 0xfffff000;
-    i = memman_free(man, addr, size);
+    i = memory_management_free(man, addr, size);
     return i;
 }
