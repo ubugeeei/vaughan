@@ -13,7 +13,7 @@ int main() {
     int d;
 
     // Read error
-    if ((infp = fopen("hankaku.txt", "r")) == NULL) {
+    if ((infp = fopen("../../static/hankaku.txt", "r")) == NULL) {
         printf("input file create_window error\n");
         return 0;
     }

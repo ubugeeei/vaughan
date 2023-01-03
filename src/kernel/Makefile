@@ -49,7 +49,7 @@ $(OUT_DIR)/kernel/bin/asmhead.bin : asmhead.nasm
 $(OUT_DIR)/kernel/bin/hankaku_txt_compiler : hankaku_txt_compiler.c
 	gcc $< -o $@
 
-hankaku.c : hankaku.txt $(OUT_DIR)/kernel/bin/hankaku_txt_compiler
+hankaku.c : ../../static/hankaku.txt $(OUT_DIR)/kernel/bin/hankaku_txt_compiler
 	$(OUT_DIR)/kernel/bin/hankaku_txt_compiler
 
 # https://gcc.gnu.org/onlinedocs/gcc/Link-Options.html
