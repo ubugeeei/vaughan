@@ -1,27 +1,32 @@
 OUT_DIR = ../../target
-LIBPATH = $(OUT_DIR)/lib/bin/
 
 OBJS_BOOTPACK = \
-	boot.o \
-	naskfunc.o \
-	hankaku.o \
-	graphic.o \
-	dsctbl.o \
-	int.o \
-	queue.o \
-	keyboard.o \
-	mouse.o \
-	memory.o \
-	sheet.o \
-	timer.o \
-	mtask.o \
-	window.o \
-	console.o \
-	file.o \
-	tek.o \
-	$(LIBPATH)libstdio.a \
-	$(LIBPATH)libstring.a \
-	$(LIBPATH)libstdlib.a
+	$(OUT_DIR)/kernel/obj/boot.o \
+	$(OUT_DIR)/kernel/obj/naskfunc.o \
+	$(OUT_DIR)/kernel/obj/hankaku.o \
+	$(OUT_DIR)/kernel/obj/graphic.o \
+	$(OUT_DIR)/kernel/obj/dsctbl.o \
+	$(OUT_DIR)/kernel/obj/int.o \
+	$(OUT_DIR)/kernel/obj/queue.o \
+	$(OUT_DIR)/kernel/obj/keyboard.o \
+	$(OUT_DIR)/kernel/obj/mouse.o \
+	$(OUT_DIR)/kernel/obj/memory.o \
+	$(OUT_DIR)/kernel/obj/sheet.o \
+	$(OUT_DIR)/kernel/obj/timer.o \
+	$(OUT_DIR)/kernel/obj/mtask.o \
+	$(OUT_DIR)/kernel/obj/window.o \
+	$(OUT_DIR)/kernel/obj/console.o \
+	$(OUT_DIR)/kernel/obj/file.o \
+	$(OUT_DIR)/kernel/obj/tek.o \
+	$(OUT_DIR)/lib/libstdio.a \
+	$(OUT_DIR)/lib/libstring.a \
+	$(OUT_DIR)/lib/libstdlib.a
+
+PREMAKE = \
+	mkdir -p $(OUT_DIR)/kernel/obj &&\
+	mkdir -p $(OUT_DIR)/kernel/bin &&\
+	mkdir -p $(OUT_DIR)/lib
+
 
 MAKE = make -r
 DEL = rm -f
@@ -31,51 +36,51 @@ CFLAGS = -m32 -fno-builtin
 COPTION = -march=i486 -nostdlib
 
 default :
-	$(MAKE) ipl10.bin
-	$(MAKE) haribote.sys
+	$(PREMAKE)
+	$(MAKE) $(OUT_DIR)/kernel/ipl10.bin
+	$(MAKE) $(OUT_DIR)/kernel/haribote.sys
 
-ipl10.bin : ipl10.nasm
-	nasm $< -o $@ -l ipl10.lst
+$(OUT_DIR)/kernel/ipl10.bin : ipl10.nasm
+	nasm $< -o $@
 
-asmhead.bin : asmhead.nasm
-	nasm $< -o $@ -l asmhead.lst
+$(OUT_DIR)/kernel/bin/asmhead.bin : asmhead.nasm
+	nasm $< -o $@
 
-hankaku_txt_compiler : hankaku_txt_compiler.c
+$(OUT_DIR)/kernel/bin/hankaku_txt_compiler : hankaku_txt_compiler.c
 	gcc $< -o $@
 
-hankaku.c : hankaku.txt hankaku_txt_compiler
-	./hankaku_txt_compiler
+hankaku.c : hankaku.txt $(OUT_DIR)/kernel/bin/hankaku_txt_compiler
+	$(OUT_DIR)/kernel/bin/hankaku_txt_compiler
 
 # https://gcc.gnu.org/onlinedocs/gcc/Link-Options.html
-boot.hrb : $(OBJS_BOOTPACK) hrb.ld
-	$(CC) $(CFLAGS) $(COPTION) -T hrb.ld -Xlinker -Map=boot.map -g $(OBJS_BOOTPACK) -o $@
+$(OUT_DIR)/kernel/bin/boot.hrb : $(OBJS_BOOTPACK) hrb.ld
+	$(CC) $(CFLAGS) $(COPTION) -T hrb.ld -Xlinker -Map=$(OUT_DIR)/kernel/boot.map -g $(OBJS_BOOTPACK) -o $@
 
-haribote.sys : asmhead.bin boot.hrb
-	cat asmhead.bin boot.hrb > haribote.sys
+$(OUT_DIR)/kernel/haribote.sys : $(OUT_DIR)/kernel/bin/asmhead.bin $(OUT_DIR)/kernel/bin/boot.hrb
+	cat $(OUT_DIR)/kernel/bin/asmhead.bin $(OUT_DIR)/kernel/bin/boot.hrb > $(OUT_DIR)/kernel/haribote.sys
 
 # Rule
 
 # C -> Object
-%.o : %.c
-	$(CC) $(CFLAGS) -c $*.c -o $*.o
+$(OUT_DIR)/kernel/obj/%.o : %.c
+	$(CC) $(CFLAGS) -c $*.c -o $(OUT_DIR)/kernel/obj/$*.o
 
 # NASM -> Object
 # -g:generate debug, -f:format, -o:outfile, -l:listfile, elf:ELF32 (i386)
-%.o : %.nasm
-	nasm -g -f elf $*.nasm -o $*.o
+$(OUT_DIR)/kernel/obj/%.o : %.nasm
+	nasm -g -f elf $*.nasm -o $(OUT_DIR)/kernel/obj/$*.o
 
 # Remove
 clean :
-	-$(DEL) asmhead.bin
-	-$(DEL) hankaku_txt_compiler
+	-$(DEL) $(OUT_DIR)/kernel/bin/asmhead.bin
+	-$(DEL) $(OUT_DIR)/kernel/bin/hankaku_txt_compiler
 	-$(DEL) hankaku.c
-	-$(DEL) *.lst
-	-$(DEL) *.o
-	-$(DEL) *.sys
-	-$(DEL) *.hrb
-	-$(DEL) *.map
+	-$(DEL) $(OUT_DIR)/kernel/obj/*.o
+	-$(DEL) $(OUT_DIR)/kernel/bin/*.sys
+	-$(DEL) $(OUT_DIR)/kernel/bin/*.hrb
+	-$(DEL) $(OUT_DIR)/kernel/*.map
 	
 src_only :
 	$(MAKE) clean
-	-$(DEL) ipl10.bin
-	-$(DEL) haribote.sys
+	-$(DEL) $(OUT_DIR)/kernel/ipl10.bin
+	-$(DEL) $(OUT_DIR)/kernel/haribote.sys

@@ -1,7 +1,7 @@
 OUT_DIR = ../../../target
-LIB_PATH = $(OUT_DIR)/lib/bin/
-API_LIB_PATH   = ../../kernel/system_call/
-KERNEL_PATH = ../../kernel/
+LIB_PATH = $(OUT_DIR)/lib/
+API_LIB_PATH   = $(OUT_DIR)/kernel/system_call/
+KERNEL_PATH = $(OUT_DIR)/kernel/
 
 MAKE = make -r
 DEL = rm -f
