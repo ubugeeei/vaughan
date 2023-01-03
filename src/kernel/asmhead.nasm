@@ -1,4 +1,4 @@
-; haribote-os
+; vaughan-os
 ; TAB=4
 
 VBEMODE	EQU		0x105			; 1024 x  768 x 8bit color

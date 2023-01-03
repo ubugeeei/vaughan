@@ -46,7 +46,7 @@ entry:
 		MOV		BX,18*2*CYLS-1
 		CALL readfast
 
-; Boot haribote.sys
+; Boot vaughan.sys
 
 		MOV		BYTE [0x0ff0],CYLS
 		JMP		0xc200

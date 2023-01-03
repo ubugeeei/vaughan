@@ -37,15 +37,15 @@ DEL = rm -rf
 PRE_MAKE = mkdir -p $(OUT_DIR)
 
 default : 
-	$(MAKE) $(OUT_DIR)/haribote.img
+	$(MAKE) $(OUT_DIR)/vaughan.img
 
 # mtool: https://www.gnu.org/software/mtools/manual/html_node/mformat.html
 # -f: size, -C: hidden_sectors, -B: boot_sector, -i: 
-$(OUT_DIR)/haribote.img : $(OUT_DIR)/kernel/ipl10.bin $(OUT_DIR)/kernel/haribote.sys $(APPS)
-	mformat -f 1440 -C -B $(OUT_DIR)/kernel/ipl10.bin -i $(OUT_DIR)/haribote.img ::
+$(OUT_DIR)/vaughan.img : $(OUT_DIR)/kernel/ipl10.bin $(OUT_DIR)/kernel/vaughan.sys $(APPS)
+	mformat -f 1440 -C -B $(OUT_DIR)/kernel/ipl10.bin -i $(OUT_DIR)/vaughan.img ::
 	mcopy -i \
-		$(OUT_DIR)/haribote.img \
-		$(OUT_DIR)/kernel/haribote.sys \
+		$(OUT_DIR)/vaughan.img \
+		$(OUT_DIR)/kernel/vaughan.sys \
 		src/kernel/ipl10.nasm \
 		$(APPS) \
 		src/app/mmldata/kirakira.mml \
@@ -59,8 +59,8 @@ $(OUT_DIR)/haribote.img : $(OUT_DIR)/kernel/ipl10.bin $(OUT_DIR)/kernel/haribote
 
 # Commands
 run :
-	$(MAKE) $(OUT_DIR)/haribote.img
-	qemu-system-i386 -soundhw pcspk -drive file=$(OUT_DIR)/haribote.img,format=raw,if=floppy -boot a
+	$(MAKE) $(OUT_DIR)/vaughan.img
+	qemu-system-i386 -soundhw pcspk -drive file=$(OUT_DIR)/vaughan.img,format=raw,if=floppy -boot a
 
 # install :
 
@@ -99,11 +99,11 @@ full :
 	$(MAKE) -C src/app/mmlplay
 	$(MAKE) -C src/app/gview
 	$(MAKE) -C src/app/echo
-	$(MAKE) $(OUT_DIR)/haribote.img
+	$(MAKE) $(OUT_DIR)/vaughan.img
 
 run_full :
 	$(MAKE) full
-	qemu-system-i386 -drive file=$(OUT_DIR)/haribote.img,format=raw,if=floppy -boot a
+	qemu-system-i386 -drive file=$(OUT_DIR)/vaughan.img,format=raw,if=floppy -boot a
 
 # install_full :
 
@@ -117,7 +117,7 @@ clean :
 
 src_only :
 	$(MAKE) clean
-	-$(DEL) $(OUT_DIR)/haribote.img
+	-$(DEL) $(OUT_DIR)/vaughan.img
 
 clean_full :
 	$(MAKE) -C src/lib clean
@@ -194,7 +194,7 @@ src_only_full :
 refresh :
 	$(MAKE) full
 	$(MAKE) clean_full
-	-$(DEL) $(OUT_DIR)/haribote.img
+	-$(DEL) $(OUT_DIR)/vaughan.img
 
 NAME = new_app
 new_app:

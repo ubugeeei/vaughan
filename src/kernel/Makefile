@@ -38,7 +38,7 @@ COPTION = -march=i486 -nostdlib
 default :
 	$(PREMAKE)
 	$(MAKE) $(OUT_DIR)/kernel/ipl10.bin
-	$(MAKE) $(OUT_DIR)/kernel/haribote.sys
+	$(MAKE) $(OUT_DIR)/kernel/vaughan.sys
 
 $(OUT_DIR)/kernel/ipl10.bin : ipl10.nasm
 	nasm $< -o $@
@@ -56,8 +56,8 @@ hankaku.c : hankaku.txt $(OUT_DIR)/kernel/bin/hankaku_txt_compiler
 $(OUT_DIR)/kernel/bin/boot.hrb : $(OBJS_BOOTPACK) hrb.ld
 	$(CC) $(CFLAGS) $(COPTION) -T hrb.ld -Xlinker -Map=$(OUT_DIR)/kernel/boot.map -g $(OBJS_BOOTPACK) -o $@
 
-$(OUT_DIR)/kernel/haribote.sys : $(OUT_DIR)/kernel/bin/asmhead.bin $(OUT_DIR)/kernel/bin/boot.hrb
-	cat $(OUT_DIR)/kernel/bin/asmhead.bin $(OUT_DIR)/kernel/bin/boot.hrb > $(OUT_DIR)/kernel/haribote.sys
+$(OUT_DIR)/kernel/vaughan.sys : $(OUT_DIR)/kernel/bin/asmhead.bin $(OUT_DIR)/kernel/bin/boot.hrb
+	cat $(OUT_DIR)/kernel/bin/asmhead.bin $(OUT_DIR)/kernel/bin/boot.hrb > $(OUT_DIR)/kernel/vaughan.sys
 
 # Rule
 
@@ -83,4 +83,4 @@ clean :
 src_only :
 	$(MAKE) clean
 	-$(DEL) $(OUT_DIR)/kernel/ipl10.bin
-	-$(DEL) $(OUT_DIR)/kernel/haribote.sys
+	-$(DEL) $(OUT_DIR)/kernel/vaughan.sys
