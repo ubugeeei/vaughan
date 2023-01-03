@@ -258,13 +258,13 @@ struct TASK_LEVEL {
   int now;
   struct TASK *tasks[MAX_TASKS_LV];
 };
-struct TASKCTL {
+struct TASK_CTL {
   int now_lv;
   char lv_change;
   struct TASK_LEVEL level[MAX_TASK_LEVELS];
   struct TASK tasks0[MAX_TASKS];
 };
-extern struct TASKCTL *taskctl;
+extern struct TASK_CTL *task_ctl;
 extern struct TIMER *task_timer;
 struct TASK *task_now(void);
 struct TASK *task_init(struct MEMORY_MANAGEMENT *memory_management);
