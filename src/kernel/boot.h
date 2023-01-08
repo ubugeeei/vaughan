@@ -1,5 +1,6 @@
 #include "../include/stdio.h"
 #include "../include/string.h"
+#include "rust.h"
 
 /*
  *
