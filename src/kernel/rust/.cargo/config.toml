@@ -1,0 +1,8 @@
+[build]
+target = "dos.json"
+
+[unstable]
+build-std = ["core"]
+
+[target.dos]
+linker = "x86_64-elf-gcc"

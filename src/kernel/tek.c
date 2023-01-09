@@ -1,7 +1,7 @@
 #include "../include/setjmp.h"
 #include "boot.h"
 // #include <string.h>
-#define NULL 0
+// #define NULL 0
 
 typedef unsigned char UCHAR;
 typedef unsigned int UINT32;
