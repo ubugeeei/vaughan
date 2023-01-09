@@ -20,7 +20,8 @@ OBJS_BOOTPACK = \
 	$(OUT_DIR)/kernel/obj/tek.o \
 	$(OUT_DIR)/lib/libstdio.a \
 	$(OUT_DIR)/lib/libstring.a \
-	$(OUT_DIR)/lib/libstdlib.a
+	$(OUT_DIR)/lib/libstdlib.a \
+	$(OUT_DIR)/kernel/rust/rustlib.a # FIXME: いい感じにリンクできない
 
 PREMAKE = \
 	mkdir -p $(OUT_DIR)/kernel/obj &&\

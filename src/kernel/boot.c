@@ -1,7 +1,7 @@
 #include "boot.h"
 
 void Boot(void) {
-    // int rust_int = rust_function();
+    int rust_int = rust_function();
 
     struct BootInfo *binfo = (struct BootInfo *)ADR_BOOT_INFO;
 
