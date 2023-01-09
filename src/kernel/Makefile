@@ -32,11 +32,15 @@ MAKE = make -r
 DEL = rm -f
 
 CC = i386-elf-gcc
+# FIXME: いい感じにリンクできない
+# CFLAGS = -m32 -fno-builtin -L$(OUT_DIR)/kernel/rust/rustlib.a
 CFLAGS = -m32 -fno-builtin
+# COPTION = -march=i486 -nostdlib -L $(OUT_DIR)/kernel/rust/rustlib.a
 COPTION = -march=i486 -nostdlib
 
 default :
 	$(PREMAKE)
+	$(MAKE) -C rust
 	$(MAKE) $(OUT_DIR)/kernel/ipl10.bin
 	$(MAKE) $(OUT_DIR)/kernel/vaughan.sys
 
